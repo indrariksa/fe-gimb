@@ -21,6 +21,7 @@ function readDraft() {
 export function InventoryPage() {
   const navigate = useNavigate();
   const [values, setValues] = useState<Record<string, string>>(() => readDraft());
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const completed = inventoryFields.filter((field) => values[field.id]).length;
   const progress = Math.round((completed / inventoryFields.length) * 100);
 
@@ -72,7 +73,7 @@ export function InventoryPage() {
             </label>
             <footer>
               <Button variant="secondary" onClick={() => navigate("/dashboard")}>Batal</Button>
-              <Button onClick={() => navigate("/analysis")}>Simpan & Lanjutkan <Icon name="arrow" size={18} /></Button>
+              <Button onClick={() => setIsConfirmOpen(true)}>Simpan & Lanjutkan <Icon name="arrow" size={18} /></Button>
             </footer>
           </form>
 
@@ -97,6 +98,22 @@ export function InventoryPage() {
           </aside>
         </div>
       </section>
+
+      {isConfirmOpen && (
+        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+          <div className="confirm-dialog__card">
+            <span className="confirm-dialog__icon">
+              <Icon name="alert" size={34} />
+            </span>
+            <h2 id="confirm-title">Data yang diinput sudah benar?</h2>
+            <p>Pastikan angka dan informasi bisnis sudah sesuai sebelum sistem mulai melakukan analisis.</p>
+            <div className="confirm-dialog__actions">
+              <Button variant="secondary" onClick={() => setIsConfirmOpen(false)}>Tidak</Button>
+              <Button onClick={() => navigate("/analysis")}>Ya, Lanjutkan</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardShell>
   );
 }
