@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 
@@ -13,6 +13,7 @@ const steps = [
 
 export function AnalysisPage() {
   const navigate = useNavigate();
+  const { businessId = "" } = useParams();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -90,7 +91,7 @@ export function AnalysisPage() {
         </div>
 
         {progress === 100 && (
-          <Button className="analysis-cta" onClick={() => navigate("/dashboard")}>
+          <Button className="analysis-cta" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>
             Masuk ke Dashboard <Icon name="arrow" size={18} />
           </Button>
         )}

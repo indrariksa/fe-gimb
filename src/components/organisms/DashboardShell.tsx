@@ -1,27 +1,28 @@
 import { useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { View } from "../../types";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
 import { Brand } from "../molecules/Brand";
 import { useThemeSettings } from "../../theme/ThemeContext";
-
-const navigation: Array<{ view: View; label: string; icon: Parameters<typeof Icon>[0]["name"] }> = [
-  { view: "dashboard", label: "Beranda", icon: "home" },
-  { view: "inventory", label: "Input Masalah", icon: "alert" },
-  { view: "dashboard", label: "Hasil Skor", icon: "grid" },
-  { view: "dashboard", label: "6 Sub-Skor", icon: "grid" },
-  { view: "dashboard", label: "Rekomendasi Solusi", icon: "bulb" },
-];
+import { useAuth } from "../../context/AuthContext";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
-const routeByView: Record<View, string> = {
-  landing: "/",
-  dashboard: "/dashboard",
-  inventory: "/inventory",
-  settings: "/settings",
-};
+
+function routeByView(view: View, businessId?: string) {
+  const businessDashboard = businessId ? `/businesses/${businessId}/dashboard` : "/businesses";
+  const inventory = businessId ? `/businesses/${businessId}/inventory/new` : "/businesses";
+
+  return {
+    landing: "/",
+    businesses: "/businesses",
+    dashboard: businessDashboard,
+    inventory,
+    settings: "/settings",
+    admin: "/admin",
+  }[view];
+}
 
 type DashboardShellProps = PropsWithChildren<{
   activeView: View;
@@ -30,6 +31,8 @@ type DashboardShellProps = PropsWithChildren<{
 
 export function DashboardShell({ activeView, title = "Smart Business Dashboard", children }: DashboardShellProps) {
   const { theme, updateTheme } = useThemeSettings();
+  const { businessId } = useParams();
+  const { user, isAdmin, logout } = useAuth();
   const navigateRoute = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(sidebarCollapsedStorageKey) === "true");
@@ -38,9 +41,21 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     localStorage.setItem(sidebarCollapsedStorageKey, String(isCollapsed));
   }, [isCollapsed]);
 
+  const navigation: Array<{ view: View; label: string; icon: Parameters<typeof Icon>[0]["name"] }> = [
+    { view: "businesses", label: "Daftar Toko", icon: "home" },
+    { view: "dashboard", label: "Dashboard", icon: "grid" },
+    { view: "inventory", label: "Input Masalah", icon: "alert" },
+    ...(isAdmin ? [{ view: "admin" as View, label: "Admin", icon: "settings" as Parameters<typeof Icon>[0]["name"] }] : []),
+  ];
+
   const navigate = (view: View) => {
     setIsMenuOpen(false);
-    navigateRoute(routeByView[view]);
+    navigateRoute(routeByView(view, businessId));
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigateRoute("/");
   };
 
   return (
@@ -61,10 +76,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           </button>
         </div>
         <nav>
-          {navigation.map((item, index) => (
+          {navigation.map((item) => (
             <button
-              key={`${item.label}-${index}`}
-              className={activeView === item.view && index < 2 ? "active" : ""}
+              key={item.label}
+              className={activeView === item.view ? "active" : ""}
               data-label={item.label}
               onClick={() => navigate(item.view)}
             >
@@ -76,7 +91,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
         <div className="sidebar__bottom">
           <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>
           <button className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => navigate("settings")}><Icon name="settings" /> <span>Pengaturan</span></button>
-          <button data-label="Keluar" onClick={() => navigate("landing")}><Icon name="logout" /> <span>Keluar</span></button>
+          <button data-label="Keluar" onClick={handleLogout}><Icon name="logout" /> <span>Keluar</span></button>
         </div>
       </aside>
       <main className="workspace">
@@ -101,10 +116,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
             </button>
             <Icon name="bell" />
             <span>
-              <strong>{theme.ownerName}</strong>
-              <small>{theme.businessName}</small>
+              <strong>{user?.full_name ?? theme.ownerName}</strong>
+              <small>{user?.role === "admin" ? "Admin" : theme.businessName}</small>
             </span>
-            <span className="avatar">{theme.ownerName.slice(0, 1)}</span>
+            <span className="avatar">{(user?.full_name ?? theme.ownerName).slice(0, 1)}</span>
           </div>
         </header>
         {children}

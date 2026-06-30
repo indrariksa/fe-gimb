@@ -1,0 +1,155 @@
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/atoms/Button";
+import { Icon } from "../components/atoms/Icon";
+import { DashboardShell } from "../components/organisms/DashboardShell";
+import { useAuth } from "../context/AuthContext";
+import * as businessApi from "../services/api/businesses";
+import type { Business } from "../services/api/types";
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
+}
+
+export function BusinessesPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [completedBusinessIds, setCompletedBusinessIds] = useState<Set<string>>(() => new Set());
+  const [form, setForm] = useState({ name: "Toko Maju Jaya", industry: "Retail", description: "Toko kebutuhan harian dan produk rumah tangga" });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const loadBusinesses = async () => {
+    setIsLoading(true);
+    try {
+      const response = await businessApi.listBusinesses();
+      setBusinesses(response.items);
+      const completedIds = await Promise.all(
+        response.items.map(async (business) => {
+          try {
+            await businessApi.latestBusinessInventory(business.public_id);
+            return business.public_id;
+          } catch {
+            return null;
+          }
+        }),
+      );
+      setCompletedBusinessIds(new Set(completedIds.filter((id): id is string => Boolean(id))));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal memuat toko");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBusinesses();
+  }, []);
+
+  const create = async (event: FormEvent) => {
+    event.preventDefault();
+    setError("");
+    setIsCreating(true);
+    try {
+      const business = await businessApi.createBusiness(form);
+      setBusinesses((current) => [business, ...current]);
+      setCompletedBusinessIds((current) => {
+        const next = new Set(current);
+        next.delete(business.public_id);
+        return next;
+      });
+      navigate(`/businesses/${business.public_id}/dashboard`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal membuat toko");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  return (
+    <DashboardShell activeView="businesses" title="Pilih Toko">
+      <section className="business-page">
+        <div className="business-hero">
+          <div>
+            <span>Workspace Bisnis</span>
+            <h2>Pilih toko yang ingin dianalisis</h2>
+            <p>Halo {user?.full_name ?? "Owner"}, setiap toko punya riwayat inventarisasi, skor kesehatan, dan rekomendasi yang terpisah.</p>
+          </div>
+          <Button onClick={() => document.getElementById("business-create-form")?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+            Tambah Toko <Icon name="arrow" size={18} />
+          </Button>
+        </div>
+
+        <div className="business-summary">
+          <article>
+            <span>Total toko</span>
+            <strong>{businesses.length}</strong>
+          </article>
+          <article>
+            <span>Siap dianalisis</span>
+            <strong>{businesses.length - completedBusinessIds.size}</strong>
+          </article>
+          <article>
+            <span>Sudah ada hasil</span>
+            <strong>{completedBusinessIds.size}</strong>
+          </article>
+          <article>
+            <span>Mode data</span>
+            <strong>Backend</strong>
+          </article>
+        </div>
+
+        <div className="business-layout">
+          <div className="business-list">
+            {isLoading && <article className="panel empty-state">Memuat toko...</article>}
+            {!isLoading && businesses.length === 0 && (
+              <article className="panel empty-state business-empty">
+                <span><Icon name="home" /></span>
+                <h3>Belum ada toko</h3>
+                <p>Buat toko pertama untuk mulai mengisi inventarisasi dan melihat dashboard diagnosis.</p>
+              </article>
+            )}
+            {businesses.map((business) => (
+              <article className={`business-card panel ${completedBusinessIds.has(business.public_id) ? "is-complete" : ""}`} key={business.public_id}>
+                <span className="business-card__mark">{business.name.slice(0, 1).toUpperCase()}</span>
+                <div>
+                  <span>{business.industry || "Bisnis"} · dibuat {formatDate(business.created_at)}</span>
+                  <h3>{business.name}</h3>
+                  <p>{business.description || "Belum ada deskripsi toko."}</p>
+                  {completedBusinessIds.has(business.public_id) && (
+                    <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil dashboard.</small>
+                  )}
+                </div>
+                <div className="business-card__actions">
+                  <Button
+                    variant="secondary"
+                    disabled={completedBusinessIds.has(business.public_id)}
+                    title={completedBusinessIds.has(business.public_id) ? "Inventory toko ini sudah diisi" : "Input data inventory"}
+                    onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
+                  >
+                    {completedBusinessIds.has(business.public_id) ? "Sudah Diisi" : "Input Data"}
+                  </Button>
+                  <Button onClick={() => navigate(`/businesses/${business.public_id}/dashboard`)}>Dashboard <Icon name="arrow" size={18} /></Button>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <form id="business-create-form" className="business-form panel" onSubmit={create}>
+            <span className="business-form__icon"><Icon name="home" /></span>
+            <h3>Tambah toko baru</h3>
+            <p>Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah.</p>
+            <label><span>Nama toko</span><input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
+            <label><span>Industri</span><input value={form.industry} onChange={(event) => setForm((current) => ({ ...current, industry: event.target.value }))} /></label>
+            <label><span>Deskripsi</span><textarea value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
+            {error && <p className="form-error">{error}</p>}
+            <Button type="submit" disabled={isCreating}>{isCreating ? "Menyimpan..." : "Buat Toko"}</Button>
+          </form>
+        </div>
+      </section>
+    </DashboardShell>
+  );
+}
