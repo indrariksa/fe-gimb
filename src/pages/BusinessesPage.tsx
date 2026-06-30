@@ -69,7 +69,7 @@ export function BusinessesPage() {
         next.delete(business.public_id);
         return next;
       });
-      navigate(`/businesses/${business.public_id}/dashboard`);
+      navigate(`/businesses/${business.public_id}/inventory/new`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal membuat toko");
     } finally {
@@ -124,30 +124,42 @@ export function BusinessesPage() {
                 <p>Buat toko pertama untuk mulai mengisi inventarisasi dan melihat dashboard diagnosis.</p>
               </article>
             )}
-            {businesses.map((business) => (
-              <article className={`business-card panel ${completedBusinessIds.has(business.public_id) ? "is-complete" : ""}`} key={business.public_id}>
-                <span className="business-card__mark">{business.name.slice(0, 1).toUpperCase()}</span>
-                <div>
-                  <span>{business.industry || "Bisnis"} · dibuat {formatDate(business.created_at)}</span>
-                  <h3>{business.name}</h3>
-                  <p>{business.description || "Belum ada deskripsi toko."}</p>
-                  {completedBusinessIds.has(business.public_id) && (
-                    <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil dashboard.</small>
-                  )}
-                </div>
-                <div className="business-card__actions">
-                  <Button
-                    variant="secondary"
-                    disabled={completedBusinessIds.has(business.public_id)}
-                    title={completedBusinessIds.has(business.public_id) ? "Inventory toko ini sudah diisi" : "Input data inventory"}
-                    onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
-                  >
-                    {completedBusinessIds.has(business.public_id) ? "Sudah Diisi" : "Input Data"}
-                  </Button>
-                  <Button onClick={() => navigate(`/businesses/${business.public_id}/dashboard`)}>Dashboard <Icon name="arrow" size={18} /></Button>
-                </div>
-              </article>
-            ))}
+            {businesses.map((business) => {
+              const hasDiagnosis = completedBusinessIds.has(business.public_id);
+
+              return (
+                <article className={`business-card panel ${hasDiagnosis ? "is-complete" : ""}`} key={business.public_id}>
+                  <span className="business-card__mark">{business.name.slice(0, 1).toUpperCase()}</span>
+                  <div>
+                    <span>{business.industry || "Bisnis"} · dibuat {formatDate(business.created_at)}</span>
+                    <h3>{business.name}</h3>
+                    <p>{business.description || "Belum ada deskripsi toko."}</p>
+                    {hasDiagnosis ? (
+                      <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil dashboard.</small>
+                    ) : (
+                      <small className="business-card__notice business-card__notice--pending">Inventory belum diisi. Mulai input data untuk membuka dashboard.</small>
+                    )}
+                  </div>
+                  <div className="business-card__actions">
+                    <Button
+                      variant="secondary"
+                      disabled={hasDiagnosis}
+                      title={hasDiagnosis ? "Inventory toko ini sudah diisi" : "Input data inventory"}
+                      onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
+                    >
+                      {hasDiagnosis ? "Sudah Diisi" : "Input Data"}
+                    </Button>
+                    <Button
+                      disabled={!hasDiagnosis}
+                      title={hasDiagnosis ? "Buka dashboard diagnosis" : "Isi inventory dulu untuk membuka dashboard"}
+                      onClick={() => navigate(`/businesses/${business.public_id}/dashboard`)}
+                    >
+                      Dashboard <Icon name="arrow" size={18} />
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           <form id="business-create-form" className="business-form panel" onSubmit={create}>

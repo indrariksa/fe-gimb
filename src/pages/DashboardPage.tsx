@@ -13,15 +13,17 @@ import type { Business, InventorySubmission } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
 
 function statusTone(score: number): "success" | "warning" | "danger" {
-  if (score >= 65) return "success";
+  if (score >= 60) return "success";
   if (score >= 40) return "warning";
   return "danger";
 }
 
 function statusLabel(score: number) {
-  if (score >= 65) return "Sehat";
-  if (score >= 40) return "Cukup";
-  return "Buruk";
+  if (score >= 80) return "Sangat Sehat";
+  if (score >= 60) return "Sehat";
+  if (score >= 40) return "Cukup Sehat";
+  if (score >= 20) return "Buruk";
+  return "Sangat Buruk";
 }
 
 function formatDate(value?: string) {
@@ -124,7 +126,6 @@ export function DashboardPage() {
               <strong>{overallScore}</strong>
               <span>{overallStatus}</span>
             </div>
-            <div className="health-scale"><span>Buruk</span><b>Cukup</b><span>Sehat</span></div>
             <p>Skor <strong>{overallScore}</strong> menunjukkan bisnis berada pada kategori <strong>{overallStatus}</strong> berdasarkan data terakhir.</p>
           </section>
           <div className="score-grid">
@@ -132,8 +133,8 @@ export function DashboardPage() {
               <ScoreCard key={card.label} {...card} />
             ))}
           </div>
-          <TrendChart />
-          <RadarProfile />
+          <TrendChart priorityIssues={submission.analysis.priority_issues} recommendations={submission.analysis.recommendations} />
+          <RadarProfile submission={submission} />
           <div className="insight-grid">
             <article className="insight-card insight-card--dark">
               <span><Icon name="alert" /></span>

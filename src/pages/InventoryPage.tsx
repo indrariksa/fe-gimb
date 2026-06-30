@@ -43,8 +43,18 @@ function readDraft(businessId: string) {
 }
 
 function toNumber(value: string | undefined) {
-  const parsed = Number(value ?? 0);
+  const parsed = Number((value ?? "0").replace(/\D/g, ""));
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function digitsOnly(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function formatNumberInput(value: string | undefined) {
+  const digits = digitsOnly(value ?? "");
+  if (!digits) return "";
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function buildPayload(values: Record<string, string>): InventoryPayload {
@@ -159,12 +169,11 @@ export function InventoryPage() {
                   suffix={field.suffix}
                   note={field.note}
                   example={field.example}
-                  type="number"
-                  min="0"
+                  type="text"
                   inputMode="numeric"
                   placeholder="0"
-                  value={values[field.id] ?? ""}
-                  onChange={(event) => setValues((current) => ({ ...current, [field.id]: event.target.value }))}
+                  value={formatNumberInput(values[field.id])}
+                  onChange={(event) => setValues((current) => ({ ...current, [field.id]: digitsOnly(event.target.value) }))}
               />
             ))}
             </div>

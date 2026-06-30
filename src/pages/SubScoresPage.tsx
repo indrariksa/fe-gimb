@@ -17,15 +17,19 @@ type SubScoreItem = {
   icon: string;
 };
 
-function status(score: number) {
-  if (score >= 65) return "Sehat";
+function statusShort(score: number) {
+  if (score >= 80) return "Sangat Sehat";
+  if (score >= 60) return "Sehat";
   if (score >= 40) return "Cukup";
-  return "Buruk";
+  if (score >= 20) return "Buruk";
+  return "Sangat Buruk";
 }
 
 function statusClass(score: number) {
-  if (score >= 65) return "success";
+  if (score >= 80) return "excellent";
+  if (score >= 60) return "success";
   if (score >= 40) return "warning";
+  if (score >= 20) return "danger";
   return "danger";
 }
 
@@ -117,7 +121,7 @@ export function SubScoresPage() {
                 <article className={`subscore-card subscore-card--${statusClass(item.score)}`} key={item.key} style={{ "--subscore-color": item.color, "--subscore-width": `${item.score}%` } as CSSProperties}>
                   <div className="subscore-card__top">
                     <span>{item.icon}</span>
-                    <b>{status(item.score)}</b>
+                    <b>{statusShort(item.score)}</b>
                   </div>
                   <strong>{item.score}</strong>
                   <h3>{item.label}</h3>
@@ -143,15 +147,17 @@ export function SubScoresPage() {
                   {items.map((item, index) => {
                     const [x, y] = radarPoint(index, item.score).split(",");
                     const [tx, ty] = axisPoint(index, 102).split(",");
+                    const tooltipX = index === 0 ? Number(x) + 16 : Number(x) - 24;
+                    const tooltipY = index === 0 ? Number(y) - 20 : Number(y) - 40;
                     return (
                       <g className="subscore-radar__point" key={item.key}>
                         <circle cx={x} cy={y} r="5" />
                         <circle className="subscore-radar__hit" cx={x} cy={y} r="15" />
                         <title>{item.shortLabel}: {item.score}</title>
-                        <foreignObject x={Number(x) - 34} y={Number(y) - 40} width="68" height="28">
+                        <text x={tx} y={ty}>{item.shortLabel}</text>
+                        <foreignObject x={tooltipX} y={tooltipY} width="48" height="28">
                           <div className="subscore-tooltip">{item.score}</div>
                         </foreignObject>
-                        <text x={tx} y={ty}>{item.shortLabel}</text>
                       </g>
                     );
                   })}
@@ -179,9 +185,10 @@ export function SubScoresPage() {
             <section className="panel score-legend">
               <h3>Interpretasi & Skala Skor</h3>
               <div>
-                <article className="danger"><strong>Skor 0 - 39 - Buruk</strong><p>Kondisi bisnis berisiko tinggi dan perlu tindakan cepat.</p></article>
-                <article className="warning"><strong>Skor 40 - 64 - Cukup Sehat</strong><p>Bisnis masih berjalan, tetapi ada area penting yang harus diperbaiki.</p></article>
-                <article className="success"><strong>Skor 65 - 79 - Sehat</strong><p>Bisnis relatif stabil dengan beberapa peluang optimasi.</p></article>
+                <article className="critical"><strong>Skor 0 - 19 - Sangat Buruk</strong><p>Kondisi bisnis sangat kritis dan membutuhkan tindakan pemulihan segera.</p></article>
+                <article className="danger"><strong>Skor 20 - 39 - Buruk</strong><p>Kondisi bisnis berisiko tinggi dan perlu tindakan cepat.</p></article>
+                <article className="warning"><strong>Skor 40 - 59 - Cukup Sehat</strong><p>Bisnis masih berjalan, tetapi ada area penting yang harus diperbaiki.</p></article>
+                <article className="success"><strong>Skor 60 - 79 - Sehat</strong><p>Bisnis relatif stabil dengan beberapa peluang optimasi.</p></article>
                 <article className="excellent"><strong>Skor 80 - 100 - Sangat Sehat</strong><p>Bisnis berada dalam kondisi kuat dan siap dikembangkan.</p></article>
               </div>
             </section>

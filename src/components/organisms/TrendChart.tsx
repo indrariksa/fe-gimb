@@ -1,31 +1,45 @@
-import { trend } from "../../data/dashboardData";
+import { Icon } from "../atoms/Icon";
 
-export function TrendChart() {
-  const points = trend
-    .map((item, index) => {
-      const x = 8 + index * 17;
-      const y = 78 - item.value;
-      return `${x},${y}`;
-    })
-    .join(" ");
+type ActionPlanProps = {
+  priorityIssues: string[];
+  recommendations: string[];
+};
 
+const fallbackSteps = [
+  "Rapikan arus kas dan pisahkan biaya operasional utama.",
+  "Perkuat penjualan dari pelanggan yang sudah pernah membeli.",
+  "Evaluasi biaya promosi agar setiap rupiah menghasilkan transaksi.",
+];
+
+function buildSteps(priorityIssues: string[], recommendations: string[]) {
+  const merged = [...priorityIssues, ...recommendations].filter(Boolean);
+  return (merged.length ? merged : fallbackSteps).slice(0, 3);
+}
+
+export function TrendChart({ priorityIssues, recommendations }: ActionPlanProps) {
+  const steps = buildSteps(priorityIssues, recommendations);
+  const labels = ["Minggu 1", "Minggu 2", "Minggu 3-4"];
   return (
-    <section className="panel trend-card">
+    <section className="panel trend-card action-plan-card">
       <div className="panel__header">
         <div>
-          <h2>Tren Skor Kesehatan</h2>
-          <p>Visualisasi perkembangan 6 bulan terakhir</p>
+          <h2>Action Plan 30 Hari</h2>
+          <p>Langkah prioritas yang bisa langsung dikerjakan dari hasil diagnosis.</p>
         </div>
-        <div className="segmented"><span>1B</span><span>3B</span><strong>6B</strong></div>
+        <span className="action-plan-card__badge">3 Fokus</span>
       </div>
-      <svg viewBox="0 0 100 64" preserveAspectRatio="none" className="trend-svg" aria-hidden="true">
-        {[12, 24, 36, 48].map((y) => <line key={y} x1="0" x2="100" y1={y} y2={y} />)}
-        <polyline points={points} />
-        {trend.map((item, index) => (
-          <circle key={item.month} cx={8 + index * 17} cy={78 - item.value} r={index === trend.length - 1 ? 1.9 : 1.2} />
+      <div className="action-plan">
+        {steps.map((step, index) => (
+          <article key={`${labels[index]}-${step}`}>
+            <span>{index + 1}</span>
+            <div>
+              <small>{labels[index]}</small>
+              <p>{step}</p>
+            </div>
+            <Icon name="arrow" size={18} />
+          </article>
         ))}
-      </svg>
-      <div className="trend-months">{trend.map((item) => <span key={item.month}>{item.month}</span>)}</div>
+      </div>
     </section>
   );
 }
