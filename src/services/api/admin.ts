@@ -1,8 +1,19 @@
 import { apiRequest } from "./client";
-import type { AdminSummary, Business, InventorySubmission, ListResponse, User, UserStatus } from "./types";
+import type { AdminSummary, Business, BusinessLimitSetting, InventorySubmission, ListResponse, User, UserStatus } from "./types";
 
 export function adminSummary() {
   return apiRequest<AdminSummary>("/admin/dashboard/summary");
+}
+
+export function adminBusinessLimit() {
+  return apiRequest<BusinessLimitSetting>("/admin/settings/business-limit");
+}
+
+export function updateBusinessLimit(value: number) {
+  return apiRequest<BusinessLimitSetting>("/admin/settings/business-limit", {
+    method: "PATCH",
+    body: JSON.stringify({ value }),
+  });
 }
 
 export function adminUsers(params = { limit: 20, offset: 0 }) {

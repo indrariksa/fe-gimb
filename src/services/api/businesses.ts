@@ -1,5 +1,9 @@
 import { apiRequest } from "./client";
-import type { Business, InventoryPayload, InventorySubmission, ListResponse } from "./types";
+import type { Business, BusinessLimitSetting, InventoryPayload, InventorySubmission, ListResponse } from "./types";
+
+export function getBusinessLimit() {
+  return apiRequest<BusinessLimitSetting>("/settings/business-limit");
+}
 
 export function listBusinesses(params = { limit: 20, offset: 0 }) {
   return apiRequest<ListResponse<Business>>(`/businesses?limit=${params.limit}&offset=${params.offset}`);

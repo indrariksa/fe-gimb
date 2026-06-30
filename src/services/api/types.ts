@@ -48,6 +48,11 @@ export type Business = {
   updated_at: string;
 };
 
+export type BusinessLimitSetting = {
+  key: "business_limit_per_user";
+  value: number;
+};
+
 export type HealthSubScores = {
   profitability: number;
   cashflow: number;

@@ -17,6 +17,7 @@ export function BusinessesPage() {
   const { user } = useAuth();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [completedBusinessIds, setCompletedBusinessIds] = useState<Set<string>>(() => new Set());
+  const [businessLimit, setBusinessLimit] = useState(2);
   const [form, setForm] = useState({ name: "Toko Maju Jaya", industry: "Retail", description: "Toko kebutuhan harian dan produk rumah tangga" });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -25,8 +26,12 @@ export function BusinessesPage() {
   const loadBusinesses = async () => {
     setIsLoading(true);
     try {
-      const response = await businessApi.listBusinesses();
+      const [response, limitSetting] = await Promise.all([
+        businessApi.listBusinesses(),
+        businessApi.getBusinessLimit(),
+      ]);
       setBusinesses(response.items);
+      setBusinessLimit(limitSetting.value);
       const completedIds = await Promise.all(
         response.items.map(async (business) => {
           try {
@@ -44,6 +49,9 @@ export function BusinessesPage() {
       setIsLoading(false);
     }
   };
+
+  const hasReachedLimit = businesses.length >= businessLimit;
+  const remainingBusinessSlots = Math.max(0, businessLimit - businesses.length);
 
   useEffect(() => {
     loadBusinesses();
@@ -78,19 +86,23 @@ export function BusinessesPage() {
             <h2>Pilih toko yang ingin dianalisis</h2>
             <p>Halo {user?.full_name ?? "Owner"}, setiap toko punya riwayat inventarisasi, skor kesehatan, dan rekomendasi yang terpisah.</p>
           </div>
-          <Button onClick={() => document.getElementById("business-create-form")?.scrollIntoView({ behavior: "smooth", block: "center" })}>
-            Tambah Toko <Icon name="arrow" size={18} />
+          <Button
+            disabled={hasReachedLimit}
+            title={hasReachedLimit ? "Batas toko sudah tercapai" : "Tambah toko baru"}
+            onClick={() => document.getElementById("business-create-form")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+          >
+            {hasReachedLimit ? "Limit Tercapai" : "Tambah Toko"} <Icon name="arrow" size={18} />
           </Button>
         </div>
 
         <div className="business-summary">
           <article>
             <span>Total toko</span>
-            <strong>{businesses.length}</strong>
+            <strong>{businesses.length}/{businessLimit}</strong>
           </article>
           <article>
-            <span>Siap dianalisis</span>
-            <strong>{businesses.length - completedBusinessIds.size}</strong>
+            <span>Sisa slot toko</span>
+            <strong>{remainingBusinessSlots}</strong>
           </article>
           <article>
             <span>Sudah ada hasil</span>
@@ -140,13 +152,17 @@ export function BusinessesPage() {
 
           <form id="business-create-form" className="business-form panel" onSubmit={create}>
             <span className="business-form__icon"><Icon name="home" /></span>
-            <h3>Tambah toko baru</h3>
-            <p>Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah.</p>
-            <label><span>Nama toko</span><input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
-            <label><span>Industri</span><input value={form.industry} onChange={(event) => setForm((current) => ({ ...current, industry: event.target.value }))} /></label>
-            <label><span>Deskripsi</span><textarea value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
+            <h3>{hasReachedLimit ? "Batas toko tercapai" : "Tambah toko baru"}</h3>
+            <p>
+              {hasReachedLimit
+                ? `Akun ini sudah memiliki ${businesses.length} dari ${businessLimit} toko yang diperbolehkan. Hubungi admin untuk menambah limit.`
+                : "Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah."}
+            </p>
+            <label><span>Nama toko</span><input disabled={hasReachedLimit} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
+            <label><span>Industri</span><input disabled={hasReachedLimit} value={form.industry} onChange={(event) => setForm((current) => ({ ...current, industry: event.target.value }))} /></label>
+            <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
             {error && <p className="form-error">{error}</p>}
-            <Button type="submit" disabled={isCreating}>{isCreating ? "Menyimpan..." : "Buat Toko"}</Button>
+            <Button type="submit" disabled={isCreating || hasReachedLimit}>{isCreating ? "Menyimpan..." : hasReachedLimit ? "Tidak Ada Slot" : "Buat Toko"}</Button>
           </form>
         </div>
       </section>

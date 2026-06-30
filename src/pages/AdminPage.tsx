@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as adminApi from "../services/api/admin";
-import type { AdminSummary, Business, InventorySubmission, User, UserStatus } from "../services/api/types";
+import type { AdminSummary, Business, BusinessLimitSetting, InventorySubmission, User, UserStatus } from "../services/api/types";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
@@ -12,8 +13,12 @@ export function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [submissions, setSubmissions] = useState<InventorySubmission[]>([]);
+  const [businessLimit, setBusinessLimit] = useState<BusinessLimitSetting | null>(null);
+  const [businessLimitInput, setBusinessLimitInput] = useState("2");
   const [error, setError] = useState("");
+  const [settingMessage, setSettingMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSavingLimit, setIsSavingLimit] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -22,14 +27,17 @@ export function AdminPage() {
       setIsLoading(true);
       setError("");
       try {
-        const [summaryData, usersData, businessesData, submissionsData] = await Promise.all([
+        const [summaryData, limitData, usersData, businessesData, submissionsData] = await Promise.all([
           adminApi.adminSummary(),
+          adminApi.adminBusinessLimit(),
           adminApi.adminUsers(),
           adminApi.adminBusinesses(),
           adminApi.adminInventorySubmissions(),
         ]);
         if (isMounted) {
           setSummary(summaryData);
+          setBusinessLimit(limitData);
+          setBusinessLimitInput(String(limitData.value));
           setUsers(usersData.items);
           setBusinesses(businessesData.items);
           setSubmissions(submissionsData.items);
@@ -52,6 +60,22 @@ export function AdminPage() {
     setUsers((current) => current.map((user) => user.id === updated.id ? updated : user));
   };
 
+  const saveBusinessLimit = async (event: FormEvent) => {
+    event.preventDefault();
+    setSettingMessage("");
+    setIsSavingLimit(true);
+    try {
+      const updated = await adminApi.updateBusinessLimit(Number(businessLimitInput));
+      setBusinessLimit(updated);
+      setBusinessLimitInput(String(updated.value));
+      setSettingMessage("Limit toko per user berhasil diperbarui.");
+    } catch (err) {
+      setSettingMessage(err instanceof Error ? err.message : "Gagal memperbarui limit toko");
+    } finally {
+      setIsSavingLimit(false);
+    }
+  };
+
   return (
     <DashboardShell activeView="admin" title="Admin Dashboard">
       <section className="admin-page">
@@ -70,9 +94,30 @@ export function AdminPage() {
               <article className="admin-metric panel"><span>User Aktif</span><strong>{summary?.active_users ?? 0}</strong></article>
               <article className="admin-metric panel"><span>Toko</span><strong>{summary?.businesses ?? 0}</strong></article>
               <article className="admin-metric panel"><span>Submission</span><strong>{summary?.inventory_submissions ?? 0}</strong></article>
+              <article className="admin-metric panel"><span>Limit toko/user</span><strong>{businessLimit?.value ?? 2}</strong></article>
             </div>
 
             <div className="admin-layout">
+              <section className="admin-section panel">
+                <h3>Pengaturan Limit</h3>
+                <form className="admin-setting-form" onSubmit={saveBusinessLimit}>
+                  <label>
+                    <span>Batas toko per user</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={businessLimitInput}
+                      onChange={(event) => setBusinessLimitInput(event.target.value)}
+                    />
+                  </label>
+                  <button className="btn" type="submit" disabled={isSavingLimit}>
+                    {isSavingLimit ? "Menyimpan..." : "Simpan Limit"}
+                  </button>
+                  {settingMessage && <p>{settingMessage}</p>}
+                </form>
+              </section>
+
               <section className="admin-section panel">
                 <h3>User</h3>
                 <div className="data-table">

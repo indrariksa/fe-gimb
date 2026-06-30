@@ -7,6 +7,7 @@ import { Icon } from "../atoms/Icon";
 import { Brand } from "../molecules/Brand";
 import { useThemeSettings } from "../../theme/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
+import * as businessApi from "../../services/api/businesses";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
 
@@ -36,15 +37,45 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const navigateRoute = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(sidebarCollapsedStorageKey) === "true");
+  const [hasInventoryResult, setHasInventoryResult] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(sidebarCollapsedStorageKey, String(isCollapsed));
   }, [isCollapsed]);
 
-  const navigation: Array<{ view: View; label: string; icon: Parameters<typeof Icon>[0]["name"] }> = [
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkInventoryResult() {
+      if (!businessId) {
+        setHasInventoryResult(false);
+        return;
+      }
+
+      try {
+        await businessApi.latestBusinessInventory(businessId);
+        if (isMounted) setHasInventoryResult(true);
+      } catch {
+        if (isMounted) setHasInventoryResult(false);
+      }
+    }
+
+    checkInventoryResult();
+    return () => {
+      isMounted = false;
+    };
+  }, [businessId]);
+
+  const needsBusiness = !businessId;
+  const navigation: Array<{ view: View; label: string; icon: Parameters<typeof Icon>[0]["name"]; disabledReason?: string }> = [
     { view: "businesses", label: "Daftar Toko", icon: "home" },
-    { view: "dashboard", label: "Dashboard", icon: "grid" },
-    { view: "inventory", label: "Input Masalah", icon: "alert" },
+    { view: "dashboard", label: "Dashboard", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : undefined },
+    {
+      view: "inventory",
+      label: "Input Masalah",
+      icon: "alert",
+      disabledReason: needsBusiness ? "Pilih toko dulu" : hasInventoryResult ? "Sudah diisi" : undefined,
+    },
     ...(isAdmin ? [{ view: "admin" as View, label: "Admin", icon: "settings" as Parameters<typeof Icon>[0]["name"] }] : []),
   ];
 
@@ -79,8 +110,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           {navigation.map((item) => (
             <button
               key={item.label}
-              className={activeView === item.view ? "active" : ""}
-              data-label={item.label}
+              className={`${activeView === item.view ? "active" : ""} ${item.disabledReason ? "is-disabled" : ""}`}
+              data-label={item.disabledReason ? `${item.label} - ${item.disabledReason}` : item.label}
+              data-tooltip={item.disabledReason}
+              disabled={Boolean(item.disabledReason)}
               onClick={() => navigate(item.view)}
             >
               <Icon name={item.icon} />

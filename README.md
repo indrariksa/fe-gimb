@@ -74,7 +74,7 @@ POST /api/v1/auth/refresh
 
 1. User login atau register.
 2. User masuk ke `/businesses`.
-3. User membuat atau memilih toko.
+3. User membuat atau memilih toko. Jumlah toko dibatasi oleh setting backend `business_limit_per_user`.
 4. User mengisi inventarisasi di `/businesses/:businessId/inventory/new`.
 5. Setelah klik `Simpan & Lanjutkan`, muncul dialog konfirmasi.
 6. Jika disetujui, frontend mengirim data ke backend:
@@ -119,6 +119,45 @@ Form frontend mengikuti field dari `src/data/inventoryFields.ts`, lalu dikirim k
 - `admin`: memiliki akses user biasa ditambah `/admin` untuk memantau user, toko, dan submission.
 
 Role dan status user berasal dari backend. Registrasi frontend membuat user biasa; admin sebaiknya dibuat/diubah dari Supabase sesuai catatan backend.
+
+## Limit Toko
+
+Frontend membaca batas toko per user dari backend:
+
+```http
+GET /api/v1/settings/business-limit
+```
+
+Response:
+
+```json
+{
+  "key": "business_limit_per_user",
+  "value": 2
+}
+```
+
+Jika jumlah toko user sudah mencapai limit:
+
+- tombol `Tambah Toko` di halaman `/businesses` menjadi disabled,
+- form tambah toko terkunci,
+- user diarahkan untuk memakai toko yang sudah ada.
+
+Admin dapat mengubah limit dari halaman `/admin`, yang memanggil:
+
+```http
+PATCH /api/v1/admin/settings/business-limit
+```
+
+Body:
+
+```json
+{
+  "value": 3
+}
+```
+
+Validasi final tetap ada di backend saat `POST /api/v1/businesses`, jadi limit tidak hanya bergantung pada UI.
 
 ## Struktur Penting
 

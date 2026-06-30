@@ -10,22 +10,9 @@ import type { Business, InventoryPayload } from "../services/api/types";
 
 const storageKeyPrefix = "gimb:sbd:inventory";
 
-const payloadKeys: Array<keyof InventoryPayload> = [
-  "six_month_revenue",
-  "six_month_transactions",
-  "new_customers",
-  "repeat_customers",
-  "active_customers",
-  "cogs",
-  "operational_cost",
-  "salary_cost",
-  "marketing_cost",
-  "employee_count",
-  "asset_value",
-  "capital_investment",
-];
+type NumericInventoryPayloadKey = Exclude<keyof InventoryPayload, "description">;
 
-const fieldToPayloadKey: Record<string, keyof InventoryPayload> = {
+const fieldToPayloadKey: Record<string, NumericInventoryPayloadKey> = {
   sixMonthRevenue: "six_month_revenue",
   sixMonthTransactions: "six_month_transactions",
   newCustomers: "new_customers",
@@ -61,7 +48,22 @@ function toNumber(value: string | undefined) {
 }
 
 function buildPayload(values: Record<string, string>): InventoryPayload {
-  const payload = payloadKeys.reduce((current, key) => ({ ...current, [key]: 0 }), {} as InventoryPayload);
+  const payload: InventoryPayload = {
+    six_month_revenue: 0,
+    six_month_transactions: 0,
+    new_customers: 0,
+    repeat_customers: 0,
+    active_customers: 0,
+    cogs: 0,
+    operational_cost: 0,
+    salary_cost: 0,
+    marketing_cost: 0,
+    employee_count: 0,
+    asset_value: 0,
+    capital_investment: 0,
+    description: "",
+  };
+
   for (const [fieldId, payloadKey] of Object.entries(fieldToPayloadKey)) {
     payload[payloadKey] = toNumber(values[fieldId]);
   }
@@ -76,6 +78,7 @@ export function InventoryPage() {
   const [values, setValues] = useState<Record<string, string>>(() => readDraft(businessId));
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [error, setError] = useState("");
+  const [isCheckingAccess, setIsCheckingAccess] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const completed = inventoryFields.filter((field) => values[field.id]).length;
   const progress = Math.round((completed / inventoryFields.length) * 100);
@@ -87,18 +90,32 @@ export function InventoryPage() {
   useEffect(() => {
     let isMounted = true;
     async function loadBusiness() {
+      setIsCheckingAccess(true);
       try {
-        const detail = await businessApi.getBusiness(businessId);
-        if (isMounted) setBusiness(detail);
+        const [detail, latestSubmission] = await Promise.all([
+          businessApi.getBusiness(businessId),
+          businessApi.latestBusinessInventory(businessId).catch(() => null),
+        ]);
+
+        if (!isMounted) return;
+        if (latestSubmission) {
+          localStorage.removeItem(storageKey(businessId));
+          navigate(`/businesses/${businessId}/dashboard`, { replace: true });
+          return;
+        }
+
+        setBusiness(detail);
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat toko");
+      } finally {
+        if (isMounted) setIsCheckingAccess(false);
       }
     }
     if (businessId) loadBusiness();
     return () => {
       isMounted = false;
     };
-  }, [businessId]);
+  }, [businessId, navigate]);
 
   const submitInventory = async () => {
     setError("");
@@ -118,6 +135,10 @@ export function InventoryPage() {
   return (
     <DashboardShell activeView="inventory" title="Input Inventarisasi Masalah">
       <section className="inventory-page">
+        {isCheckingAccess ? (
+          <article className="panel empty-state">Memeriksa status inventarisasi...</article>
+        ) : (
+        <>
         <div className="form-hero">
           <h2>Lengkapi data bisnis 6 bulan terakhir</h2>
           <p>{business?.name ?? "Toko"} - setiap angka akan dipakai sebagai bahan diagnosis kesehatan bisnis yang lebih komprehensif.</p>
@@ -184,6 +205,8 @@ export function InventoryPage() {
             </article>
           </aside>
         </div>
+        </>
+        )}
       </section>
 
       {isConfirmOpen && (
