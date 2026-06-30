@@ -13,12 +13,16 @@ const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
 
 function routeByView(view: View, businessId?: string) {
   const businessDashboard = businessId ? `/businesses/${businessId}/dashboard` : "/businesses";
+  const score = businessId ? `/businesses/${businessId}/score` : "/businesses";
+  const subScores = businessId ? `/businesses/${businessId}/sub-scores` : "/businesses";
   const inventory = businessId ? `/businesses/${businessId}/inventory/new` : "/businesses";
 
   return {
     landing: "/",
     businesses: "/businesses",
+    score,
     dashboard: businessDashboard,
+    subscores: subScores,
     inventory,
     settings: "/settings",
     admin: "/admin",
@@ -69,7 +73,9 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const needsBusiness = !businessId;
   const navigation: Array<{ view: View; label: string; icon: Parameters<typeof Icon>[0]["name"]; disabledReason?: string }> = [
     { view: "businesses", label: "Daftar Toko", icon: "home" },
-    { view: "dashboard", label: "Dashboard", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : undefined },
+    { view: "dashboard", label: "Dashboard", icon: "home", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
+    { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
+    { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     {
       view: "inventory",
       label: "Input Masalah",

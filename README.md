@@ -49,6 +49,8 @@ npm run build
 - `/register` registrasi user baru
 - `/businesses` daftar dan tambah toko
 - `/businesses/:businessId/dashboard` dashboard diagnosis toko
+- `/businesses/:businessId/score` halaman hasil skor kesehatan keseluruhan
+- `/businesses/:businessId/sub-scores` halaman 6 sub skor bisnis
 - `/businesses/:businessId/inventory/new` form input inventarisasi toko
 - `/businesses/:businessId/analysis` animasi proses analisis setelah submit
 - `/settings` pengaturan tema dan identitas aplikasi
@@ -84,7 +86,8 @@ POST /api/v1/businesses/:businessId/inventory-submissions
 ```
 
 7. User diarahkan ke halaman analisis.
-8. Setelah loading 100%, user dapat masuk ke dashboard toko.
+8. Setelah loading 100%, user masuk ke halaman hasil skor keseluruhan.
+9. User dapat membuka detail 6 sub skor dari tombol `Lihat Sub Skor`.
 9. Dashboard mengambil hasil terbaru dari:
 
 ```http

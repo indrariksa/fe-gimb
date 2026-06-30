@@ -91,8 +91,8 @@ export function AnalysisPage() {
         </div>
 
         {progress === 100 && (
-          <Button className="analysis-cta" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>
-            Masuk ke Dashboard <Icon name="arrow" size={18} />
+          <Button className="analysis-cta" onClick={() => navigate(`/businesses/${businessId}/score`)}>
+            Lihat Hasil Skor <Icon name="arrow" size={18} />
           </Button>
         )}
       </section>

@@ -10,7 +10,9 @@ import { InventoryPage } from "./pages/InventoryPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
+import { ScoreResultPage } from "./pages/ScoreResultPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { SubScoresPage } from "./pages/SubScoresPage";
 
 export function App() {
   return (
@@ -25,6 +27,8 @@ export function App() {
             <Route element={<RequireAuth />}>
               <Route path="/businesses" element={<BusinessesPage />} />
               <Route path="/businesses/:businessId/dashboard" element={<DashboardPage />} />
+              <Route path="/businesses/:businessId/score" element={<ScoreResultPage />} />
+              <Route path="/businesses/:businessId/sub-scores" element={<SubScoresPage />} />
               <Route path="/businesses/:businessId/inventory/new" element={<InventoryPage />} />
               <Route path="/businesses/:businessId/analysis" element={<AnalysisPage />} />
               <Route path="/settings" element={<SettingsPage />} />

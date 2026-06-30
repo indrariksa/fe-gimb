@@ -98,7 +98,7 @@ export function DashboardPage() {
             <p>{business?.name ?? theme.businessName} - Diagnosa terakhir: {formatDate(submission?.created_at)}</p>
           </div>
           <div className="dashboard__actions">
-            <Button variant="secondary">Sub Skor</Button>
+            <Button variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Sub Skor</Button>
             <Button>Rekomendasi <Icon name="arrow" size={18} /></Button>
             <Button variant="dark"><Icon name="download" size={18} /> Excel</Button>
             <Button variant="dark"><Icon name="file" size={18} /> PDF</Button>
