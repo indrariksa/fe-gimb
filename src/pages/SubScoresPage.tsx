@@ -5,7 +5,9 @@ import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as businessApi from "../services/api/businesses";
+import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
+import { useAuth } from "../context/AuthContext";
 import { clampPercent, formatScore } from "../utils/number";
 
 type SubScoreItem = {
@@ -50,6 +52,7 @@ function axisPoint(index: number, radius: number) {
 
 export function SubScoresPage() {
   const { businessId = "" } = useParams();
+  const { isAdmin } = useAuth();
   const [business, setBusiness] = useState<Business | null>(null);
   const [submission, setSubmission] = useState<InventorySubmission | null>(null);
   const [error, setError] = useState("");
@@ -62,9 +65,11 @@ export function SubScoresPage() {
       setIsLoading(true);
       setError("");
       try {
+        const getBusiness = isAdmin ? adminApi.adminBusiness : businessApi.getBusiness;
+        const getLatestInventory = isAdmin ? adminApi.adminLatestBusinessInventory : businessApi.latestBusinessInventory;
         const [businessDetail, latestSubmission] = await Promise.all([
-          businessApi.getBusiness(businessId),
-          businessApi.latestBusinessInventory(businessId),
+          getBusiness(businessId),
+          getLatestInventory(businessId),
         ]);
         if (isMounted) {
           setBusiness(businessDetail);
@@ -81,7 +86,7 @@ export function SubScoresPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId]);
+  }, [businessId, isAdmin]);
 
   const items = useMemo<SubScoreItem[]>(() => {
     const scores = submission?.analysis.sub_scores;

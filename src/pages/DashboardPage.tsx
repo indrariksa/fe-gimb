@@ -9,8 +9,10 @@ import { TrendChart } from "../components/organisms/TrendChart";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { scoreCards } from "../data/dashboardData";
 import * as businessApi from "../services/api/businesses";
+import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { clampPercent, formatScore } from "../utils/number";
 
 function statusTone(score: number): "success" | "warning" | "danger" {
@@ -34,6 +36,7 @@ function formatDate(value?: string) {
 
 export function DashboardPage() {
   const { theme } = useThemeSettings();
+  const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const { businessId = "" } = useParams();
   const [business, setBusiness] = useState<Business | null>(null);
@@ -48,10 +51,12 @@ export function DashboardPage() {
       setIsLoading(true);
       setError("");
       try {
-        const businessDetail = await businessApi.getBusiness(businessId);
+        const getBusiness = isAdmin ? adminApi.adminBusiness : businessApi.getBusiness;
+        const getLatestInventory = isAdmin ? adminApi.adminLatestBusinessInventory : businessApi.latestBusinessInventory;
+        const businessDetail = await getBusiness(businessId);
         let latest: InventorySubmission | null = null;
         try {
-          latest = await businessApi.latestBusinessInventory(businessId);
+          latest = await getLatestInventory(businessId);
         } catch {
           latest = null;
         }
@@ -70,7 +75,7 @@ export function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId]);
+  }, [businessId, isAdmin]);
 
   const cards = useMemo(() => {
     if (!submission?.analysis?.sub_scores) return scoreCards;

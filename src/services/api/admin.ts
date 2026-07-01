@@ -31,6 +31,14 @@ export function adminBusinesses(params = { limit: 20, offset: 0 }) {
   return apiRequest<ListResponse<Business>>(`/admin/businesses?limit=${params.limit}&offset=${params.offset}`);
 }
 
+export function adminBusiness(publicId: string) {
+  return apiRequest<Business>(`/admin/businesses/${publicId}`);
+}
+
+export function adminLatestBusinessInventory(publicId: string) {
+  return apiRequest<InventorySubmission>(`/admin/businesses/${publicId}/inventory-submissions/latest`);
+}
+
 export function adminInventorySubmissions(params = { limit: 20, offset: 0 }) {
   return apiRequest<ListResponse<InventorySubmission>>(`/admin/inventory-submissions?limit=${params.limit}&offset=${params.offset}`);
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
+import { Icon } from "../components/atoms/Icon";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, Business, BusinessLimitSetting, InventorySubmission, User, UserStatus } from "../services/api/types";
 import { formatScore } from "../utils/number";
@@ -10,6 +12,7 @@ function formatDate(value: string) {
 }
 
 export function AdminPage() {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -77,10 +80,23 @@ export function AdminPage() {
     }
   };
 
+  const latestSubmissionByBusinessId = submissions.reduce<Record<string, InventorySubmission>>((lookup, submission) => {
+    if (submission.business_id && !lookup[submission.business_id]) lookup[submission.business_id] = submission;
+    return lookup;
+  }, {});
+
+  const diagnosisWatchlist = [...submissions]
+    .filter((submission) => submission.analysis)
+    .sort((a, b) => (a.analysis?.overall_score ?? 0) - (b.analysis?.overall_score ?? 0))
+    .slice(0, 5);
+
+  const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
+  const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
+
   return (
     <DashboardShell activeView="admin" title="Admin Dashboard">
       <section className="admin-page">
-        <div className="form-hero">
+        <div id="overview" className="form-hero admin-anchor">
           <h2>Kontrol operasional aplikasi</h2>
           <p>Pantau user, toko, dan submission inventarisasi yang masuk ke sistem.</p>
         </div>
@@ -99,7 +115,41 @@ export function AdminPage() {
             </div>
 
             <div className="admin-layout">
-              <section className="admin-section panel">
+              <section id="diagnoses" className="admin-section panel admin-section--wide admin-anchor">
+                <div className="admin-section__heading">
+                  <div>
+                    <h3>Monitoring Diagnosis</h3>
+                    <p>Toko dengan skor terendah tampil lebih dulu agar admin bisa cepat melakukan review.</p>
+                  </div>
+                  <b>{diagnosisWatchlist.length} data</b>
+                </div>
+                <div className="admin-watchlist">
+                  {diagnosisWatchlist.length === 0 && <article className="empty-state">Belum ada hasil diagnosis yang bisa dipantau.</article>}
+                  {diagnosisWatchlist.map((submission) => {
+                    const business = businesses.find((item) => item.id === submission.business_id);
+                    return (
+                      <article key={submission.public_id}>
+                        <div>
+                          <span>{submission.analysis.status}</span>
+                          <strong>{submission.business_name || business?.name || submission.public_id}</strong>
+                          <small>{formatDate(submission.created_at)}</small>
+                        </div>
+                        <b>{formatScore(submission.analysis.overall_score)}</b>
+                        <div className="admin-row-actions">
+                          {business && (
+                            <>
+                              <button onClick={() => goToBusinessDashboard(business.public_id)}>Dashboard <Icon name="arrow" size={16} /></button>
+                              <button onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
+                            </>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section id="limits" className="admin-section panel admin-anchor">
                 <h3>Pengaturan Limit</h3>
                 <form className="admin-setting-form" onSubmit={saveBusinessLimit}>
                   <label>
@@ -119,7 +169,7 @@ export function AdminPage() {
                 </form>
               </section>
 
-              <section className="admin-section panel">
+              <section id="users" className="admin-section panel admin-anchor">
                 <h3>User</h3>
                 <div className="data-table">
                   {users.map((user) => (
@@ -139,33 +189,48 @@ export function AdminPage() {
                 </div>
               </section>
 
-              <section className="admin-section panel">
+              <section id="businesses" className="admin-section panel admin-anchor">
                 <h3>Toko</h3>
                 <div className="data-table">
-                  {businesses.map((business) => (
-                    <article key={business.public_id}>
-                      <div>
-                        <strong>{business.name}</strong>
-                        <span>{business.industry || "Tanpa industri"}</span>
-                      </div>
-                      <span>{formatDate(business.created_at)}</span>
-                    </article>
-                  ))}
+                  {businesses.map((business) => {
+                    const latestSubmission = latestSubmissionByBusinessId[business.id];
+                    return (
+                      <article key={business.public_id} className="data-table__action-row">
+                        <div>
+                          <strong>{business.name}</strong>
+                          <span>{business.industry || "Tanpa industri"}</span>
+                        </div>
+                        <span>{latestSubmission ? `${formatScore(latestSubmission.analysis.overall_score)} - ${latestSubmission.analysis.status}` : "Belum ada hasil"}</span>
+                        <div className="admin-row-actions">
+                          <button onClick={() => goToBusinessDashboard(business.public_id)} disabled={!latestSubmission}>Dashboard</button>
+                          <button onClick={() => goToBusinessSubScores(business.public_id)} disabled={!latestSubmission}>Sub Skor</button>
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
               </section>
 
-              <section className="admin-section panel admin-section--wide">
+              <section id="submissions" className="admin-section panel admin-section--wide admin-anchor">
                 <h3>Submission Terbaru</h3>
                 <div className="data-table">
                   {submissions.map((submission) => (
-                    <article key={submission.public_id}>
-                      <div>
-                        <strong>{submission.business_name || submission.public_id}</strong>
-                        <span>{formatDate(submission.created_at)}</span>
-                      </div>
-                      <b>{formatScore(submission.analysis?.overall_score ?? 0)}/100</b>
-                      <span>{submission.analysis?.status ?? "Belum Dianalisis"}</span>
-                    </article>
+                    (() => {
+                      const business = businesses.find((item) => item.id === submission.business_id);
+                      return (
+                        <article key={submission.public_id}>
+                          <div>
+                            <strong>{submission.business_name || submission.public_id}</strong>
+                            <span>{formatDate(submission.created_at)}</span>
+                          </div>
+                          <b>{formatScore(submission.analysis?.overall_score ?? 0)}</b>
+                          <div className="admin-row-actions">
+                            <span>{submission.analysis?.status ?? "Belum Dianalisis"}</span>
+                            {business && <button onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor</button>}
+                          </div>
+                        </article>
+                      );
+                    })()
                   ))}
                 </div>
               </section>

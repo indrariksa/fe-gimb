@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { View } from "../../types";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
@@ -8,6 +8,7 @@ import { Brand } from "../molecules/Brand";
 import { useThemeSettings } from "../../theme/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import * as businessApi from "../../services/api/businesses";
+import * as adminApi from "../../services/api/admin";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
 
@@ -34,11 +35,20 @@ type DashboardShellProps = PropsWithChildren<{
   title?: string;
 }>;
 
+type NavigationItem = {
+  view: View;
+  label: string;
+  icon: Parameters<typeof Icon>[0]["name"];
+  disabledReason?: string;
+  sectionId?: string;
+};
+
 export function DashboardShell({ activeView, title = "Smart Business Dashboard", children }: DashboardShellProps) {
   const { theme, updateTheme } = useThemeSettings();
   const { businessId } = useParams();
   const { user, isAdmin, logout } = useAuth();
   const navigateRoute = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(sidebarCollapsedStorageKey) === "true");
   const [hasInventoryResult, setHasInventoryResult] = useState(false);
@@ -59,7 +69,11 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
       }
 
       try {
-        await businessApi.latestBusinessInventory(businessId);
+        if (isAdmin) {
+          await adminApi.adminLatestBusinessInventory(businessId);
+        } else {
+          await businessApi.latestBusinessInventory(businessId);
+        }
         if (isMounted) setHasInventoryResult(true);
       } catch {
         if (isMounted) setHasInventoryResult(false);
@@ -70,10 +84,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     return () => {
       isMounted = false;
     };
-  }, [businessId]);
+  }, [businessId, isAdmin]);
 
   const needsBusiness = !businessId;
-  const navigation: Array<{ view: View; label: string; icon: Parameters<typeof Icon>[0]["name"]; disabledReason?: string }> = [
+  const userNavigation: NavigationItem[] = [
     { view: "businesses", label: "Daftar Toko", icon: "home" },
     { view: "dashboard", label: "Dashboard", icon: "home", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
@@ -84,12 +98,41 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
       icon: "alert",
       disabledReason: needsBusiness ? "Pilih toko dulu" : hasInventoryResult ? "Sudah diisi" : undefined,
     },
-    ...(isAdmin ? [{ view: "admin" as View, label: "Admin", icon: "settings" as Parameters<typeof Icon>[0]["name"] }] : []),
   ];
 
-  const navigate = (view: View) => {
+  const adminNavigation: NavigationItem[] = [
+    { view: "admin", label: "Ringkasan", icon: "chart", sectionId: "overview" },
+    { view: "admin", label: "Diagnosis", icon: "alert", sectionId: "diagnoses" },
+    { view: "admin", label: "User", icon: "home", sectionId: "users" },
+    { view: "admin", label: "Toko", icon: "grid", sectionId: "businesses" },
+    { view: "admin", label: "Submission", icon: "file", sectionId: "submissions" },
+    { view: "admin", label: "Limit", icon: "settings", sectionId: "limits" },
+  ];
+
+  const navigation = isAdmin ? adminNavigation : userNavigation;
+
+  const navigate = (item: NavigationItem) => {
+    setIsMenuOpen(false);
+    if (item.sectionId) {
+      navigateRoute(`/admin#${item.sectionId}`);
+      window.requestAnimationFrame(() => {
+        document.getElementById(item.sectionId ?? "")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      return;
+    }
+    navigateRoute(routeByView(item.view, businessId));
+  };
+
+  const navigateToView = (view: View) => {
     setIsMenuOpen(false);
     navigateRoute(routeByView(view, businessId));
+  };
+
+  const isNavigationActive = (item: NavigationItem) => {
+    if (!item.sectionId) return activeView === item.view;
+    if (activeView !== "admin") return false;
+    if (!location.hash) return item.sectionId === "overview";
+    return location.hash === `#${item.sectionId}`;
   };
 
   const handleLogout = async () => {
@@ -121,11 +164,11 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           {navigation.map((item) => (
             <button
               key={item.label}
-              className={`${activeView === item.view ? "active" : ""} ${item.disabledReason ? "is-disabled" : ""}`}
+              className={`${isNavigationActive(item) ? "active" : ""} ${item.disabledReason ? "is-disabled" : ""}`}
               data-label={item.disabledReason ? `${item.label} - ${item.disabledReason}` : item.label}
               data-tooltip={item.disabledReason}
               disabled={Boolean(item.disabledReason)}
-              onClick={() => navigate(item.view)}
+              onClick={() => navigate(item)}
             >
               <Icon name={item.icon} />
               <span>{item.label}</span>
@@ -133,8 +176,8 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           ))}
         </nav>
         <div className="sidebar__bottom">
-          <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>
-          <button className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => navigate("settings")}><Icon name="settings" /> <span>Pengaturan</span></button>
+          {!isAdmin && <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>}
+          <button className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => navigateToView("settings")}><Icon name="settings" /> <span>Pengaturan</span></button>
           <button data-label="Keluar" onClick={() => setIsLogoutConfirmOpen(true)}><Icon name="logout" /> <span>Keluar</span></button>
         </div>
       </aside>
