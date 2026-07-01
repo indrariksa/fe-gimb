@@ -1,3 +1,5 @@
+import { clampPercent, formatScore } from "../../utils/number";
+
 type ScoreCardProps = {
   label: string;
   score: number;
@@ -7,16 +9,18 @@ type ScoreCardProps = {
 };
 
 export function ScoreCard({ label, score, status, tone, icon }: ScoreCardProps) {
+  const progress = clampPercent(score);
+
   return (
     <article className={`score-card score-card--${tone}`}>
       <div className="score-card__top">
         <span className="score-card__icon">{icon}</span>
         <span className="pill">{status}</span>
       </div>
-      <strong>{score}</strong>
+      <strong>{formatScore(score)}</strong>
       <span>{label}</span>
       <div className="meter">
-        <i style={{ width: `${score}%` }} />
+        <i style={{ width: `${progress}%` }} />
       </div>
     </article>
   );

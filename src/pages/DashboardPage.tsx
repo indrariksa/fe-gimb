@@ -11,6 +11,7 @@ import { scoreCards } from "../data/dashboardData";
 import * as businessApi from "../services/api/businesses";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
+import { clampPercent, formatScore } from "../utils/number";
 
 function statusTone(score: number): "success" | "warning" | "danger" {
   if (score >= 60) return "success";
@@ -85,7 +86,8 @@ export function DashboardPage() {
   }, [submission]);
 
   const overallScore = submission?.analysis.overall_score ?? 0;
-  const overallProgress = Math.min(100, Math.max(0, overallScore));
+  const overallProgress = clampPercent(overallScore);
+  const overallScoreText = formatScore(overallScore);
   const overallStatus = submission?.analysis.status ?? "Belum Ada Data";
   const primaryIssue = submission?.analysis.priority_issues?.[0] ?? "Belum ada prioritas perbaikan. Isi inventarisasi agar sistem dapat membaca area kritis bisnis.";
   const strength = submission?.analysis.strengths?.[0] ?? "Kekuatan utama akan muncul setelah data inventarisasi pertama selesai dianalisis.";
@@ -123,10 +125,10 @@ export function DashboardPage() {
           <section className="health-card panel">
             <p>Skor Kesehatan Keseluruhan</p>
             <div className="health-ring" style={{ "--health-progress": `${overallProgress}%` } as CSSProperties}>
-              <strong>{overallScore}</strong>
+              <strong>{overallScoreText}</strong>
               <span>{overallStatus}</span>
             </div>
-            <p>Skor <strong>{overallScore}</strong> menunjukkan bisnis berada pada kategori <strong>{overallStatus}</strong> berdasarkan data terakhir.</p>
+            <p>Skor <strong>{overallScoreText}</strong> menunjukkan bisnis berada pada kategori <strong>{overallStatus}</strong> berdasarkan data terakhir.</p>
           </section>
           <div className="score-grid">
             {cards.map((card) => (

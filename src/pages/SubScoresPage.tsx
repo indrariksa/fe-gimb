@@ -6,6 +6,7 @@ import { Icon } from "../components/atoms/Icon";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as businessApi from "../services/api/businesses";
 import type { Business, InventorySubmission } from "../services/api/types";
+import { clampPercent, formatScore } from "../utils/number";
 
 type SubScoreItem = {
   key: string;
@@ -37,7 +38,7 @@ function radarPoint(index: number, score: number) {
   const center = 115;
   const maxRadius = 82;
   const angle = -Math.PI / 2 + (index * Math.PI * 2) / 6;
-  const radius = (Math.max(0, Math.min(100, score)) / 100) * maxRadius;
+  const radius = (clampPercent(score) / 100) * maxRadius;
   return `${center + Math.cos(angle) * radius},${center + Math.sin(angle) * radius}`;
 }
 
@@ -118,12 +119,12 @@ export function SubScoresPage() {
 
             <div className="subscore-card-grid">
               {items.map((item) => (
-                <article className={`subscore-card subscore-card--${statusClass(item.score)}`} key={item.key} style={{ "--subscore-color": item.color, "--subscore-width": `${item.score}%` } as CSSProperties}>
+                <article className={`subscore-card subscore-card--${statusClass(item.score)}`} key={item.key} style={{ "--subscore-color": item.color, "--subscore-width": `${clampPercent(item.score)}%` } as CSSProperties}>
                   <div className="subscore-card__top">
                     <span>{item.icon}</span>
                     <b>{statusShort(item.score)}</b>
                   </div>
-                  <strong>{item.score}</strong>
+                  <strong>{formatScore(item.score)}</strong>
                   <h3>{item.label}</h3>
                   <p>{item.description}</p>
                   <div className="subscore-meter"><i /></div>
@@ -153,10 +154,10 @@ export function SubScoresPage() {
                       <g className="subscore-radar__point" key={item.key}>
                         <circle cx={x} cy={y} r="5" />
                         <circle className="subscore-radar__hit" cx={x} cy={y} r="15" />
-                        <title>{item.shortLabel}: {item.score}</title>
+                        <title>{item.shortLabel}: {formatScore(item.score)}</title>
                         <text x={tx} y={ty}>{item.shortLabel}</text>
                         <foreignObject x={tooltipX} y={tooltipY} width="48" height="28">
-                          <div className="subscore-tooltip">{item.score}</div>
+                          <div className="subscore-tooltip">{formatScore(item.score)}</div>
                         </foreignObject>
                       </g>
                     );
@@ -172,8 +173,8 @@ export function SubScoresPage() {
                     {[100, 75, 50, 25, 0].map((value) => <span key={value}>{value}</span>)}
                   </div>
                   {items.map((item) => (
-                    <div className="subscore-chart__bar" key={item.key} style={{ "--bar-height": `${item.score}%`, "--bar-color": item.color } as CSSProperties}>
-                      <b>{item.score}</b>
+                    <div className="subscore-chart__bar" key={item.key} style={{ "--bar-height": `${clampPercent(item.score)}%`, "--bar-color": item.color } as CSSProperties}>
+                      <b>{formatScore(item.score)}</b>
                       <i />
                       <span>{item.shortLabel}</span>
                     </div>

@@ -6,14 +6,11 @@ import { Icon } from "../components/atoms/Icon";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as businessApi from "../services/api/businesses";
 import type { Business, InventorySubmission } from "../services/api/types";
+import { clampPercent, formatScore } from "../utils/number";
 
 function formatDate(value?: string) {
   if (!value) return "-";
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(value));
-}
-
-function clampScore(score: number) {
-  return Math.max(0, Math.min(100, score));
 }
 
 function getScoreInsights(submission: InventorySubmission) {
@@ -69,7 +66,8 @@ export function ScoreResultPage() {
   }, [businessId]);
 
   const score = submission?.analysis.overall_score ?? 0;
-  const progress = clampScore(score);
+  const progress = clampPercent(score);
+  const scoreText = formatScore(score);
   const status = submission?.analysis.status ?? "Belum Ada Data";
   const insights = submission ? getScoreInsights(submission) : { strongest: "-", priority: "-" };
 
@@ -94,7 +92,7 @@ export function ScoreResultPage() {
 
               <div className="score-result-ring-wrap">
                 <div className="score-result-ring" style={{ "--score-progress": `${progress}%` } as CSSProperties}>
-                  <strong>{score}</strong>
+                  <strong>{scoreText}</strong>
                   <span>{status}</span>
                 </div>
                 <div className="score-result-pulse" />

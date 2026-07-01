@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, Business, BusinessLimitSetting, InventorySubmission, User, UserStatus } from "../services/api/types";
+import { formatScore } from "../utils/number";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
@@ -162,7 +163,7 @@ export function AdminPage() {
                         <strong>{submission.business_name || submission.public_id}</strong>
                         <span>{formatDate(submission.created_at)}</span>
                       </div>
-                      <b>{submission.analysis?.overall_score ?? 0}/100</b>
+                      <b>{formatScore(submission.analysis?.overall_score ?? 0)}/100</b>
                       <span>{submission.analysis?.status ?? "Belum Dianalisis"}</span>
                     </article>
                   ))}
