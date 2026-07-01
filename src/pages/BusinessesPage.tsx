@@ -8,6 +8,51 @@ import { useAuth } from "../context/AuthContext";
 import * as businessApi from "../services/api/businesses";
 import type { Business } from "../services/api/types";
 
+const industryOptions = [
+  "Retail",
+  "Grosir",
+  "Toko Kelontong",
+  "Minimarket",
+  "Kuliner / F&B",
+  "Kafe",
+  "Restoran",
+  "Catering",
+  "Bakery",
+  "Fashion",
+  "Konveksi",
+  "Kecantikan",
+  "Barbershop / Salon",
+  "Kesehatan",
+  "Apotek",
+  "Pendidikan",
+  "Kursus / Pelatihan",
+  "Jasa Profesional",
+  "Jasa Reparasi",
+  "Jasa Kebersihan",
+  "Laundry",
+  "Travel / Pariwisata",
+  "Transportasi / Logistik",
+  "Properti",
+  "Konstruksi",
+  "Manufaktur / Produksi",
+  "Percetakan",
+  "Pertanian",
+  "Peternakan",
+  "Perikanan",
+  "Digital / Online",
+  "E-commerce",
+  "Teknologi / Software",
+  "Kreatif / Desain",
+  "Media / Konten",
+  "Event Organizer",
+  "Otomotif",
+  "Elektronik",
+  "Furniture",
+  "Kerajinan",
+  "Keuangan / Koperasi",
+  "Lainnya",
+];
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
 }
@@ -18,7 +63,9 @@ export function BusinessesPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [completedBusinessIds, setCompletedBusinessIds] = useState<Set<string>>(() => new Set());
   const [businessLimit, setBusinessLimit] = useState(2);
-  const [form, setForm] = useState({ name: "Toko Maju Jaya", industry: "Retail", description: "Toko kebutuhan harian dan produk rumah tangga" });
+  const [form, setForm] = useState({ name: "", industry: "", description: "" });
+  const [industrySearch, setIndustrySearch] = useState("");
+  const [isIndustryOpen, setIsIndustryOpen] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -51,7 +98,15 @@ export function BusinessesPage() {
   };
 
   const hasReachedLimit = businesses.length >= businessLimit;
-  const remainingBusinessSlots = Math.max(0, businessLimit - businesses.length);
+  const needInputCount = Math.max(0, businesses.length - completedBusinessIds.size);
+  const diagnosisStatus = businesses.length === 0 ? "Belum mulai" : needInputCount === 0 ? "Lengkap" : "Belum lengkap";
+  const isDiagnosisComplete = businesses.length > 0 && needInputCount === 0;
+  const normalizedIndustrySearch = industrySearch.toLowerCase().trim();
+  const filteredIndustries = industryOptions.filter((industry) => industry.toLowerCase().includes(normalizedIndustrySearch));
+  const canUseCustomIndustry = Boolean(
+    industrySearch.trim() &&
+    !industryOptions.some((industry) => industry.toLowerCase() === normalizedIndustrySearch),
+  );
 
   useEffect(() => {
     loadBusinesses();
@@ -98,19 +153,19 @@ export function BusinessesPage() {
         <div className="business-summary">
           <article>
             <span>Total toko</span>
-            <strong>{businesses.length}/{businessLimit}</strong>
+            <strong>{businesses.length} dari {businessLimit}</strong>
           </article>
           <article>
-            <span>Sisa slot toko</span>
-            <strong>{remainingBusinessSlots}</strong>
+            <span>Perlu input</span>
+            <strong>{needInputCount}</strong>
           </article>
           <article>
             <span>Sudah ada hasil</span>
             <strong>{completedBusinessIds.size}</strong>
           </article>
           <article>
-            <span>Mode data</span>
-            <strong>Backend</strong>
+            <span>Status diagnosis</span>
+            <strong className={isDiagnosisComplete ? "is-good" : "is-warning"}>{diagnosisStatus}</strong>
           </article>
         </div>
 
@@ -170,9 +225,64 @@ export function BusinessesPage() {
                 ? `Akun ini sudah memiliki ${businesses.length} dari ${businessLimit} toko yang diperbolehkan. Hubungi admin untuk menambah limit.`
                 : "Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah."}
             </p>
-            <label><span>Nama toko</span><input disabled={hasReachedLimit} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
-            <label><span>Industri</span><input disabled={hasReachedLimit} value={form.industry} onChange={(event) => setForm((current) => ({ ...current, industry: event.target.value }))} /></label>
-            <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
+            <label><span>Nama toko</span><input required disabled={hasReachedLimit} placeholder="Contoh: Toko Maju Jaya" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
+            <label className="industry-combobox">
+              <span>Industri</span>
+              <input
+                required
+                disabled={hasReachedLimit}
+                placeholder="Cari atau pilih industri"
+                value={isIndustryOpen ? industrySearch : form.industry}
+                onFocus={() => {
+                  setIndustrySearch(form.industry);
+                  setIsIndustryOpen(true);
+                }}
+                onBlur={() => {
+                  window.setTimeout(() => {
+                    setIndustrySearch("");
+                    setIsIndustryOpen(false);
+                  }, 120);
+                }}
+                onChange={(event) => {
+                  setIndustrySearch(event.target.value);
+                  setForm((current) => ({ ...current, industry: event.target.value }));
+                  setIsIndustryOpen(true);
+                }}
+              />
+              {isIndustryOpen && !hasReachedLimit && (
+                <div className="industry-combobox__menu">
+                  {canUseCustomIndustry && (
+                    <button
+                      type="button"
+                      className="industry-combobox__custom"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        setForm((current) => ({ ...current, industry: industrySearch.trim() }));
+                        setIndustrySearch("");
+                        setIsIndustryOpen(false);
+                      }}
+                    >
+                      Gunakan "{industrySearch.trim()}"
+                    </button>
+                  )}
+                  {filteredIndustries.map((industry) => (
+                    <button
+                      type="button"
+                      key={industry}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        setForm((current) => ({ ...current, industry }));
+                        setIndustrySearch("");
+                        setIsIndustryOpen(false);
+                      }}
+                    >
+                      {industry}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </label>
+            <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} placeholder="Contoh: Toko kebutuhan harian dan produk rumah tangga" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
             {error && <p className="form-error">{error}</p>}
             <Button type="submit" disabled={isCreating || hasReachedLimit}>{isCreating ? "Menyimpan..." : hasReachedLimit ? "Tidak Ada Slot" : "Buat Toko"}</Button>
           </form>

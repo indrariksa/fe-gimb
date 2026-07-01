@@ -58,6 +58,7 @@ export function RegisterPage() {
           <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Daftar"} <Icon name="arrow" size={18} /></Button>
         </form>
         <p className="auth-link">Sudah punya akun? <Link to="/login">Login</Link></p>
+        <p className="auth-link auth-link--landing"><Link to="/">Kembali ke landing page</Link></p>
       </section>
     </main>
   );

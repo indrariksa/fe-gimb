@@ -42,6 +42,8 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(sidebarCollapsedStorageKey) === "true");
   const [hasInventoryResult, setHasInventoryResult] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(sidebarCollapsedStorageKey, String(isCollapsed));
@@ -91,8 +93,11 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   };
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     await logout();
-    navigateRoute("/");
+    setIsLogoutConfirmOpen(false);
+    setIsLoggingOut(false);
+    navigateRoute("/login", { replace: true });
   };
 
   return (
@@ -130,7 +135,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
         <div className="sidebar__bottom">
           <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>
           <button className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => navigate("settings")}><Icon name="settings" /> <span>Pengaturan</span></button>
-          <button data-label="Keluar" onClick={handleLogout}><Icon name="logout" /> <span>Keluar</span></button>
+          <button data-label="Keluar" onClick={() => setIsLogoutConfirmOpen(true)}><Icon name="logout" /> <span>Keluar</span></button>
         </div>
       </aside>
       <main className="workspace">
@@ -163,6 +168,21 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
         </header>
         {children}
       </main>
+      {isLogoutConfirmOpen && (
+        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+          <div className="confirm-dialog__card">
+            <span className="confirm-dialog__icon">
+              <Icon name="logout" size={34} />
+            </span>
+            <h2 id="logout-title">Keluar dari dashboard?</h2>
+            <p>Sesi Anda akan ditutup dan Anda akan diarahkan kembali ke halaman login.</p>
+            <div className="confirm-dialog__actions">
+              <Button variant="secondary" onClick={() => setIsLogoutConfirmOpen(false)} disabled={isLoggingOut}>Tidak</Button>
+              <Button onClick={handleLogout} disabled={isLoggingOut}>{isLoggingOut ? "Keluar..." : "Ya, Keluar"}</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
