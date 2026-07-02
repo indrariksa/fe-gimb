@@ -39,6 +39,10 @@ export function adminBusiness(publicId: string) {
   return apiRequest<Business>(`/admin/businesses/${publicId}`);
 }
 
+export function adminDiagnosisWatchlist(params = { limit: 5, offset: 0 }) {
+  return apiRequest<ListResponse<InventorySubmission>>(`/admin/diagnosis-watchlist?limit=${params.limit}&offset=${params.offset}`);
+}
+
 export function adminLatestBusinessInventory(publicId: string) {
   return apiRequest<InventorySubmission>(`/admin/businesses/${publicId}/inventory-submissions/latest`);
 }

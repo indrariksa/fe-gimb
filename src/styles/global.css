@@ -1150,6 +1150,18 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   padding: clamp(24px, 4vw, 56px);
 }
 
+.admin-page,
+.admin-grid,
+.admin-layout,
+.admin-section,
+.admin-metric,
+.admin-table-wrap,
+.data-table,
+.data-table article,
+.admin-setting-form {
+  min-width: 0;
+}
+
 .business-hero {
   margin-bottom: 22px;
   display: flex;
@@ -1412,12 +1424,16 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .admin-section__heading h3 {
   margin: 0 0 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .admin-section__heading p {
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .admin-section__heading > b {
@@ -1445,6 +1461,8 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .admin-setting-form input {
+  width: 100%;
+  min-width: 0;
   min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1482,6 +1500,8 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .data-table strong {
   display: block;
   color: var(--ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .admin-row-actions {
@@ -1621,6 +1641,49 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .admin-table--audit {
   min-width: 1040px;
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.admin-pagination > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-pagination b {
+  color: var(--ink);
+  font-size: .9rem;
+}
+
+.admin-pagination button {
+  min-height: 38px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, var(--line));
+  border-radius: 8px;
+  padding: 0 14px;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--surface));
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 900;
+}
+
+.admin-pagination button:hover:not(:disabled) {
+  color: var(--on-primary);
+  background: var(--color-primary);
+}
+
+.admin-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
 }
 
 .status-pill {
@@ -2334,12 +2397,32 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   }
   .admin-section__heading {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+  .admin-section__heading > b {
+    justify-self: start;
+    max-width: 100%;
   }
   .admin-watchlist article > b {
     text-align: left;
   }
   .admin-row-actions {
     justify-content: flex-start;
+  }
+  .admin-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .admin-pagination > div {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .admin-setting-form .btn,
+  .admin-setting-form button,
+  .admin-row-actions button {
+    width: 100%;
+    max-width: 100%;
   }
   .business-card__actions { justify-content: stretch; }
   .business-card__actions .btn { flex: 1; }
@@ -2421,6 +2504,60 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   .subscore-chart__bar b {
     padding: 5px 8px;
     font-size: .68rem;
+  }
+  .admin-page {
+    overflow-x: hidden;
+  }
+  .admin-section,
+  .admin-metric {
+    padding: 18px;
+    border-radius: 14px;
+  }
+  .admin-section__heading h3 {
+    font-size: clamp(1.8rem, 10vw, 2.7rem);
+    line-height: 1.08;
+  }
+  .admin-section__heading p {
+    font-size: .98rem;
+    line-height: 1.5;
+  }
+  .admin-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-table {
+    min-width: 620px;
+  }
+  .admin-table--audit {
+    min-width: 780px;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 13px 12px;
+  }
+  .admin-setting-form input,
+  .admin-setting-form .btn,
+  .admin-setting-form button {
+    width: 100%;
+    max-width: 100%;
+  }
+  .data-table article {
+    padding: 16px;
+  }
+  .data-table__action-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .data-table article > *,
+  .data-table span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .admin-row-actions {
+    width: 100%;
+  }
+  .admin-pagination button {
+    flex: 1 1 120px;
   }
   .workspace__topbar h1 { font-size: 1.05rem; }
   .dashboard__actions .btn { width: 100%; }

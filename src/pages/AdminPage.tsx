@@ -39,18 +39,57 @@ function metadataPreview(metadata: Record<string, unknown>) {
   return entries.slice(0, 2).map(([key, value]) => `${key}: ${String(value)}`).join(", ");
 }
 
+const diagnosisPageSize = 5;
+const auditPageSize = 10;
+
+type PaginationControlsProps = {
+  page: number;
+  pageSize: number;
+  count: number;
+  isLoading?: boolean;
+  onPageChange: (page: number) => void;
+};
+
+function PaginationControls({ page, pageSize, count, isLoading, onPageChange }: PaginationControlsProps) {
+  const start = count === 0 ? 0 : page * pageSize + 1;
+  const end = page * pageSize + count;
+  const canGoNext = count === pageSize;
+
+  return (
+    <div className="admin-pagination">
+      <span>{isLoading ? "Memuat..." : count > 0 ? `${start}-${end}` : "0 data"}</span>
+      <div>
+        <button type="button" disabled={page === 0 || isLoading} onClick={() => onPageChange(Math.max(0, page - 1))}>
+          Sebelumnya
+        </button>
+        <b>Halaman {page + 1}</b>
+        <button type="button" disabled={!canGoNext || isLoading} onClick={() => onPageChange(page + 1)}>
+          Berikutnya
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function AdminPage() {
   const navigate = useNavigate();
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [submissions, setSubmissions] = useState<InventorySubmission[]>([]);
+  const [diagnosisRows, setDiagnosisRows] = useState<InventorySubmission[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [businessLimit, setBusinessLimit] = useState<BusinessLimitSetting | null>(null);
   const [businessLimitInput, setBusinessLimitInput] = useState("2");
+  const [diagnosisPage, setDiagnosisPage] = useState(0);
+  const [auditPage, setAuditPage] = useState(0);
   const [error, setError] = useState("");
+  const [diagnosisError, setDiagnosisError] = useState("");
+  const [auditError, setAuditError] = useState("");
   const [settingMessage, setSettingMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(true);
+  const [isAuditLoading, setIsAuditLoading] = useState(true);
   const [isSavingLimit, setIsSavingLimit] = useState(false);
 
   useEffect(() => {
@@ -60,13 +99,12 @@ export function AdminPage() {
       setIsLoading(true);
       setError("");
       try {
-        const [summaryData, limitData, usersData, businessesData, submissionsData, auditLogData] = await Promise.all([
+        const [summaryData, limitData, usersData, businessesData, submissionsData] = await Promise.all([
           adminApi.adminSummary(),
           adminApi.adminBusinessLimit(),
           adminApi.adminUsers(),
-          adminApi.adminBusinesses(),
+          adminApi.adminBusinesses({ limit: 100, offset: 0 }),
           adminApi.adminInventorySubmissions(),
-          adminApi.adminAuditLogs(),
         ]);
         if (isMounted) {
           setSummary(summaryData);
@@ -75,7 +113,6 @@ export function AdminPage() {
           setUsers(usersData.items);
           setBusinesses(businessesData.items);
           setSubmissions(submissionsData.items);
-          setAuditLogs(auditLogData.items);
         }
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat dashboard admin");
@@ -89,6 +126,52 @@ export function AdminPage() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDiagnosis() {
+      setIsDiagnosisLoading(true);
+      setDiagnosisError("");
+      try {
+        const response = await adminApi.adminDiagnosisWatchlist({
+          limit: diagnosisPageSize,
+          offset: diagnosisPage * diagnosisPageSize,
+        });
+        if (isMounted) setDiagnosisRows(response.items);
+      } catch (err) {
+        if (isMounted) setDiagnosisError(err instanceof Error ? err.message : "Gagal memuat monitoring diagnosis");
+      } finally {
+        if (isMounted) setIsDiagnosisLoading(false);
+      }
+    }
+    loadDiagnosis();
+    return () => {
+      isMounted = false;
+    };
+  }, [diagnosisPage]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadAuditLogs() {
+      setIsAuditLoading(true);
+      setAuditError("");
+      try {
+        const response = await adminApi.adminAuditLogs({
+          limit: auditPageSize,
+          offset: auditPage * auditPageSize,
+        });
+        if (isMounted) setAuditLogs(response.items);
+      } catch (err) {
+        if (isMounted) setAuditError(err instanceof Error ? err.message : "Gagal memuat audit log");
+      } finally {
+        if (isMounted) setIsAuditLoading(false);
+      }
+    }
+    loadAuditLogs();
+    return () => {
+      isMounted = false;
+    };
+  }, [auditPage]);
 
   const updateStatus = async (userId: string, status: UserStatus) => {
     const updated = await adminApi.updateUserStatus(userId, status);
@@ -110,16 +193,6 @@ export function AdminPage() {
       setIsSavingLimit(false);
     }
   };
-
-  const latestSubmissionByBusinessId = submissions.reduce<Record<string, InventorySubmission>>((lookup, submission) => {
-    if (submission.business_id && !lookup[submission.business_id]) lookup[submission.business_id] = submission;
-    return lookup;
-  }, {});
-
-  const diagnosisWatchlist = [...submissions]
-    .filter((submission) => submission.analysis)
-    .sort((a, b) => (a.analysis?.overall_score ?? 0) - (b.analysis?.overall_score ?? 0))
-    .slice(0, 5);
 
   const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
   const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
@@ -152,7 +225,7 @@ export function AdminPage() {
                     <h3>Monitoring Diagnosis</h3>
                     <p>Toko dengan skor terendah tampil lebih dulu agar admin bisa cepat melakukan review.</p>
                   </div>
-                  <b>{diagnosisWatchlist.length} data</b>
+                  <b>{diagnosisRows.length} data</b>
                 </div>
                 <div className="admin-table-wrap">
                   <table className="admin-table">
@@ -166,10 +239,14 @@ export function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {diagnosisWatchlist.length === 0 && (
+                      {diagnosisError && <tr><td colSpan={5}>{diagnosisError}</td></tr>}
+                      {!diagnosisError && isDiagnosisLoading && (
+                        <tr><td colSpan={5}>Memuat monitoring diagnosis...</td></tr>
+                      )}
+                      {!diagnosisError && !isDiagnosisLoading && diagnosisRows.length === 0 && (
                         <tr><td colSpan={5}>Belum ada hasil diagnosis yang bisa dipantau.</td></tr>
                       )}
-                      {diagnosisWatchlist.map((submission) => {
+                      {!isDiagnosisLoading && !diagnosisError && diagnosisRows.map((submission) => {
                         const business = businesses.find((item) => item.id === submission.business_id);
                         return (
                           <tr key={submission.public_id}>
@@ -198,6 +275,13 @@ export function AdminPage() {
                     </tbody>
                   </table>
                 </div>
+                <PaginationControls
+                  page={diagnosisPage}
+                  pageSize={diagnosisPageSize}
+                  count={diagnosisRows.length}
+                  isLoading={isDiagnosisLoading}
+                  onPageChange={setDiagnosisPage}
+                />
               </section>
 
               <section id="limits" className="admin-section panel admin-anchor">
@@ -237,28 +321,6 @@ export function AdminPage() {
                       </select>
                     </article>
                   ))}
-                </div>
-              </section>
-
-              <section id="businesses" className="admin-section panel admin-anchor">
-                <h3>Toko</h3>
-                <div className="data-table">
-                  {businesses.map((business) => {
-                    const latestSubmission = latestSubmissionByBusinessId[business.id];
-                    return (
-                      <article key={business.public_id} className="data-table__action-row">
-                        <div>
-                          <strong>{business.name}</strong>
-                          <span>{business.industry || "Tanpa industri"}</span>
-                        </div>
-                        <span>{latestSubmission ? `${formatScore(latestSubmission.analysis.overall_score)} - ${latestSubmission.analysis.status}` : "Belum ada hasil"}</span>
-                        <div className="admin-row-actions">
-                          <button onClick={() => goToBusinessDashboard(business.public_id)} disabled={!latestSubmission}>Dashboard</button>
-                          <button onClick={() => goToBusinessSubScores(business.public_id)} disabled={!latestSubmission}>Sub Skor</button>
-                        </div>
-                      </article>
-                    );
-                  })}
                 </div>
               </section>
 
@@ -307,10 +369,14 @@ export function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {auditLogs.length === 0 && (
+                      {auditError && <tr><td colSpan={6}>{auditError}</td></tr>}
+                      {!auditError && isAuditLoading && (
+                        <tr><td colSpan={6}>Memuat audit log...</td></tr>
+                      )}
+                      {!auditError && !isAuditLoading && auditLogs.length === 0 && (
                         <tr><td colSpan={6}>Belum ada audit log.</td></tr>
                       )}
-                      {auditLogs.map((log) => (
+                      {!isAuditLoading && !auditError && auditLogs.map((log) => (
                         <tr key={log.id}>
                           <td>{formatDateTime(log.created_at)}</td>
                           <td><strong>{formatAction(log.action)}</strong></td>
@@ -326,6 +392,13 @@ export function AdminPage() {
                     </tbody>
                   </table>
                 </div>
+                <PaginationControls
+                  page={auditPage}
+                  pageSize={auditPageSize}
+                  count={auditLogs.length}
+                  isLoading={isAuditLoading}
+                  onPageChange={setAuditPage}
+                />
               </section>
             </div>
           </>
