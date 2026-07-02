@@ -1,8 +1,12 @@
 import { apiRequest } from "./client";
-import type { AdminSummary, Business, BusinessLimitSetting, InventorySubmission, ListResponse, User, UserStatus } from "./types";
+import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, ListResponse, User, UserStatus } from "./types";
 
 export function adminSummary() {
   return apiRequest<AdminSummary>("/admin/dashboard/summary");
+}
+
+export function adminAuditLogs(params = { limit: 50, offset: 0 }) {
+  return apiRequest<ListResponse<AuditLog>>(`/admin/audit-logs?limit=${params.limit}&offset=${params.offset}`);
 }
 
 export function adminBusinessLimit() {

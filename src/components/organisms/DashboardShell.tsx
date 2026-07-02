@@ -106,6 +106,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     { view: "admin", label: "User", icon: "home", sectionId: "users" },
     { view: "admin", label: "Toko", icon: "grid", sectionId: "businesses" },
     { view: "admin", label: "Submission", icon: "file", sectionId: "submissions" },
+    { view: "admin", label: "Audit Log", icon: "file", sectionId: "audit-logs" },
     { view: "admin", label: "Limit", icon: "settings", sectionId: "limits" },
   ];
 

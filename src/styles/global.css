@@ -1565,6 +1565,64 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   text-align: right;
 }
 
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-muted);
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-table th {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--color-primary) 5%, var(--surface));
+  font-size: .76rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-table td strong {
+  display: block;
+  color: var(--ink);
+}
+
+.admin-table td span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: .86rem;
+  font-weight: 750;
+}
+
+.admin-table__score {
+  color: var(--color-primary) !important;
+  font-size: 1.55rem;
+}
+
+.admin-table--audit {
+  min-width: 1040px;
+}
+
 .status-pill {
   width: fit-content;
   padding: 6px 10px;

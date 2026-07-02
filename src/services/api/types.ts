@@ -140,3 +140,15 @@ export type AdminSummary = {
   active_users: number;
   suspended_users: number;
 };
+
+export type AuditLog = {
+  id: string;
+  actor_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  ip_address: string;
+  user_agent: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
