@@ -6,7 +6,9 @@ import { TextField } from "../components/atoms/TextField";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { inventoryFields } from "../data/inventoryFields";
 import * as businessApi from "../services/api/businesses";
+import { getFriendlyApiError } from "../services/api/client";
 import type { Business, InventoryPayload } from "../services/api/types";
+import { cleanText, firstValidationError, validateMaxLength } from "../utils/formValidation";
 
 const storageKeyPrefix = "gimb:sbd:inventory";
 
@@ -77,8 +79,19 @@ function buildPayload(values: Record<string, string>): InventoryPayload {
   for (const [fieldId, payloadKey] of Object.entries(fieldToPayloadKey)) {
     payload[payloadKey] = toNumber(values[fieldId]);
   }
-  payload.description = values.description ?? "";
+  payload.description = cleanText(values.description ?? "");
   return payload;
+}
+
+function validateInventoryPayload(payload: InventoryPayload) {
+  return firstValidationError([
+    payload.six_month_revenue <= 0 ? "Total omzet 6 bulan wajib lebih dari 0." : "",
+    payload.six_month_transactions <= 0 ? "Total transaksi 6 bulan wajib lebih dari 0." : "",
+    payload.new_customers < 0 || payload.repeat_customers < 0 || payload.active_customers < 0
+      ? "Jumlah pelanggan tidak boleh bernilai negatif."
+      : "",
+    validateMaxLength(payload.description, "Deskripsi masalah", 1000),
+  ]);
 }
 
 export function InventoryPage() {
@@ -129,13 +142,21 @@ export function InventoryPage() {
 
   const submitInventory = async () => {
     setError("");
+    const payload = buildPayload(values);
+    const validationError = validateInventoryPayload(payload);
+    if (validationError) {
+      setError(validationError);
+      setIsConfirmOpen(false);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await businessApi.createBusinessInventory(businessId, buildPayload(values));
+      await businessApi.createBusinessInventory(businessId, payload);
       localStorage.removeItem(storageKey(businessId));
       navigate(`/businesses/${businessId}/analysis`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal menyimpan inventarisasi");
+      setError(getFriendlyApiError(err, "Gagal menyimpan inventarisasi"));
     } finally {
       setIsConfirmOpen(false);
       setIsSubmitting(false);

@@ -26,6 +26,22 @@ export class ApiError extends Error {
   }
 }
 
+export function getFriendlyApiError(error: unknown, fallback = "Terjadi kesalahan. Coba lagi beberapa saat."): string {
+  if (error instanceof ApiError) {
+    if (error.status === 429) return "Terlalu banyak percobaan, coba lagi beberapa menit.";
+    if (error.status === 413) return "Data yang dikirim terlalu besar. Kurangi isi deskripsi lalu coba lagi.";
+    if (error.status >= 500) return "Server sedang bermasalah. Coba lagi beberapa saat.";
+    return error.message || fallback;
+  }
+
+  if (error instanceof TypeError) {
+    return "Tidak bisa terhubung ke server. Pastikan API aktif dan origin frontend sudah diizinkan di CORS_ALLOWED_ORIGINS.";
+  }
+
+  if (error instanceof Error) return error.message;
+  return fallback;
+}
+
 type RequestOptions = RequestInit & {
   auth?: boolean;
 };

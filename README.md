@@ -66,6 +66,8 @@ Base URL diambil dari `VITE_API_BASE_URL`. Semua request protected otomatis memb
 Authorization: Bearer <access_token>
 ```
 
+Untuk production, domain frontend harus ikut dimasukkan ke `CORS_ALLOWED_ORIGINS` di backend. Jika tidak, browser akan memblokir request sebelum response API bisa dibaca.
+
 Token disimpan sementara di `localStorage` dengan key `gimb:auth`. Saat aplikasi dibuka ulang, frontend mencoba refresh token melalui:
 
 ```http

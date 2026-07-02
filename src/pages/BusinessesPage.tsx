@@ -6,7 +6,9 @@ import { Icon } from "../components/atoms/Icon";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { useAuth } from "../context/AuthContext";
 import * as businessApi from "../services/api/businesses";
+import { getFriendlyApiError } from "../services/api/client";
 import type { Business } from "../services/api/types";
+import { cleanText, firstValidationError, validateMaxLength, validateRequiredText } from "../utils/formValidation";
 
 const industryOptions = [
   "Retail",
@@ -115,9 +117,26 @@ export function BusinessesPage() {
   const create = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
+
+    const cleanedForm = {
+      name: cleanText(form.name),
+      industry: cleanText(form.industry),
+      description: cleanText(form.description),
+    };
+    const validationError = firstValidationError([
+      validateRequiredText(cleanedForm.name, "Nama toko"),
+      validateRequiredText(cleanedForm.industry, "Industri"),
+      validateMaxLength(cleanedForm.description, "Deskripsi", 500),
+    ]);
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setIsCreating(true);
     try {
-      const business = await businessApi.createBusiness(form);
+      const business = await businessApi.createBusiness(cleanedForm);
       setBusinesses((current) => [business, ...current]);
       setCompletedBusinessIds((current) => {
         const next = new Set(current);
@@ -126,7 +145,7 @@ export function BusinessesPage() {
       });
       navigate(`/businesses/${business.public_id}/inventory/new`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal membuat toko");
+      setError(getFriendlyApiError(err, "Gagal membuat toko"));
     } finally {
       setIsCreating(false);
     }
