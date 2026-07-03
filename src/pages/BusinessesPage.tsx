@@ -208,11 +208,6 @@ export function BusinessesPage() {
                     <span>{business.industry || "Bisnis"} · dibuat {formatDate(business.created_at)}</span>
                     <h3>{business.name}</h3>
                     <p>{business.description || "Belum ada deskripsi toko."}</p>
-                    {hasDiagnosis ? (
-                      <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil dashboard.</small>
-                    ) : (
-                      <small className="business-card__notice business-card__notice--pending">Inventory belum diisi. Mulai input data untuk membuka dashboard.</small>
-                    )}
                   </div>
                   <div className="business-card__actions">
                     <Button
@@ -231,6 +226,11 @@ export function BusinessesPage() {
                       Dashboard <Icon name="arrow" size={18} />
                     </Button>
                   </div>
+                  {hasDiagnosis ? (
+                    <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil dashboard.</small>
+                  ) : (
+                    <small className="business-card__notice business-card__notice--pending">Inventory belum diisi. Mulai input data untuk membuka dashboard.</small>
+                  )}
                 </article>
               );
             })}

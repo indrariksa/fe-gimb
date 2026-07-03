@@ -1260,6 +1260,10 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
+.business-card > div {
+  min-width: 0;
+}
+
 .business-card:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--color-primary) 32%, var(--line));
@@ -1295,14 +1299,17 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .business-card__notice {
-  width: fit-content;
+  width: 100%;
+  grid-column: 2 / 4;
   display: inline-flex;
   margin-top: 10px;
-  padding: 7px 10px;
+  padding: 8px 18px;
   border-radius: 999px;
   color: color-mix(in srgb, var(--color-success) 76%, var(--ink));
   background: color-mix(in srgb, var(--color-success) 12%, var(--surface));
   font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .business-card__notice--pending {
@@ -2426,6 +2433,11 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   }
   .business-card__actions { justify-content: stretch; }
   .business-card__actions .btn { flex: 1; }
+  .business-card__notice {
+    grid-column: auto;
+    width: 100%;
+    border-radius: 16px;
+  }
   .admin-grid { grid-template-columns: 1fr; }
   .inventory-form__grid { grid-template-columns: 1fr; padding: 20px; }
   .field--wide { margin: 0 20px 20px; }
