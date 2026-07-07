@@ -12,11 +12,11 @@ export function SettingsPage() {
           <h2>Pengaturan aplikasi</h2>
           <p>
             {isAdmin
-              ? "Atur identitas aplikasi, informasi toko, dan warna tema. Semua perubahan sementara disimpan lokal."
+              ? "Atur warna tema dashboard. Semua perubahan sementara disimpan lokal."
               : "Atur warna tampilan dashboard sesuai preferensi Anda."}
           </p>
         </div>
-        <ThemeCustomizer scope={isAdmin ? "full" : "colors"} />
+        <ThemeCustomizer scope="colors" />
       </section>
     </DashboardShell>
   );

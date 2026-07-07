@@ -221,12 +221,13 @@ a { color: inherit; text-decoration: none; }
   background: var(--color-primary);
 }
 
-.app-shell { min-height: 100vh; display: grid; grid-template-columns: 304px 1fr; background: var(--soft); transition: grid-template-columns .24s ease; }
+.app-shell { position: relative; isolation: isolate; min-height: 100vh; display: grid; grid-template-columns: 304px 1fr; background: var(--soft); transition: grid-template-columns .24s ease; }
 .app-shell.is-collapsed { grid-template-columns: 92px 1fr; }
 .sidebar-backdrop { display: none; }
 .sidebar {
   position: sticky;
   top: 0;
+  z-index: 30;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -353,7 +354,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--on-success);
 }
 .app-shell.is-collapsed .sidebar__brand-row { flex-direction: column; justify-content: flex-start; padding: 24px 16px 18px; gap: 14px; }
-.app-shell.is-collapsed .sidebar { overflow: visible; }
+.app-shell.is-collapsed .sidebar { z-index: 80; overflow: visible; }
 .app-shell.is-collapsed .sidebar .brand > span:not(.brand__mark),
 .app-shell.is-collapsed .sidebar nav span,
 .app-shell.is-collapsed .sidebar__bottom .btn,
@@ -375,7 +376,7 @@ a { color: inherit; text-decoration: none; }
   position: absolute;
   left: calc(100% + 12px);
   top: 50%;
-  z-index: 20;
+  z-index: 120;
   min-width: max-content;
   padding: 10px 13px;
   border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--line));
@@ -396,7 +397,7 @@ a { color: inherit; text-decoration: none; }
   position: absolute;
   left: calc(100% + 6px);
   top: 50%;
-  z-index: 21;
+  z-index: 121;
   width: 10px;
   height: 10px;
   border-left: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--line));
@@ -421,7 +422,7 @@ a { color: inherit; text-decoration: none; }
   opacity: 1;
   transform: translate(0, -50%) rotate(45deg) scale(1);
 }
-.workspace { min-width: 0; }
+.workspace { position: relative; z-index: 1; min-width: 0; }
 .workspace__topbar {
   position: sticky;
   top: 0;
@@ -1654,36 +1655,195 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-top: 16px;
+  gap: 18px;
+  margin-top: 18px;
   color: var(--muted);
   font-weight: 850;
 }
 
-.admin-pagination > div {
+.admin-pagination__meta {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.admin-pagination b {
+.admin-pagination__meta span {
   color: var(--ink);
-  font-size: .9rem;
-}
-
-.admin-pagination button {
-  min-height: 38px;
-  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, var(--line));
-  border-radius: 8px;
-  padding: 0 14px;
-  color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 6%, var(--surface));
-  font: inherit;
-  font-size: .86rem;
+  font-size: .95rem;
   font-weight: 900;
 }
 
-.admin-pagination button:hover:not(:disabled) {
+.admin-pagination label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-pagination input {
+  min-height: 44px;
+  min-width: 66px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, var(--line));
+  border-radius: 8px;
+  padding: 0 14px;
+  color: var(--ink);
+  background: var(--surface);
+  font: inherit;
+  font-size: .92rem;
+  font-weight: 900;
+  outline: none;
+}
+
+.admin-pagination input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.admin-pagination input {
+  width: 74px;
+}
+
+.admin-pagination__native-size {
+  display: none;
+}
+
+.admin-pagination__size {
+  position: relative;
+  display: inline-flex;
+  z-index: 5;
+}
+
+.admin-pagination__size > button {
+  min-height: 44px;
+  min-width: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, var(--line));
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--surface);
+  font: inherit;
+  font-size: .92rem;
+  font-weight: 900;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.admin-pagination__size > button svg {
+  transition: transform .2s ease;
+}
+
+.admin-pagination__size > button.is-open svg {
+  transform: rotate(180deg);
+}
+
+.admin-pagination__size-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  display: grid;
+  min-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, .18);
+  animation: paginationMenuIn .16s ease both;
+}
+
+.admin-pagination__size-menu button {
+  min-height: 40px;
+  min-width: 80px;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 0;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--surface);
+  text-align: left;
+}
+
+.admin-pagination__size-menu button:hover:not(:disabled),
+.admin-pagination__size-menu button.is-selected {
+  color: var(--on-primary);
+  background: color-mix(in srgb, var(--color-primary) 82%, var(--color-accent));
+}
+
+.admin-pagination__size-menu button span {
+  color: inherit;
+  font-size: .92rem;
+  font-weight: 900;
+}
+
+@keyframes paginationMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-pagination__controls {
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.admin-pagination__pages {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.admin-pagination__controls button {
+  min-height: 44px;
+  min-width: 48px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0 16px;
+  color: var(--color-primary);
+  background: var(--surface);
+  font: inherit;
+  font-size: .92rem;
+  font-weight: 900;
+}
+
+.admin-pagination__controls > button:first-child {
+  min-width: 104px;
+}
+
+.admin-pagination__controls > button:last-child {
+  min-width: 72px;
+  border-right: 0;
+}
+
+.admin-pagination__pages span {
+  display: inline-grid;
+  min-height: 44px;
+  min-width: 48px;
+  place-items: center;
+  border-right: 1px solid var(--line);
+  color: var(--muted);
+  background: var(--surface);
+}
+
+.admin-pagination__controls button:hover:not(:disabled) {
+  color: var(--on-primary);
+  background: var(--color-primary);
+}
+
+.admin-pagination__controls button.is-active {
   color: var(--on-primary);
   background: var(--color-primary);
 }
@@ -2421,9 +2581,15 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
     align-items: stretch;
     flex-direction: column;
   }
-  .admin-pagination > div {
+  .admin-pagination__meta {
     justify-content: space-between;
     flex-wrap: wrap;
+    width: 100%;
+  }
+  .admin-pagination__controls {
+    justify-content: flex-start;
+    overflow-x: auto;
+    width: 100%;
   }
   .admin-setting-form .btn,
   .admin-setting-form button,
@@ -2568,8 +2734,20 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   .admin-row-actions {
     width: 100%;
   }
-  .admin-pagination button {
-    flex: 1 1 120px;
+  .admin-pagination__controls button,
+  .admin-pagination__pages span {
+    flex: 0 0 auto;
+    min-width: 44px;
+    padding-inline: 12px;
+  }
+  .admin-pagination__controls > button:first-child {
+    min-width: 94px;
+  }
+  .admin-pagination__controls > button:last-child {
+    min-width: 68px;
+  }
+  .admin-pagination input {
+    width: 100%;
   }
   .workspace__topbar h1 { font-size: 1.05rem; }
   .dashboard__actions .btn { width: 100%; }

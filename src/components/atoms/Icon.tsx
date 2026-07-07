@@ -1,5 +1,5 @@
 type IconProps = {
-  name: "chart" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon";
+  name: "chart" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check";
   size?: number;
 };
 
@@ -20,6 +20,8 @@ const paths: Record<IconProps["name"], string[]> = {
   palette: ["M12 3a9 9 0 1 0 0 18h1.5a1.8 1.8 0 0 0 1.2-3.1 1.8 1.8 0 0 1 1.2-3.1H18a6 6 0 0 0 0-12h-6Z", "M7.5 10h.01", "M10 7h.01", "M14 7h.01"],
   sun: ["M12 4V2", "M12 22v-2", "M4.93 4.93 3.52 3.52", "M20.48 20.48l-1.41-1.41", "M4 12H2", "M22 12h-2", "M4.93 19.07l-1.41 1.41", "M20.48 3.52l-1.41 1.41", "M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"],
   moon: ["M21 14.2A7.5 7.5 0 0 1 9.8 3 8.5 8.5 0 1 0 21 14.2Z"],
+  chevron: ["M6 9l6 6 6-6"],
+  check: ["M20 6 9 17l-5-5"],
 };
 
 export function Icon({ name, size = 22 }: IconProps) {

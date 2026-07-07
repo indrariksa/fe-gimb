@@ -11,7 +11,7 @@ export function RegisterPage() {
   const { theme } = useThemeSettings();
   const { register, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ full_name: "Budi Santoso", email: "admin@gmail.com", password: "admin123" });
+  const [form, setForm] = useState({ full_name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,15 +44,15 @@ export function RegisterPage() {
         <form onSubmit={submit} className="auth-form">
           <label>
             <span>Nama lengkap</span>
-            <input value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} required />
+            <input placeholder="Masukkan Nama Lengkap" value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} required />
           </label>
           <label>
             <span>Email</span>
-            <input type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} required />
+            <input type="email" placeholder="Masukkan Email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} required />
           </label>
           <label>
             <span>Password</span>
-            <input type="password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} required minLength={8} />
+            <input type="password" placeholder="Masukkan Password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} required minLength={8} />
           </label>
           {error && <p className="form-error">{error}</p>}
           <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Daftar"} <Icon name="arrow" size={18} /></Button>

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
 import * as adminApi from "../services/api/admin";
-import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, User, UserStatus } from "../services/api/types";
+import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
 import { formatScore } from "../utils/number";
 
 function formatDate(value: string) {
@@ -39,33 +39,158 @@ function metadataPreview(metadata: Record<string, unknown>) {
   return entries.slice(0, 2).map(([key, value]) => `${key}: ${String(value)}`).join(", ");
 }
 
-const diagnosisPageSize = 5;
-const auditPageSize = 10;
+const paginationSizeOptions = [5, 10, 20, 50];
+const defaultDiagnosisPageSize = 5;
+const defaultAuditPageSize = 10;
+
+function emptyPaginationMeta(limit: number): PaginationMeta {
+  return {
+    limit,
+    offset: 0,
+    count: 0,
+    total: 0,
+    page: 1,
+    total_pages: 0,
+    has_next: false,
+    has_prev: false,
+  };
+}
+
+function normalizePaginationMeta(meta: Partial<PaginationMeta> | undefined, itemCount: number, limit: number, offset: number): PaginationMeta {
+  const count = Number.isFinite(meta?.count) ? Number(meta?.count) : itemCount;
+  const total = Number.isFinite(meta?.total) ? Number(meta?.total) : offset + count;
+  const page = Number.isFinite(meta?.page) ? Number(meta?.page) : Math.floor(offset / limit) + 1;
+  const totalPages = Number.isFinite(meta?.total_pages)
+    ? Number(meta?.total_pages)
+    : total > 0 ? Math.max(1, Math.ceil(total / limit)) : 0;
+
+  return {
+    limit: Number.isFinite(meta?.limit) ? Number(meta?.limit) : limit,
+    offset: Number.isFinite(meta?.offset) ? Number(meta?.offset) : offset,
+    count,
+    total,
+    page,
+    total_pages: totalPages,
+    has_next: typeof meta?.has_next === "boolean" ? meta.has_next : count === limit,
+    has_prev: typeof meta?.has_prev === "boolean" ? meta.has_prev : offset > 0,
+  };
+}
+
+function paginationPages(currentPage: number, totalPages: number) {
+  if (totalPages <= 0) return [1];
+  if (totalPages <= 6) return Array.from({ length: totalPages }, (_, index) => index + 1);
+
+  const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+  const sorted = Array.from(pages)
+    .filter((page) => page >= 1 && page <= totalPages)
+    .sort((a, b) => a - b);
+
+  return sorted.reduce<Array<number | string>>((acc, page, index) => {
+    if (index > 0 && page - sorted[index - 1] > 1) acc.push(`ellipsis-${page}`);
+    acc.push(page);
+    return acc;
+  }, []);
+}
 
 type PaginationControlsProps = {
   page: number;
   pageSize: number;
-  count: number;
+  meta: PaginationMeta;
   isLoading?: boolean;
   onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
 };
 
-function PaginationControls({ page, pageSize, count, isLoading, onPageChange }: PaginationControlsProps) {
-  const start = count === 0 ? 0 : page * pageSize + 1;
-  const end = page * pageSize + count;
-  const canGoNext = count === pageSize;
+function PaginationControls({ page, pageSize, meta, isLoading, onPageChange, onPageSizeChange }: PaginationControlsProps) {
+  const [isSizeMenuOpen, setIsSizeMenuOpen] = useState(false);
+  const start = meta.count === 0 ? 0 : meta.offset + 1;
+  const end = meta.offset + meta.count;
+  const canGoNext = meta.has_next;
+  const displayPage = page + 1;
+  const totalPages = meta.total_pages || displayPage;
+  const pages = paginationPages(displayPage, totalPages);
 
   return (
     <div className="admin-pagination">
-      <span>{isLoading ? "Memuat..." : count > 0 ? `${start}-${end}` : "0 data"}</span>
-      <div>
-        <button type="button" disabled={page === 0 || isLoading} onClick={() => onPageChange(Math.max(0, page - 1))}>
-          Sebelumnya
-        </button>
-        <b>Halaman {page + 1}</b>
-        <button type="button" disabled={!canGoNext || isLoading} onClick={() => onPageChange(page + 1)}>
-          Berikutnya
-        </button>
+      <div className="admin-pagination__meta">
+        <span>
+          {isLoading
+            ? "Memuat data..."
+            : meta.total > 0
+              ? `Showing ${start} to ${end} of ${meta.total} entries`
+              : "Showing 0 entries"}
+        </span>
+        <label>
+          Tampilkan
+          <span className="admin-pagination__size">
+            <button
+              type="button"
+              className={isSizeMenuOpen ? "is-open" : ""}
+              aria-haspopup="listbox"
+              aria-expanded={isSizeMenuOpen}
+              disabled={isLoading}
+              onClick={() => setIsSizeMenuOpen((current) => !current)}
+            >
+              {pageSize}
+              <Icon name="chevron" size={16} />
+            </button>
+            {isSizeMenuOpen && (
+              <span className="admin-pagination__size-menu" role="listbox" aria-label="Jumlah data yang ditampilkan">
+                {paginationSizeOptions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    role="option"
+                    aria-selected={option === pageSize}
+                    className={option === pageSize ? "is-selected" : ""}
+                    disabled={isLoading}
+                    onClick={() => {
+                      setIsSizeMenuOpen(false);
+                      onPageSizeChange(option);
+                    }}
+                  >
+                    {option === pageSize && <Icon name="check" size={16} />}
+                    <span>{option}</span>
+                  </button>
+                ))}
+              </span>
+            )}
+          </span>
+          data
+          <select
+            className="admin-pagination__native-size"
+            value={pageSize}
+            disabled={isLoading}
+            onChange={(event) => onPageSizeChange(Number(event.target.value))}
+            aria-hidden="true"
+            tabIndex={-1}
+          >
+            {paginationSizeOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div className="admin-pagination__controls">
+        <button type="button" disabled={!meta.has_prev || isLoading} onClick={() => onPageChange(Math.max(0, page - 1))}>Previous</button>
+        <div className="admin-pagination__pages" aria-label="Pilihan halaman">
+          {pages.map((pageItem) => (
+            typeof pageItem === "number" ? (
+              <button
+                key={pageItem}
+                type="button"
+                className={pageItem === displayPage ? "is-active" : ""}
+                disabled={isLoading}
+                onClick={() => onPageChange(pageItem - 1)}
+              >
+                {pageItem}
+              </button>
+            ) : (
+              <span key={pageItem}>...</span>
+            )
+          ))}
+        </div>
+        <button type="button" disabled={!canGoNext || isLoading} onClick={() => onPageChange(page + 1)}>Next</button>
       </div>
     </div>
   );
@@ -82,7 +207,11 @@ export function AdminPage() {
   const [businessLimit, setBusinessLimit] = useState<BusinessLimitSetting | null>(null);
   const [businessLimitInput, setBusinessLimitInput] = useState("2");
   const [diagnosisPage, setDiagnosisPage] = useState(0);
+  const [diagnosisPageSize, setDiagnosisPageSize] = useState(defaultDiagnosisPageSize);
+  const [diagnosisMeta, setDiagnosisMeta] = useState(() => emptyPaginationMeta(defaultDiagnosisPageSize));
   const [auditPage, setAuditPage] = useState(0);
+  const [auditPageSize, setAuditPageSize] = useState(defaultAuditPageSize);
+  const [auditMeta, setAuditMeta] = useState(() => emptyPaginationMeta(defaultAuditPageSize));
   const [error, setError] = useState("");
   const [diagnosisError, setDiagnosisError] = useState("");
   const [auditError, setAuditError] = useState("");
@@ -132,14 +261,22 @@ export function AdminPage() {
     async function loadDiagnosis() {
       setIsDiagnosisLoading(true);
       setDiagnosisError("");
+      const offset = diagnosisPage * diagnosisPageSize;
       try {
         const response = await adminApi.adminDiagnosisWatchlist({
           limit: diagnosisPageSize,
-          offset: diagnosisPage * diagnosisPageSize,
+          offset,
         });
-        if (isMounted) setDiagnosisRows(response.items);
+        if (isMounted) {
+          setDiagnosisRows(response.items);
+          setDiagnosisMeta(normalizePaginationMeta(response.meta, response.items.length, diagnosisPageSize, offset));
+        }
       } catch (err) {
-        if (isMounted) setDiagnosisError(err instanceof Error ? err.message : "Gagal memuat monitoring diagnosis");
+        if (isMounted) {
+          setDiagnosisRows([]);
+          setDiagnosisMeta(emptyPaginationMeta(diagnosisPageSize));
+          setDiagnosisError(err instanceof Error ? err.message : "Gagal memuat monitoring diagnosis");
+        }
       } finally {
         if (isMounted) setIsDiagnosisLoading(false);
       }
@@ -148,21 +285,29 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [diagnosisPage]);
+  }, [diagnosisPage, diagnosisPageSize]);
 
   useEffect(() => {
     let isMounted = true;
     async function loadAuditLogs() {
       setIsAuditLoading(true);
       setAuditError("");
+      const offset = auditPage * auditPageSize;
       try {
         const response = await adminApi.adminAuditLogs({
           limit: auditPageSize,
-          offset: auditPage * auditPageSize,
+          offset,
         });
-        if (isMounted) setAuditLogs(response.items);
+        if (isMounted) {
+          setAuditLogs(response.items);
+          setAuditMeta(normalizePaginationMeta(response.meta, response.items.length, auditPageSize, offset));
+        }
       } catch (err) {
-        if (isMounted) setAuditError(err instanceof Error ? err.message : "Gagal memuat audit log");
+        if (isMounted) {
+          setAuditLogs([]);
+          setAuditMeta(emptyPaginationMeta(auditPageSize));
+          setAuditError(err instanceof Error ? err.message : "Gagal memuat audit log");
+        }
       } finally {
         if (isMounted) setIsAuditLoading(false);
       }
@@ -171,7 +316,7 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [auditPage]);
+  }, [auditPage, auditPageSize]);
 
   const updateStatus = async (userId: string, status: UserStatus) => {
     const updated = await adminApi.updateUserStatus(userId, status);
@@ -225,7 +370,7 @@ export function AdminPage() {
                     <h3>Monitoring Diagnosis</h3>
                     <p>Toko dengan skor terendah tampil lebih dulu agar admin bisa cepat melakukan review.</p>
                   </div>
-                  <b>{diagnosisRows.length} data</b>
+                  <b>{diagnosisMeta.total} data</b>
                 </div>
                 <div className="admin-table-wrap">
                   <table className="admin-table">
@@ -278,9 +423,13 @@ export function AdminPage() {
                 <PaginationControls
                   page={diagnosisPage}
                   pageSize={diagnosisPageSize}
-                  count={diagnosisRows.length}
+                  meta={diagnosisMeta}
                   isLoading={isDiagnosisLoading}
                   onPageChange={setDiagnosisPage}
+                  onPageSizeChange={(pageSize) => {
+                    setDiagnosisPage(0);
+                    setDiagnosisPageSize(pageSize);
+                  }}
                 />
               </section>
 
@@ -354,7 +503,7 @@ export function AdminPage() {
                     <h3>Audit Log</h3>
                     <p>Riwayat aktivitas penting seperti login, perubahan user, pembuatan toko, dan submit inventory.</p>
                   </div>
-                  <b>{auditLogs.length} log</b>
+                  <b>{auditMeta.total} log</b>
                 </div>
                 <div className="admin-table-wrap">
                   <table className="admin-table admin-table--audit">
@@ -395,9 +544,13 @@ export function AdminPage() {
                 <PaginationControls
                   page={auditPage}
                   pageSize={auditPageSize}
-                  count={auditLogs.length}
+                  meta={auditMeta}
                   isLoading={isAuditLoading}
                   onPageChange={setAuditPage}
+                  onPageSizeChange={(pageSize) => {
+                    setAuditPage(0);
+                    setAuditPageSize(pageSize);
+                  }}
                 />
               </section>
             </div>

@@ -103,10 +103,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const adminNavigation: NavigationItem[] = [
     { view: "admin", label: "Ringkasan", icon: "chart", sectionId: "overview" },
     { view: "admin", label: "Diagnosis", icon: "alert", sectionId: "diagnoses" },
+    { view: "admin", label: "Limit", icon: "settings", sectionId: "limits" },
     { view: "admin", label: "User", icon: "home", sectionId: "users" },
     { view: "admin", label: "Submission", icon: "file", sectionId: "submissions" },
     { view: "admin", label: "Audit Log", icon: "file", sectionId: "audit-logs" },
-    { view: "admin", label: "Limit", icon: "settings", sectionId: "limits" },
   ];
 
   const navigation = isAdmin ? adminNavigation : userNavigation;
