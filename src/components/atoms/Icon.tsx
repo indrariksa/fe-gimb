@@ -1,5 +1,5 @@
 type IconProps = {
-  name: "chart" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check";
+  name: "chart" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check" | "search" | "filter" | "refresh" | "maximize";
   size?: number;
 };
 
@@ -22,6 +22,10 @@ const paths: Record<IconProps["name"], string[]> = {
   moon: ["M21 14.2A7.5 7.5 0 0 1 9.8 3 8.5 8.5 0 1 0 21 14.2Z"],
   chevron: ["M6 9l6 6 6-6"],
   check: ["M20 6 9 17l-5-5"],
+  search: ["M21 21l-4.35-4.35", "M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"],
+  filter: ["M3 5h18l-7 8v5l-4 2v-7L3 5Z"],
+  refresh: ["M21 12a9 9 0 0 1-15.5 6.2", "M3 12A9 9 0 0 1 18.5 5.8", "M18 3v4h-4", "M6 21v-4h4"],
+  maximize: ["M8 3H3v5", "M3 3l6 6", "M16 3h5v5", "M21 3l-6 6", "M8 21H3v-5", "M3 21l6-6", "M16 21h5v-5", "M21 21l-6-6"],
 };
 
 export function Icon({ name, size = 22 }: IconProps) {

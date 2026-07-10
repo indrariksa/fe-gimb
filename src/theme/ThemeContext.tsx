@@ -13,12 +13,13 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function readTheme(): ThemeSettings {
   const saved = localStorage.getItem(themeStorageKey);
-  if (!saved) return defaultTheme;
+  const preferredMode = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : defaultTheme.mode;
+  if (!saved) return { ...defaultTheme, mode: preferredMode };
 
   try {
-    return { ...defaultTheme, ...JSON.parse(saved) };
+    return { ...defaultTheme, mode: preferredMode, ...JSON.parse(saved) };
   } catch {
-    return defaultTheme;
+    return { ...defaultTheme, mode: preferredMode };
   }
 }
 

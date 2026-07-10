@@ -5,10 +5,10 @@ export const defaultTheme: ThemeSettings = {
   businessName: "Toko Maju Jaya",
   ownerName: "Budi Santoso",
   mode: "light",
-  primaryColor: "#0b2a52",
-  accentColor: "#f59e0b",
-  successColor: "#16b981",
-  warningColor: "#f59e0b",
+  primaryColor: "#6558d9",
+  accentColor: "#d58a28",
+  successColor: "#199c82",
+  warningColor: "#d58a28",
 };
 
 export const themeStorageKey = "gimb:sbd:theme";
@@ -19,7 +19,7 @@ function hexToRgb(hex: string) {
     ? normalized.split("").map((char) => char + char).join("")
     : normalized;
 
-  if (value.length !== 6) return { r: 11, g: 42, b: 82 };
+  if (value.length !== 6) return { r: 101, g: 88, b: 217 };
 
   return {
     r: Number.parseInt(value.slice(0, 2), 16),

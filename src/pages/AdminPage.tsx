@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
@@ -6,6 +6,7 @@ import { Icon } from "../components/atoms/Icon";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
 import { formatScore } from "../utils/number";
+import { useThemeSettings } from "../theme/ThemeContext";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
@@ -37,6 +38,58 @@ function metadataPreview(metadata: Record<string, unknown>) {
   const entries = Object.entries(metadata).filter(([, value]) => value !== null && value !== undefined && value !== "");
   if (entries.length === 0) return "-";
   return entries.slice(0, 2).map(([key, value]) => `${key}: ${String(value)}`).join(", ");
+}
+
+type AuditLevel = "info" | "warning" | "error";
+type AuditLevelFilter = AuditLevel | "all";
+
+function auditLevel(action: string): AuditLevel {
+  const lowered = action.toLowerCase();
+  if (lowered.includes("failed") || lowered.includes("error") || lowered.includes("blocked")) return "error";
+  if (lowered.includes("updated") || lowered.includes("deleted") || lowered.includes("suspended") || lowered.includes("limit")) return "warning";
+  return "info";
+}
+
+function auditLevelLabel(level: AuditLevel) {
+  return level === "error" ? "Error" : level === "warning" ? "Warning" : "Info";
+}
+
+function auditService(log: AuditLog) {
+  const actionRoot = log.action.split(".")[0] || log.entity_type || "system";
+  return `${actionRoot.replace(/_/g, "-")}-service`;
+}
+
+function auditStatusText(level: AuditLevel) {
+  if (level === "error") return "failed";
+  if (level === "warning") return "review";
+  return "ok";
+}
+
+function formatAuditTime(value: string) {
+  return new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(value));
+}
+
+function auditTags(log: AuditLog) {
+  const actionParts = log.action.split(".").filter(Boolean);
+  const metadataKeys = Object.keys(log.metadata ?? {}).slice(0, 3);
+  return Array.from(new Set([log.entity_type, ...actionParts, ...metadataKeys].filter(Boolean))).slice(0, 6);
+}
+
+function auditSearchValue(log: AuditLog) {
+  return [
+    log.action,
+    log.actor_id ?? "",
+    log.entity_type,
+    log.entity_id,
+    log.ip_address,
+    log.user_agent,
+    metadataPreview(log.metadata ?? {}),
+    JSON.stringify(log.metadata ?? {}),
+  ].join(" ").toLowerCase();
 }
 
 const paginationSizeOptions = [5, 10, 20, 50];
@@ -198,6 +251,7 @@ function PaginationControls({ page, pageSize, meta, isLoading, onPageChange, onP
 
 export function AdminPage() {
   const navigate = useNavigate();
+  const { theme, updateTheme } = useThemeSettings();
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -212,6 +266,11 @@ export function AdminPage() {
   const [auditPage, setAuditPage] = useState(0);
   const [auditPageSize, setAuditPageSize] = useState(defaultAuditPageSize);
   const [auditMeta, setAuditMeta] = useState(() => emptyPaginationMeta(defaultAuditPageSize));
+  const [auditReloadKey, setAuditReloadKey] = useState(0);
+  const [auditSearch, setAuditSearch] = useState("");
+  const [auditLevelFilter, setAuditLevelFilter] = useState<AuditLevelFilter>("all");
+  const [isAuditFilterOpen, setIsAuditFilterOpen] = useState(false);
+  const [expandedAuditId, setExpandedAuditId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [diagnosisError, setDiagnosisError] = useState("");
   const [auditError, setAuditError] = useState("");
@@ -316,7 +375,17 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [auditPage, auditPageSize]);
+  }, [auditPage, auditPageSize, auditReloadKey]);
+
+  const visibleAuditLogs = useMemo(() => {
+    const normalizedSearch = auditSearch.trim().toLowerCase();
+    return auditLogs.filter((log) => {
+      const level = auditLevel(log.action);
+      const matchesLevel = auditLevelFilter === "all" || level === auditLevelFilter;
+      const matchesSearch = normalizedSearch.length === 0 || auditSearchValue(log).includes(normalizedSearch);
+      return matchesLevel && matchesSearch;
+    });
+  }, [auditLogs, auditLevelFilter, auditSearch]);
 
   const updateStatus = async (userId: string, status: UserStatus) => {
     const updated = await adminApi.updateUserStatus(userId, status);
@@ -341,6 +410,15 @@ export function AdminPage() {
 
   const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
   const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
+  const toggleAuditFullscreen = () => {
+    const panel = document.getElementById("audit-logs");
+    if (!panel) return;
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+      return;
+    }
+    void panel.requestFullscreen?.();
+  };
 
   return (
     <DashboardShell activeView="admin" title="Admin Dashboard">
@@ -497,49 +575,140 @@ export function AdminPage() {
                 </div>
               </section>
 
-              <section id="audit-logs" className="admin-section panel admin-section--wide admin-anchor">
-                <div className="admin-section__heading">
-                  <div>
-                    <h3>Audit Log</h3>
-                    <p>Riwayat aktivitas penting seperti login, perubahan user, pembuatan toko, dan submit inventory.</p>
-                  </div>
-                  <b>{auditMeta.total} log</b>
+              <section id="audit-logs" className="admin-section panel admin-section--wide admin-anchor audit-log-panel">
+                <div className="audit-toolbar" aria-label="Audit log tools">
+                  <button type="button" aria-label="Mode layar penuh" onClick={toggleAuditFullscreen}>
+                    <Icon name="maximize" size={20} />
+                  </button>
+                  <button type="button" aria-label="Ubah mode warna" onClick={() => updateTheme({ mode: theme.mode === "dark" ? "light" : "dark" })}>
+                    <Icon name={theme.mode === "dark" ? "sun" : "moon"} size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Muat ulang audit log"
+                    disabled={isAuditLoading}
+                    onClick={() => setAuditReloadKey((current) => current + 1)}
+                  >
+                    <Icon name="refresh" size={20} />
+                  </button>
                 </div>
-                <div className="admin-table-wrap">
-                  <table className="admin-table admin-table--audit">
-                    <thead>
-                      <tr>
-                        <th>Waktu</th>
-                        <th>Aksi</th>
-                        <th>Actor</th>
-                        <th>Target</th>
-                        <th>IP</th>
-                        <th>Metadata</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {auditError && <tr><td colSpan={6}>{auditError}</td></tr>}
-                      {!auditError && isAuditLoading && (
-                        <tr><td colSpan={6}>Memuat audit log...</td></tr>
-                      )}
-                      {!auditError && !isAuditLoading && auditLogs.length === 0 && (
-                        <tr><td colSpan={6}>Belum ada audit log.</td></tr>
-                      )}
-                      {!isAuditLoading && !auditError && auditLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td>{formatDateTime(log.created_at)}</td>
-                          <td><strong>{formatAction(log.action)}</strong></td>
-                          <td>{shortValue(log.actor_id ?? "")}</td>
-                          <td>
-                            <strong>{log.entity_type || "-"}</strong>
-                            <span>{shortValue(log.entity_id)}</span>
-                          </td>
-                          <td>{log.ip_address || "-"}</td>
-                          <td>{metadataPreview(log.metadata)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+
+                <div className="audit-heading">
+                  <div>
+                    <h3>Logs</h3>
+                    <p>{visibleAuditLogs.length} of {auditMeta.total} logs</p>
+                  </div>
+                  <span>{auditLevelFilter === "all" ? "Semua level" : auditLevelLabel(auditLevelFilter)}</span>
+                </div>
+
+                <div className="audit-controls">
+                  <label className="audit-search">
+                    <Icon name="search" size={22} />
+                    <input
+                      value={auditSearch}
+                      onChange={(event) => setAuditSearch(event.target.value)}
+                      placeholder="Cari log berdasarkan aksi, actor, target, IP, atau metadata..."
+                    />
+                  </label>
+                  <div className="audit-filter">
+                    <button
+                      type="button"
+                      aria-label="Filter audit log"
+                      aria-haspopup="menu"
+                      aria-expanded={isAuditFilterOpen}
+                      onClick={() => setIsAuditFilterOpen((current) => !current)}
+                    >
+                      <Icon name="filter" size={22} />
+                    </button>
+                    {isAuditFilterOpen && (
+                      <div className="audit-filter__menu" role="menu">
+                        {(["all", "info", "warning", "error"] as AuditLevelFilter[]).map((level) => (
+                          <button
+                            key={level}
+                            type="button"
+                            className={auditLevelFilter === level ? "is-active" : ""}
+                            onClick={() => {
+                              setAuditLevelFilter(level);
+                              setIsAuditFilterOpen(false);
+                            }}
+                          >
+                            {level === "all" ? "Semua" : auditLevelLabel(level)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="audit-log-list">
+                  {auditError && <article className="audit-empty">{auditError}</article>}
+                  {!auditError && isAuditLoading && <article className="audit-empty">Memuat audit log...</article>}
+                  {!auditError && !isAuditLoading && auditLogs.length === 0 && <article className="audit-empty">Belum ada audit log.</article>}
+                  {!auditError && !isAuditLoading && auditLogs.length > 0 && visibleAuditLogs.length === 0 && (
+                    <article className="audit-empty">Tidak ada log yang cocok di halaman ini.</article>
+                  )}
+                  {!isAuditLoading && !auditError && visibleAuditLogs.map((log) => {
+                    const level = auditLevel(log.action);
+                    const isExpanded = expandedAuditId === log.id;
+                    const tags = auditTags(log);
+                    return (
+                      <article key={log.id} className={`audit-log-row audit-log-row--${level} ${isExpanded ? "is-expanded" : ""}`}>
+                        <button
+                          type="button"
+                          className="audit-log-row__toggle"
+                          aria-label={isExpanded ? "Tutup detail audit log" : "Buka detail audit log"}
+                          onClick={() => setExpandedAuditId((current) => current === log.id ? null : log.id)}
+                        >
+                          <Icon name="chevron" size={18} />
+                        </button>
+                        <b className={`audit-level audit-level--${level}`}>{auditLevelLabel(level)}</b>
+                        <time>{formatAuditTime(log.created_at)}</time>
+                        <strong>{auditService(log)}</strong>
+                        <p>{formatAction(log.action)}</p>
+                        <span className={`audit-status audit-status--${level}`}>{auditStatusText(level)}</span>
+                        <small>{log.ip_address || "-"}</small>
+
+                        {isExpanded && (
+                          <div className="audit-log-detail">
+                            <div className="audit-log-detail__message">
+                              <span>Message</span>
+                              <code>{formatAction(log.action)}</code>
+                            </div>
+                            <div className="audit-log-detail__grid">
+                              <div>
+                                <span>Actor</span>
+                                <code>{shortValue(log.actor_id ?? "", 28)}</code>
+                              </div>
+                              <div>
+                                <span>Entity</span>
+                                <code>{log.entity_type || "-"} / {shortValue(log.entity_id, 28)}</code>
+                              </div>
+                              <div>
+                                <span>Timestamp</span>
+                                <code>{formatDateTime(log.created_at)}</code>
+                              </div>
+                              <div>
+                                <span>User Agent</span>
+                                <code>{shortValue(log.user_agent || "-", 48)}</code>
+                              </div>
+                            </div>
+                            {tags.length > 0 && (
+                              <div className="audit-tags">
+                                <span>Tags</span>
+                                <div>
+                                  {tags.map((tag) => <b key={tag}>{tag}</b>)}
+                                </div>
+                              </div>
+                            )}
+                            <details className="audit-metadata">
+                              <summary>Metadata</summary>
+                              <pre>{JSON.stringify(log.metadata ?? {}, null, 2)}</pre>
+                            </details>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })}
                 </div>
                 <PaginationControls
                   page={auditPage}

@@ -204,7 +204,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
             <Icon name="bell" />
             <span>
               <strong>{user?.full_name ?? theme.ownerName}</strong>
-              <small>{user?.role === "admin" ? "Admin" : theme.businessName}</small>
+              <small>{user?.role === "admin" ? "Admin" : user?.email ?? theme.businessName}</small>
             </span>
             <span className="avatar">{(user?.full_name ?? theme.ownerName).slice(0, 1)}</span>
           </div>
