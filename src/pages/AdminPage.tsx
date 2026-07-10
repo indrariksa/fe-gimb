@@ -43,7 +43,9 @@ function metadataPreview(metadata: Record<string, unknown>) {
 type AuditLevel = "info" | "warning" | "error";
 type AuditLevelFilter = AuditLevel | "all";
 
-function auditLevel(action: string): AuditLevel {
+function auditLevel(logOrAction: AuditLog | string): AuditLevel {
+  if (typeof logOrAction !== "string" && logOrAction.level) return logOrAction.level;
+  const action = typeof logOrAction === "string" ? logOrAction : logOrAction.action;
   const lowered = action.toLowerCase();
   if (lowered.includes("failed") || lowered.includes("error") || lowered.includes("blocked")) return "error";
   if (lowered.includes("updated") || lowered.includes("deleted") || lowered.includes("suspended") || lowered.includes("limit")) return "warning";
@@ -55,21 +57,55 @@ function auditLevelLabel(level: AuditLevel) {
 }
 
 function auditService(log: AuditLog) {
+  if (log.service) return log.service;
   const actionRoot = log.action.split(".")[0] || log.entity_type || "system";
   return `${actionRoot.replace(/_/g, "-")}-service`;
 }
 
-function auditStatusText(level: AuditLevel) {
-  if (level === "error") return "failed";
-  if (level === "warning") return "review";
-  return "ok";
+function auditStatusText(log: AuditLog, level: AuditLevel) {
+  if (typeof log.status_code === "number" && log.status_code > 0) return String(log.status_code);
+  if (level === "error") return "401";
+  if (level === "warning") return "202";
+  return "200";
+}
+
+function auditDuration(log: AuditLog) {
+  if (typeof log.duration_ms !== "number") return "-";
+  if (log.duration_ms < 1000) return `${log.duration_ms}ms`;
+  return `${(log.duration_ms / 1000).toFixed(1)}s`;
+}
+
+function auditMessage(log: AuditLog) {
+  return log.message || formatAction(log.action);
+}
+
+function metadataString(log: AuditLog, key: string) {
+  const value = log.metadata?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : "";
+}
+
+function auditActor(log: AuditLog) {
+  if (log.actor_name && log.actor_email) return `${log.actor_name} (${log.actor_email})`;
+  if (log.actor_name) return log.actor_name;
+  if (log.actor_email) return log.actor_email;
+  const email = metadataString(log, "email");
+  if (email) return email;
+  return log.actor_id ? "Pengguna terdaftar" : "System";
+}
+
+function auditEntity(log: AuditLog) {
+  if (log.entity_label) return log.entity_label;
+  const email = metadataString(log, "email");
+  if (log.entity_type === "user" && email) return email;
+  return formatAction(log.entity_type || "system");
 }
 
 function formatAuditTime(value: string) {
-  return new Intl.DateTimeFormat("id-ID", {
+  return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    hour12: true,
   }).format(new Date(value));
 }
 
@@ -82,9 +118,14 @@ function auditTags(log: AuditLog) {
 function auditSearchValue(log: AuditLog) {
   return [
     log.action,
-    log.actor_id ?? "",
+    auditActor(log),
+    auditEntity(log),
+    log.service ?? "",
+    log.endpoint ?? "",
+    log.message ?? "",
+    typeof log.status_code === "number" ? String(log.status_code) : "",
+    typeof log.duration_ms === "number" ? String(log.duration_ms) : "",
     log.entity_type,
-    log.entity_id,
     log.ip_address,
     log.user_agent,
     metadataPreview(log.metadata ?? {}),
@@ -380,7 +421,7 @@ export function AdminPage() {
   const visibleAuditLogs = useMemo(() => {
     const normalizedSearch = auditSearch.trim().toLowerCase();
     return auditLogs.filter((log) => {
-      const level = auditLevel(log.action);
+      const level = auditLevel(log);
       const matchesLevel = auditLevelFilter === "all" || level === auditLevelFilter;
       const matchesSearch = normalizedSearch.length === 0 || auditSearchValue(log).includes(normalizedSearch);
       return matchesLevel && matchesSearch;
@@ -648,7 +689,7 @@ export function AdminPage() {
                     <article className="audit-empty">Tidak ada log yang cocok di halaman ini.</article>
                   )}
                   {!isAuditLoading && !auditError && visibleAuditLogs.map((log) => {
-                    const level = auditLevel(log.action);
+                    const level = auditLevel(log);
                     const isExpanded = expandedAuditId === log.id;
                     const tags = auditTags(log);
                     return (
@@ -664,28 +705,48 @@ export function AdminPage() {
                         <b className={`audit-level audit-level--${level}`}>{auditLevelLabel(level)}</b>
                         <time>{formatAuditTime(log.created_at)}</time>
                         <strong>{auditService(log)}</strong>
-                        <p>{formatAction(log.action)}</p>
-                        <span className={`audit-status audit-status--${level}`}>{auditStatusText(level)}</span>
-                        <small>{log.ip_address || "-"}</small>
+                        <p>{auditMessage(log)}</p>
+                        <span className={`audit-status audit-status--${level}`}>{auditStatusText(log, level)}</span>
+                        <small>{auditDuration(log)}</small>
 
                         {isExpanded && (
                           <div className="audit-log-detail">
                             <div className="audit-log-detail__message">
                               <span>Message</span>
-                              <code>{formatAction(log.action)}</code>
+                              <code>{auditMessage(log)}</code>
                             </div>
                             <div className="audit-log-detail__grid">
                               <div>
                                 <span>Actor</span>
-                                <code>{shortValue(log.actor_id ?? "", 28)}</code>
+                                <code>{auditActor(log)}</code>
                               </div>
                               <div>
                                 <span>Entity</span>
-                                <code>{log.entity_type || "-"} / {shortValue(log.entity_id, 28)}</code>
+                                <code>{auditEntity(log)}</code>
+                              </div>
+                              <div>
+                                <span>Level</span>
+                                <code>{auditLevelLabel(level)}</code>
+                              </div>
+                              <div>
+                                <span>Service</span>
+                                <code>{auditService(log)}</code>
+                              </div>
+                              <div>
+                                <span>Endpoint</span>
+                                <code>{log.endpoint || "-"}</code>
+                              </div>
+                              <div>
+                                <span>Status Code</span>
+                                <code>{auditStatusText(log, level)}</code>
+                              </div>
+                              <div>
+                                <span>Duration</span>
+                                <code>{auditDuration(log)}</code>
                               </div>
                               <div>
                                 <span>Timestamp</span>
-                                <code>{formatDateTime(log.created_at)}</code>
+                                <code>{formatDateTime(log.created_at)} · {formatAuditTime(log.created_at)}</code>
                               </div>
                               <div>
                                 <span>User Agent</span>
@@ -700,10 +761,10 @@ export function AdminPage() {
                                 </div>
                               </div>
                             )}
-                            <details className="audit-metadata">
-                              <summary>Metadata</summary>
-                              <pre>{JSON.stringify(log.metadata ?? {}, null, 2)}</pre>
-                            </details>
+                            <div>
+                              <span>Metadata</span>
+                              <code>{JSON.stringify(log.metadata ?? {}, null, 2)}</code>
+                            </div>
                           </div>
                         )}
                       </article>

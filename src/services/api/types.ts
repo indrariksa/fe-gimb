@@ -149,9 +149,18 @@ export type AdminSummary = {
 export type AuditLog = {
   id: string;
   actor_id: string | null;
+  actor_name?: string;
+  actor_email?: string;
   action: string;
   entity_type: string;
   entity_id: string;
+  entity_label?: string;
+  level?: "info" | "warning" | "error";
+  service?: string;
+  endpoint?: string;
+  message?: string;
+  status_code?: number;
+  duration_ms?: number;
   ip_address: string;
   user_agent: string;
   metadata: Record<string, unknown>;
