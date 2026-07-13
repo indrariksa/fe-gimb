@@ -75,6 +75,10 @@ function auditDuration(log: AuditLog) {
   return `${(log.duration_ms / 1000).toFixed(1)}s`;
 }
 
+function auditIPAddress(log: AuditLog) {
+  return log.ip_address || "-";
+}
+
 function auditMessage(log: AuditLog) {
   return log.message || formatAction(log.action);
 }
@@ -710,6 +714,7 @@ export function AdminPage() {
                         <p>{auditMessage(log)}</p>
                         <span className={`audit-status audit-status--${level}`}>{auditStatusText(log, level)}</span>
                         <small>{auditDuration(log)}</small>
+                        <small className="audit-ip">{auditIPAddress(log)}</small>
 
                         {isExpanded && (
                           <div className="audit-log-detail">
@@ -745,6 +750,10 @@ export function AdminPage() {
                               <div>
                                 <span>Duration</span>
                                 <code>{auditDuration(log)}</code>
+                              </div>
+                              <div>
+                                <span>IP Address</span>
+                                <code>{auditIPAddress(log)}</code>
                               </div>
                               <div>
                                 <span>Timestamp</span>

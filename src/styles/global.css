@@ -2253,7 +2253,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .audit-log-row {
   display: grid;
-  grid-template-columns: 34px minmax(84px, auto) minmax(92px, auto) minmax(148px, .8fr) minmax(220px, 1.4fr) minmax(72px, auto) minmax(88px, auto);
+  grid-template-columns: 34px minmax(84px, auto) minmax(104px, auto) minmax(148px, .75fr) minmax(220px, 1.3fr) minmax(72px, auto) minmax(88px, auto) minmax(104px, auto);
   align-items: center;
   gap: 16px;
   min-width: 0;
@@ -2346,6 +2346,15 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   color: var(--muted);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-weight: 900;
+}
+
+.audit-ip {
+  justify-self: end;
+  max-width: 122px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 .audit-status--info {
@@ -3764,6 +3773,9 @@ dt,
     grid-column: 2 / -1;
     justify-self: start;
   }
+  .audit-ip {
+    max-width: 100%;
+  }
   .audit-log-detail {
     margin-left: 0;
   }
@@ -3970,6 +3982,10 @@ dt,
   .audit-status,
   .audit-log-row small {
     grid-column: 2 / -1;
+  }
+  .audit-ip {
+    justify-self: start;
+    max-width: 100%;
   }
   .audit-level {
     padding: 7px 10px;
