@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { PropsWithChildren } from "react";
-import { configureApiClient } from "../services/api/client";
+import { ApiTimeoutError, configureApiClient, timeoutMessage } from "../services/api/client";
 import * as authApi from "../services/api/auth";
 import type { AuthResponse, User } from "../services/api/types";
 
@@ -46,6 +46,7 @@ function authFromResponse(response: AuthResponse): StoredAuth {
 export function AuthProvider({ children }: PropsWithChildren) {
   const [auth, setAuth] = useState<StoredAuth | null>(() => readStoredAuth());
   const [isLoading, setIsLoading] = useState(true);
+  const [showTimeoutNotice, setShowTimeoutNotice] = useState(false);
 
   const persistAuth = useCallback((nextAuth: StoredAuth | null) => {
     setAuth(nextAuth);
@@ -60,8 +61,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
     configureApiClient({
       getAccessToken: () => readStoredAuth()?.accessToken ?? null,
       onUnauthorized: () => persistAuth(null),
+      onTimeout: () => setShowTimeoutNotice(true),
     });
   }, [persistAuth]);
+
+  useEffect(() => {
+    if (!showTimeoutNotice) return;
+    const timeout = window.setTimeout(() => setShowTimeoutNotice(false), 5_000);
+    return () => window.clearTimeout(timeout);
+  }, [showTimeoutNotice]);
 
   useEffect(() => {
     let isMounted = true;
@@ -76,8 +84,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       try {
         const refreshed = await authApi.refreshToken(stored.refreshToken);
         if (isMounted) persistAuth(authFromResponse(refreshed));
-      } catch {
-        if (isMounted) persistAuth(null);
+      } catch (error) {
+        if (isMounted && !(error instanceof ApiTimeoutError)) persistAuth(null);
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -123,7 +131,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
     logout: handleLogout,
   }), [auth, handleLogin, handleLogout, handleRegister, isLoading]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      {showTimeoutNotice && (
+        <div className="api-timeout-notice" role="alert" aria-live="assertive">
+          <strong>Koneksi timeout</strong>
+          <span>{timeoutMessage}</span>
+        </div>
+      )}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

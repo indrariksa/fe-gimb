@@ -36,3 +36,5 @@ Icon
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+AGENTS.md

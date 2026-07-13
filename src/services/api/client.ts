@@ -2,16 +2,21 @@ import type { ApiEnvelope } from "./types";
 
 const defaultBaseUrl = "http://127.0.0.1:8080/api/v1";
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? defaultBaseUrl;
+const requestTimeoutMs = 15_000;
+export const timeoutMessage = "Koneksi ke server terlalu lama. Silakan coba lagi.";
 
 let accessTokenProvider: (() => string | null) | null = null;
 let onUnauthorized: (() => void) | null = null;
+let onTimeout: (() => void) | null = null;
 
 export function configureApiClient(options: {
   getAccessToken: () => string | null;
   onUnauthorized: () => void;
+  onTimeout: () => void;
 }) {
   accessTokenProvider = options.getAccessToken;
   onUnauthorized = options.onUnauthorized;
+  onTimeout = options.onTimeout;
 }
 
 export class ApiError extends Error {
@@ -23,6 +28,13 @@ export class ApiError extends Error {
     this.name = "ApiError";
     this.status = status;
     this.details = details;
+  }
+}
+
+export class ApiTimeoutError extends Error {
+  constructor() {
+    super(timeoutMessage);
+    this.name = "ApiTimeoutError";
   }
 }
 
@@ -59,10 +71,20 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     if (token) headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${baseUrl}${path}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${baseUrl}${path}`, {
+      ...options,
+      headers,
+      signal: options.signal ?? AbortSignal.timeout(requestTimeoutMs),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      onTimeout?.();
+      throw new ApiTimeoutError();
+    }
+    throw error;
+  }
   const envelope = (await response.json().catch(() => ({}))) as ApiEnvelope<T>;
 
   if (!response.ok || envelope.success === false) {

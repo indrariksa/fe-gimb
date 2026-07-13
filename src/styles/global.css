@@ -120,6 +120,30 @@ textarea:disabled {
 }
 a { color: inherit; text-decoration: none; }
 
+.api-timeout-notice {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 200;
+  width: min(390px, calc(100vw - 32px));
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 45%, var(--line));
+  border-radius: 10px;
+  display: grid;
+  gap: 3px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  animation: timeoutNoticeIn .2s ease-out;
+}
+
+.api-timeout-notice strong { color: var(--color-danger); }
+.api-timeout-notice span { color: var(--muted); font-size: var(--text-body-sm); }
+
+@keyframes timeoutNoticeIn {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
 .btn {
   min-height: 48px;
   border: 0;

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
+import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
@@ -300,7 +301,6 @@ export function AdminPage() {
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
-  const [submissions, setSubmissions] = useState<InventorySubmission[]>([]);
   const [diagnosisRows, setDiagnosisRows] = useState<InventorySubmission[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [businessLimit, setBusinessLimit] = useState<BusinessLimitSetting | null>(null);
@@ -324,6 +324,7 @@ export function AdminPage() {
   const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(true);
   const [isAuditLoading, setIsAuditLoading] = useState(true);
   const [isSavingLimit, setIsSavingLimit] = useState(false);
+  const [isLimitConfirmOpen, setIsLimitConfirmOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -332,12 +333,11 @@ export function AdminPage() {
       setIsLoading(true);
       setError("");
       try {
-        const [summaryData, limitData, usersData, businessesData, submissionsData] = await Promise.all([
+        const [summaryData, limitData, usersData, businessesData] = await Promise.all([
           adminApi.adminSummary(),
           adminApi.adminBusinessLimit(),
           adminApi.adminUsers(),
           adminApi.adminBusinesses({ limit: 100, offset: 0 }),
-          adminApi.adminInventorySubmissions(),
         ]);
         if (isMounted) {
           setSummary(summaryData);
@@ -345,7 +345,6 @@ export function AdminPage() {
           setBusinessLimitInput(String(limitData.value));
           setUsers(usersData.items);
           setBusinesses(businessesData.items);
-          setSubmissions(submissionsData.items);
         }
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat dashboard admin");
@@ -437,9 +436,13 @@ export function AdminPage() {
     setUsers((current) => current.map((user) => user.id === updated.id ? updated : user));
   };
 
-  const saveBusinessLimit = async (event: FormEvent) => {
+  const saveBusinessLimit = (event: FormEvent) => {
     event.preventDefault();
     setSettingMessage("");
+    setIsLimitConfirmOpen(true);
+  };
+
+  const confirmBusinessLimitSave = async () => {
     setIsSavingLimit(true);
     try {
       const updated = await adminApi.updateBusinessLimit(Number(businessLimitInput));
@@ -450,6 +453,7 @@ export function AdminPage() {
       setSettingMessage(err instanceof Error ? err.message : "Gagal memperbarui limit toko");
     } finally {
       setIsSavingLimit(false);
+      setIsLimitConfirmOpen(false);
     }
   };
 
@@ -594,30 +598,6 @@ export function AdminPage() {
                         <option value="suspended">suspended</option>
                       </select>
                     </article>
-                  ))}
-                </div>
-              </section>
-
-              <section id="submissions" className="admin-section panel admin-section--wide admin-anchor">
-                <h3>Submission Terbaru</h3>
-                <div className="data-table">
-                  {submissions.map((submission) => (
-                    (() => {
-                      const business = businesses.find((item) => item.id === submission.business_id);
-                      return (
-                        <article key={submission.public_id}>
-                          <div>
-                            <strong>{submission.business_name || submission.public_id}</strong>
-                            <span>{formatDate(submission.created_at)}</span>
-                          </div>
-                          <b>{formatScore(submission.analysis?.overall_score ?? 0)}</b>
-                          <div className="admin-row-actions">
-                            <span>{submission.analysis?.status ?? "Belum Dianalisis"}</span>
-                            {business && <button onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor</button>}
-                          </div>
-                        </article>
-                      );
-                    })()
                   ))}
                 </div>
               </section>
@@ -798,6 +778,24 @@ export function AdminPage() {
           </>
         )}
       </section>
+
+      {isLimitConfirmOpen && (
+        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="limit-confirm-title">
+          <div className="confirm-dialog__card">
+            <span className="confirm-dialog__icon"><Icon name="settings" size={34} /></span>
+            <h2 id="limit-confirm-title">Simpan perubahan limit?</h2>
+            <p>Limit toko per user akan diubah menjadi <strong>{businessLimitInput}</strong>.</p>
+            <div className="confirm-dialog__actions">
+              <Button variant="secondary" disabled={isSavingLimit} onClick={() => setIsLimitConfirmOpen(false)}>
+                Tidak
+              </Button>
+              <Button disabled={isSavingLimit} onClick={confirmBusinessLimitSave}>
+                {isSavingLimit ? "Menyimpan..." : "Ya, Simpan"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardShell>
   );
 }
