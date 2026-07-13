@@ -215,7 +215,7 @@ export function AdminInventoryDetailPage() {
                   <span><Icon name="alert" /></span>
                   <h3>Prioritas Diagnosis</h3>
                   <ul>
-                    {(submission.analysis.priority_issues.length > 0 ? submission.analysis.priority_issues : ["Belum ada prioritas khusus."]).map((item) => (
+                    {(submission.analysis.priority_issues?.length ? submission.analysis.priority_issues : ["Belum ada prioritas khusus."]).map((item) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
@@ -224,7 +224,7 @@ export function AdminInventoryDetailPage() {
                   <span><Icon name="check" /></span>
                   <h3>Kekuatan Utama</h3>
                   <ul>
-                    {(submission.analysis.strengths.length > 0 ? submission.analysis.strengths : ["Belum ada kekuatan khusus."]).map((item) => (
+                    {(submission.analysis.strengths?.length ? submission.analysis.strengths : ["Belum ada kekuatan khusus."]).map((item) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>

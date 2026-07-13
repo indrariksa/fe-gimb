@@ -1,6 +1,8 @@
 import { apiRequest } from "./client";
 import type { AuthResponse, User } from "./types";
 
+let pendingRefresh: Promise<AuthResponse> | null = null;
+
 export function login(payload: { email: string; password: string }) {
   return apiRequest<AuthResponse>("/auth/login", {
     method: "POST",
@@ -18,11 +20,16 @@ export function register(payload: { email: string; password: string; full_name: 
 }
 
 export function refreshToken(refresh_token: string) {
-  return apiRequest<AuthResponse>("/auth/refresh", {
-    method: "POST",
-    auth: false,
-    body: JSON.stringify({ refresh_token }),
-  });
+  if (!pendingRefresh) {
+    pendingRefresh = apiRequest<AuthResponse>("/auth/refresh", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ refresh_token }),
+    }).finally(() => {
+      pendingRefresh = null;
+    });
+  }
+  return pendingRefresh;
 }
 
 export function me() {

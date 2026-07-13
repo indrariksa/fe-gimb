@@ -12,7 +12,7 @@ const fallbackSteps = [
 ];
 
 function buildSteps(priorityIssues: string[], recommendations: string[]) {
-  const merged = [...priorityIssues, ...recommendations].filter(Boolean);
+  const merged = [...(priorityIssues ?? []), ...(recommendations ?? [])].filter(Boolean);
   return (merged.length ? merged : fallbackSteps).slice(0, 3);
 }
 

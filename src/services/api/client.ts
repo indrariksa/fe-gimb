@@ -88,7 +88,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const envelope = (await response.json().catch(() => ({}))) as ApiEnvelope<T>;
 
   if (!response.ok || envelope.success === false) {
-    if (response.status === 401) onUnauthorized?.();
+    if (response.status === 401 && options.auth !== false) onUnauthorized?.();
     throw new ApiError(response.status, envelope.message ?? "Request failed", envelope.error);
   }
 
