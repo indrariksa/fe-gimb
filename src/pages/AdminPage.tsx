@@ -451,6 +451,7 @@ export function AdminPage() {
 
   const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
   const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
+  const goToBusinessInventoryInput = (publicId: string) => navigate(`/admin/businesses/${publicId}/inventory-input`);
   const toggleAuditFullscreen = () => {
     const panel = document.getElementById("audit-logs");
     if (!panel) return;
@@ -527,6 +528,7 @@ export function AdminPage() {
                                   <>
                                     <button onClick={() => goToBusinessDashboard(business.public_id)}>Dashboard <Icon name="arrow" size={16} /></button>
                                     <button onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
+                                    <button onClick={() => goToBusinessInventoryInput(business.public_id)}>Lihat Input <Icon name="arrow" size={16} /></button>
                                   </>
                                 ) : (
                                   <span>-</span>

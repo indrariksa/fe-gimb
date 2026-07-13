@@ -3,6 +3,7 @@ import { ThemeProvider } from "./theme/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { RequireAuth } from "./components/guards/RequireAuth";
 import { AnalysisPage } from "./pages/AnalysisPage";
+import { AdminInventoryDetailPage } from "./pages/AdminInventoryDetailPage";
 import { AdminPage } from "./pages/AdminPage";
 import { BusinessesPage } from "./pages/BusinessesPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -39,6 +40,7 @@ export function App() {
 
             <Route element={<RequireAuth adminOnly />}>
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/businesses/:businessId/inventory-input" element={<AdminInventoryDetailPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
