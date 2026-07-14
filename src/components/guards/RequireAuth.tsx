@@ -3,9 +3,10 @@ import { useAuth } from "../../context/AuthContext";
 
 type RequireAuthProps = {
   adminOnly?: boolean;
+  userOnly?: boolean;
 };
 
-export function RequireAuth({ adminOnly = false }: RequireAuthProps) {
+export function RequireAuth({ adminOnly = false, userOnly = false }: RequireAuthProps) {
   const location = useLocation();
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
@@ -19,6 +20,10 @@ export function RequireAuth({ adminOnly = false }: RequireAuthProps) {
 
   if (adminOnly && !isAdmin) {
     return <Navigate to="/businesses" replace />;
+  }
+
+  if (userOnly && isAdmin) {
+    return <Navigate to="/admin" replace />;
   }
 
   return <Outlet />;

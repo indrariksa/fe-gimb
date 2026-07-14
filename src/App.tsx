@@ -26,7 +26,6 @@ export function App() {
             <Route path="/register" element={<RegisterPage />} />
 
             <Route element={<RequireAuth />}>
-              <Route path="/businesses" element={<BusinessesPage />} />
               <Route path="/businesses/:businessId/dashboard" element={<DashboardPage />} />
               <Route path="/businesses/:businessId/score" element={<ScoreResultPage />} />
               <Route path="/businesses/:businessId/sub-scores" element={<SubScoresPage />} />
@@ -36,6 +35,10 @@ export function App() {
               <Route path="/dashboard" element={<Navigate to="/businesses" replace />} />
               <Route path="/inventory" element={<Navigate to="/businesses" replace />} />
               <Route path="/analysis" element={<Navigate to="/businesses" replace />} />
+            </Route>
+
+            <Route element={<RequireAuth userOnly />}>
+              <Route path="/businesses" element={<BusinessesPage />} />
             </Route>
 
             <Route element={<RequireAuth adminOnly />}>
