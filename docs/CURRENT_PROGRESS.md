@@ -1,5 +1,7 @@
 # Current Progress
 
+Terakhir diperbarui: 15 Juli 2026
+
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
 ## Fitur yang Sudah Terimplementasi
@@ -36,9 +38,10 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - summary metrics;
   - diagnosis watchlist dengan pagination;
   - update business limit;
-  - user list dan update status;
+  - user list dengan pagination dan update status;
   - audit log list dengan pagination, search/filter lokal, detail expand, reload, fullscreen.
 - Admin inventory detail/input readout page.
+- SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.
 - Responsive styling di `global.css`.
 - Beberapa atribut ARIA untuk dialog, menu, pagination, icons, timeout alert.
@@ -102,15 +105,14 @@ File test/spec: Belum teridentifikasi.
 
 ## Verifikasi Saat Dokumen Ini Dibuat
 
-Belum dijalankan build production (`npm run build`) karena perintah itu menulis output ke `dist`, sementara tugas ini hanya membaca/menganalisis dan membuat dokumentasi.
-
 Pemeriksaan yang dijalankan:
 
 ```bash
-./node_modules/.bin/tsc --noEmit
+node ./node_modules/typescript/bin/tsc --noEmit
+cmd /c npm run build
 ```
 
-Hasil: exit code `0`.
+Hasil: kedua perintah exit code `0`.
 
 ## Risiko atau Bagian yang Perlu Dikonfirmasi
 

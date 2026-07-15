@@ -14,6 +14,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `tsconfig.json` | Konfigurasi TypeScript strict/noEmit. | Saat mengubah aturan TS. |
 | `vercel.json` | Rewrite SPA untuk deployment Vercel. | Saat mengubah hosting/routing production. |
 | `.env.example` | Daftar env frontend. | Saat menambah/mengubah environment variable. |
+| `public/gimb-icon.svg` | Asset ikon SVG untuk favicon dan brand mark. | Saat mengubah identitas visual aplikasi pada browser tab atau logo sidebar/brand. |
 
 ## Entry dan Routing
 
@@ -54,7 +55,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/atoms/Button.tsx` | Button base dengan variant. | Saat menambah variant/button behavior. |
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |
 | `src/components/atoms/TextField.tsx` | Field input dengan prefix/suffix/note/example. | Saat mengubah field inventory/theme input. |
-| `src/components/molecules/Brand.tsx` | Brand/logo text. | Saat mengubah brand display. |
+| `src/components/molecules/Brand.tsx` | Brand/logo text dan brand mark dari SVG publik. | Saat mengubah brand display. |
 | `src/components/molecules/ScoreCard.tsx` | Score card reusable. | Saat mengubah card score dashboard. |
 
 ## Pages

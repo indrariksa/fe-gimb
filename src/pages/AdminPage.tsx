@@ -140,6 +140,7 @@ function auditSearchValue(log: AuditLog) {
 
 const paginationSizeOptions = [5, 10, 20, 50];
 const defaultDiagnosisPageSize = 5;
+const defaultUserPageSize = 5;
 const defaultAuditPageSize = 10;
 
 function emptyPaginationMeta(limit: number): PaginationMeta {
@@ -308,6 +309,9 @@ export function AdminPage() {
   const [diagnosisPage, setDiagnosisPage] = useState(0);
   const [diagnosisPageSize, setDiagnosisPageSize] = useState(defaultDiagnosisPageSize);
   const [diagnosisMeta, setDiagnosisMeta] = useState(() => emptyPaginationMeta(defaultDiagnosisPageSize));
+  const [userPage, setUserPage] = useState(0);
+  const [userPageSize, setUserPageSize] = useState(defaultUserPageSize);
+  const [userMeta, setUserMeta] = useState(() => emptyPaginationMeta(defaultUserPageSize));
   const [auditPage, setAuditPage] = useState(0);
   const [auditPageSize, setAuditPageSize] = useState(defaultAuditPageSize);
   const [auditMeta, setAuditMeta] = useState(() => emptyPaginationMeta(defaultAuditPageSize));
@@ -318,10 +322,12 @@ export function AdminPage() {
   const [expandedAuditId, setExpandedAuditId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [diagnosisError, setDiagnosisError] = useState("");
+  const [userError, setUserError] = useState("");
   const [auditError, setAuditError] = useState("");
   const [settingMessage, setSettingMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(true);
+  const [isUserLoading, setIsUserLoading] = useState(true);
   const [isAuditLoading, setIsAuditLoading] = useState(true);
   const [isSavingLimit, setIsSavingLimit] = useState(false);
   const [isLimitConfirmOpen, setIsLimitConfirmOpen] = useState(false);
@@ -333,17 +339,15 @@ export function AdminPage() {
       setIsLoading(true);
       setError("");
       try {
-        const [summaryData, limitData, usersData, businessesData] = await Promise.all([
+        const [summaryData, limitData, businessesData] = await Promise.all([
           adminApi.adminSummary(),
           adminApi.adminBusinessLimit(),
-          adminApi.adminUsers(),
           adminApi.adminBusinesses({ limit: 100, offset: 0 }),
         ]);
         if (isMounted) {
           setSummary(summaryData);
           setBusinessLimit(limitData);
           setBusinessLimitInput(String(limitData.value));
-          setUsers(usersData.items);
           setBusinesses(businessesData.items);
         }
       } catch (err) {
@@ -358,6 +362,37 @@ export function AdminPage() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadUsers() {
+      setIsUserLoading(true);
+      setUserError("");
+      const offset = userPage * userPageSize;
+      try {
+        const response = await adminApi.adminUsers({
+          limit: userPageSize,
+          offset,
+        });
+        if (isMounted) {
+          setUsers(response.items);
+          setUserMeta(normalizePaginationMeta(response.meta, response.items.length, userPageSize, offset));
+        }
+      } catch (err) {
+        if (isMounted) {
+          setUsers([]);
+          setUserMeta(emptyPaginationMeta(userPageSize));
+          setUserError(err instanceof Error ? err.message : "Gagal memuat user");
+        }
+      } finally {
+        if (isMounted) setIsUserLoading(false);
+      }
+    }
+    loadUsers();
+    return () => {
+      isMounted = false;
+    };
+  }, [userPage, userPageSize]);
 
   useEffect(() => {
     let isMounted = true;
@@ -583,9 +618,17 @@ export function AdminPage() {
               </section>
 
               <section id="users" className="admin-section panel admin-anchor">
-                <h3>User</h3>
+                <div className="admin-section__heading">
+                  <div>
+                    <h3>User</h3>
+                  </div>
+                  <b>{userMeta.total} data</b>
+                </div>
                 <div className="data-table">
-                  {users.map((user) => (
+                  {userError && <article>{userError}</article>}
+                  {!userError && isUserLoading && <article>Memuat user...</article>}
+                  {!userError && !isUserLoading && users.length === 0 && <article>Belum ada user.</article>}
+                  {!userError && !isUserLoading && users.map((user) => (
                     <article key={user.id}>
                       <div>
                         <strong>{user.full_name}</strong>
@@ -600,6 +643,17 @@ export function AdminPage() {
                     </article>
                   ))}
                 </div>
+                <PaginationControls
+                  page={userPage}
+                  pageSize={userPageSize}
+                  meta={userMeta}
+                  isLoading={isUserLoading}
+                  onPageChange={setUserPage}
+                  onPageSizeChange={(pageSize) => {
+                    setUserPage(0);
+                    setUserPageSize(pageSize);
+                  }}
+                />
               </section>
 
               <section id="audit-logs" className="admin-section panel admin-section--wide admin-anchor audit-log-panel">

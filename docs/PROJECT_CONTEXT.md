@@ -53,6 +53,7 @@ Konfigurasi:
 | `src/data` | Data statis dashboard fallback dan field inventarisasi. |
 | `src/utils` | Helper validasi form dan angka. |
 | `src/styles/global.css` | Semua styling global, layout, responsive, dark mode. |
+| `public/gimb-icon.svg` | Ikon SVG ringan untuk favicon browser dan brand mark aplikasi. |
 
 ## Arsitektur Frontend
 
@@ -275,6 +276,7 @@ Styling:
 
 - satu CSS global besar di `src/styles/global.css`;
 - CSS custom properties untuk warna, surface, font, shadow, dark mode;
+- SVG `public/gimb-icon.svg` dipakai sebagai favicon browser dan brand mark di komponen `Brand`;
 - font diimport dari Google Fonts di CSS;
 - class naming dominan BEM-ish seperti `block__element--modifier`;
 - panel/card/button class digunakan lintas halaman.
