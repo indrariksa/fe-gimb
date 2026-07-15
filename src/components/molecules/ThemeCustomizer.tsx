@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Button } from "../atoms/Button";
+import { Icon } from "../atoms/Icon";
 import { TextField } from "../atoms/TextField";
 import { useThemeSettings } from "../../theme/ThemeContext";
 
@@ -8,6 +10,7 @@ type ThemeCustomizerProps = {
 
 export function ThemeCustomizer({ scope = "full" }: ThemeCustomizerProps) {
   const { theme, updateTheme, resetTheme } = useThemeSettings();
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const isColorsOnly = scope === "colors";
 
   return (
@@ -46,11 +49,33 @@ export function ThemeCustomizer({ scope = "full" }: ThemeCustomizerProps) {
           <input type="color" value={theme.accentColor} onChange={(event) => updateTheme({ accentColor: event.target.value })} />
         </label>
         <label className="field">
-          <span className="field__label">Warna sehat</span>
+          <span className="field__label">Warna status positif</span>
           <input type="color" value={theme.successColor} onChange={(event) => updateTheme({ successColor: event.target.value })} />
         </label>
       </div>
-      <Button variant="secondary" onClick={resetTheme}>Reset Tema</Button>
+      <Button variant="secondary" onClick={() => setIsResetConfirmOpen(true)}>Reset Tema</Button>
+      {isResetConfirmOpen && (
+        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="theme-reset-title">
+          <div className="confirm-dialog__card">
+            <span className="confirm-dialog__icon">
+              <Icon name="palette" size={34} />
+            </span>
+            <h2 id="theme-reset-title">Reset tema?</h2>
+            <p>Warna dan preferensi tampilan lokal akan dikembalikan ke pengaturan awal.</p>
+            <div className="confirm-dialog__actions">
+              <Button variant="secondary" onClick={() => setIsResetConfirmOpen(false)}>Batal</Button>
+              <Button
+                onClick={() => {
+                  resetTheme();
+                  setIsResetConfirmOpen(false);
+                }}
+              >
+                Ya, Reset
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

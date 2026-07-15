@@ -26,6 +26,12 @@ export type AuthResponse = {
   refresh_token_expires_at: string;
 };
 
+export type ChangePasswordPayload = {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+};
+
 export type PaginationMeta = {
   limit: number;
   offset: number;

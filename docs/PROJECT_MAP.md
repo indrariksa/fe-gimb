@@ -30,7 +30,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | --- | --- | --- |
 | `src/context/AuthContext.tsx` | Session state, localStorage `gimb:auth`, bootstrap refresh, logout, API client config. | Saat mengubah login lifecycle, token storage, refresh behavior, timeout/unauthorized handling. |
 | `src/services/api/client.ts` | Base URL, fetch wrapper, auth header, timeout, API errors. | Saat mengubah API transport, envelope handling, base URL, atau friendly errors. |
-| `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/refresh/logout/me integration. |
+| `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/refresh/logout/me/ubah password integration. |
 | `src/services/api/businesses.ts` | User business/inventory endpoints. | Saat mengubah fitur toko/inventory user. |
 | `src/services/api/admin.ts` | Admin endpoints. | Saat mengubah dashboard admin, audit, users, business limit, diagnosis watchlist. |
 | `src/services/api/types.ts` | Type kontrak API. | Saat backend contract berubah atau field response/request baru dipakai. |
@@ -71,7 +71,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/ScoreResultPage.tsx` | Hasil skor keseluruhan. | Saat mengubah score summary. |
 | `src/pages/DashboardPage.tsx` | Dashboard diagnosis utama. | Saat mengubah summary dashboard/user insight. |
 | `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, legend. | Saat mengubah visualisasi sub-score. |
-| `src/pages/SettingsPage.tsx` | Pengaturan tema lokal. | Saat mengubah settings. |
+| `src/pages/SettingsPage.tsx` | Pengaturan ubah password mandiri dan tema lokal. | Saat mengubah settings atau keamanan akun. |
 | `src/pages/AdminPage.tsx` | Admin summary, diagnosis, limit, users, audit logs. | Saat mengubah fitur admin utama. |
 | `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory untuk admin. | Saat mengubah review detail inventory admin. |
 

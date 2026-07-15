@@ -219,6 +219,7 @@ export function BusinessesPage() {
                       {hasDiagnosis ? "Sudah Diisi" : "Input Data"}
                     </Button>
                     <Button
+                      className="btn--shiny-dashboard"
                       disabled={!hasDiagnosis}
                       title={hasDiagnosis ? "Buka dashboard diagnosis" : "Isi inventory dulu untuk membuka dashboard"}
                       onClick={() => navigate(`/businesses/${business.public_id}/dashboard`)}

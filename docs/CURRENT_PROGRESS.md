@@ -9,6 +9,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - React/Vite SPA dengan BrowserRouter.
 - Landing page untuk Smart Business Dashboard.
 - Login dan register.
+- Ubah password mandiri dari halaman settings.
 - Session auth di `localStorage` key `gimb:auth`.
 - Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
 - API client fetch wrapper dengan timeout 15 detik, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
@@ -32,7 +33,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Score result page.
 - Dashboard diagnosis dengan score ring, score cards, action plan, business snapshot, dan insight cards yang readable di light/dark mode.
 - Sub-scores page dengan card, radar SVG, bar chart, dan legend.
-- Settings page untuk warna tema lokal.
+- Settings page untuk ubah password mandiri dan warna tema lokal.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
 - Admin dashboard:
   - summary metrics;

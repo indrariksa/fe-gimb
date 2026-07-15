@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { AuthResponse, User } from "./types";
+import type { AuthResponse, ChangePasswordPayload, User } from "./types";
 
 let pendingRefresh: Promise<AuthResponse> | null = null;
 
@@ -34,6 +34,13 @@ export function refreshToken(refresh_token: string) {
 
 export function me() {
   return apiRequest<User>("/me");
+}
+
+export function changePassword(payload: ChangePasswordPayload) {
+  return apiRequest<null>("/me/password", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
 
 export function logout(refresh_token: string) {

@@ -19,7 +19,7 @@ Route ini memakai `RequireAuth`. Admin dan user bisa mengakses, tetapi data API 
 | `/businesses/:businessId/sub-scores` | `SubScoresPage` | `DashboardShell`, subscore cards, radar SVG, bar chart | Yes | `admin`, `user` | User: `GET /businesses/:id`, `GET /businesses/:id/inventory-submissions/latest`; Admin: `GET /admin/businesses/:id`, `GET /admin/businesses/:id/inventory-submissions/latest` | Detail enam sub-skor bisnis dan legend interpretasi skor. |
 | `/businesses/:businessId/inventory/new` | `InventoryPage` | `DashboardShell`, `TextField`, confirmation dialog | Yes | `admin`, `user` | `GET /businesses/:id`, `GET /businesses/:id/inventory-submissions/latest`, `POST /businesses/:id/inventory-submissions` | Form inventarisasi business-scoped; menyimpan draft lokal dan submit ke backend. |
 | `/businesses/:businessId/analysis` | `AnalysisPage` | Progress ring, step list, `Button` | Yes | `admin`, `user` | Tidak ada | Simulasi animasi analisis 5.2 detik lalu tombol ke score result. |
-| `/settings` | `SettingsPage` | `DashboardShell`, `ThemeCustomizer` | Yes | `admin`, `user` | Tidak ada | Pengaturan tema lokal warna/dark mode. |
+| `/settings` | `SettingsPage` | `DashboardShell`, form ubah password, `ThemeCustomizer` | Yes | `admin`, `user` | `PATCH /me/password` | Pengaturan keamanan akun untuk ubah password mandiri dan pengaturan tema lokal warna/dark mode. |
 | `/dashboard` | `Navigate` | `Navigate` | Yes | `admin`, `user` | Tidak ada | Redirect ke `/businesses`. |
 | `/inventory` | `Navigate` | `Navigate` | Yes | `admin`, `user` | Tidak ada | Redirect ke `/businesses`. |
 | `/analysis` | `Navigate` | `Navigate` | Yes | `admin`, `user` | Tidak ada | Redirect ke `/businesses`. |

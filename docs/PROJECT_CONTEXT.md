@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, daftar toko, form inventarisasi bisnis, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, dan admin dashboard.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, ubah password mandiri, daftar toko, form inventarisasi bisnis, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, dan admin dashboard.
 
 ## Tujuan Aplikasi
 
@@ -169,6 +169,8 @@ Alur:
 8. Jika refresh gagal selain timeout, session lokal dihapus dan user perlu login ulang.
 9. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
 
+Ubah password mandiri berada di `SettingsPage` dan memakai `PATCH /me/password`. Form meminta password sekarang, password baru, dan konfirmasi password; session tetap aktif setelah berhasil.
+
 Tidak ditemukan penggunaan cookie untuk auth.
 
 ## Role dan Proteksi Halaman
@@ -252,6 +254,7 @@ Validasi yang teridentifikasi:
 
 - Login: HTML `type=email`, `required`, password `required minLength=8`.
 - Register: nama/email/password required; password `minLength=8`; email `type=email`.
+- Ubah password: semua field required, password baru minimal 8 karakter, konfirmasi harus sama, dan password baru harus berbeda dari password sekarang.
 - Business create:
   - `cleanText`;
   - `validateRequiredText` untuk nama toko dan industri;
@@ -357,7 +360,7 @@ Script test: Belum teridentifikasi.
 - Score result page.
 - Dashboard diagnosis dengan score cards, action plan, dan business snapshot.
 - Sub-scores page dengan card, radar SVG, bar chart, dan legend.
-- Settings page untuk tema lokal.
+- Settings page untuk ubah password mandiri dan tema lokal.
 - Admin dashboard summary.
 - Admin monitoring diagnosis dengan pagination.
 - Admin update business limit.
