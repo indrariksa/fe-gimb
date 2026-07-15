@@ -39,7 +39,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - summary metrics;
   - diagnosis watchlist dengan pagination;
   - update business limit;
-  - user list dengan pagination dan update status;
+  - user list dengan pagination, update status, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
   - audit log list dengan pagination, search/filter lokal, detail expand, reload, fullscreen.
 - Admin inventory detail/input readout page.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
