@@ -10,8 +10,8 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Landing page untuk Smart Business Dashboard.
 - Login dan register.
 - Session auth di `localStorage` key `gimb:auth`.
-- Refresh token saat bootstrap aplikasi.
-- API client fetch wrapper dengan timeout 15 detik, auth header, envelope parsing, dan 401 handler.
+- Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
+- API client fetch wrapper dengan timeout 15 detik, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
 - Route guard authenticated, admin-only, dan user-only.
 - Redirect role:
   - admin ke `/admin`;
@@ -30,7 +30,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Confirmation dialog submit inventory.
 - Analysis progress page berbasis timer lokal.
 - Score result page.
-- Dashboard diagnosis dengan score ring, score cards, action plan, dan business snapshot.
+- Dashboard diagnosis dengan score ring, score cards, action plan, business snapshot, dan insight cards yang readable di light/dark mode.
 - Sub-scores page dengan card, radar SVG, bar chart, dan legend.
 - Settings page untuk warna tema lokal.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
@@ -120,6 +120,5 @@ Hasil: kedua perintah exit code `0`.
 - Apakah landing copy lama tentang integrasi backend masih diinginkan.
 - Apakah tombol export PDF/Excel perlu implementasi nyata atau memang placeholder UI.
 - Apakah audit search/filter perlu server-side agar mencari seluruh log.
-- Apakah session harus mencoba refresh otomatis saat access token expired, bukan langsung logout pada 401.
 - Apakah admin inventory detail perlu endpoint submitter/detail user daripada mengambil 100 user pertama.
 - Apakah perlu test runner/lint formal untuk CI.

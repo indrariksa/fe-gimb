@@ -162,10 +162,12 @@ Alur:
 1. Login/register memanggil API auth.
 2. Response auth diubah ke local shape `{ user, accessToken, refreshToken }`.
 3. Data disimpan di `localStorage` key `gimb:auth`.
-4. Saat bootstrap, jika ada refresh token, frontend memanggil `/auth/refresh`.
-5. API client dikonfigurasi dengan provider access token dan handler unauthorized/timeout.
-6. Jika response protected mendapat `401`, session lokal dihapus.
-7. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
+4. Saat bootstrap, frontend memakai access token tersimpan jika token masih valid.
+5. Jika access token kosong, rusak, expired, atau akan expired dalam 60 detik, frontend memanggil `/auth/refresh`.
+6. API client dikonfigurasi dengan provider access token, refresh-on-401 sekali, dan handler unauthorized/timeout.
+7. Jika response protected mendapat `401`, API client mencoba refresh token dan retry request asli sekali.
+8. Jika refresh gagal selain timeout, session lokal dihapus dan user perlu login ulang.
+9. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
 
 Tidak ditemukan penggunaan cookie untuk auth.
 
@@ -237,7 +239,7 @@ Error handling:
 - `ApiError` untuk non-OK response atau envelope `success === false`;
 - `ApiTimeoutError` untuk timeout;
 - `getFriendlyApiError` memberi pesan khusus untuk 429, 413, >=500, dan network `TypeError`;
-- `401` pada protected request memanggil `onUnauthorized` dan menghapus session lokal;
+- `401` pada protected request mencoba refresh token dan retry request sekali sebelum session lokal dihapus;
 - timeout memunculkan notice global `role="alert"` selama 5 detik.
 
 Tidak ada interceptor library seperti Axios. Pola interceptor dibuat manual melalui `configureApiClient`.
@@ -345,7 +347,7 @@ Script test: Belum teridentifikasi.
 
 - Landing page.
 - Login/register dengan redirect role.
-- Session persistence dan refresh token saat bootstrap.
+- Session persistence, lazy refresh token saat bootstrap, dan refresh-on-401 sekali.
 - Route guard user/admin.
 - User business list/create dengan business limit.
 - Pengecekan inventory existing per business.
@@ -369,7 +371,7 @@ Script test: Belum teridentifikasi.
 - Tambahkan route di `App.tsx` dan proteksi lewat `RequireAuth` sesuai role.
 - API call baru diletakkan di service domain dalam `src/services/api`.
 - Type kontrak API ditambahkan di `src/services/api/types.ts`.
-- Gunakan `apiRequest<T>` agar auth header, timeout, envelope, dan 401 handling konsisten.
+- Gunakan `apiRequest<T>` agar auth header, timeout, envelope, refresh-on-401, dan unauthorized handling konsisten.
 - Untuk error user-facing, gunakan `getFriendlyApiError` pada form/action penting.
 - Gunakan `public_id` business di URL, bukan UUID internal.
 - Simpan state UI lokal di context/localStorage hanya jika memang preferensi/draft lokal.
@@ -383,7 +385,6 @@ Script test: Belum teridentifikasi.
 - Test runner dan test file belum teridentifikasi.
 - Lint script belum teridentifikasi.
 - Tidak ada client-side schema validation library; validasi masih helper sederhana dan HTML validation.
-- Tidak ditemukan mekanisme refresh access token otomatis saat request mendapat 401; frontend menghapus sesi dan user perlu login ulang.
 - Tidak ditemukan penyimpanan tema ke backend; tema saat ini lokal.
 - Landing page copy masih menyebut form inventarisasi siap disimpan lokal sebelum integrasi backend, padahal fitur inventory sudah memanggil backend. Perlu dikonfirmasi apakah copy masih diinginkan.
 - Tombol dashboard seperti `Rekomendasi`, `Excel`, `PDF`, `Upgrade Plan`, dan export di sub-scores belum terlihat memiliki implementasi aksi nyata selain tampilan tombol.

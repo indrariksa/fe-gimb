@@ -8,13 +8,16 @@ export const timeoutMessage = "Koneksi ke server terlalu lama. Silakan coba lagi
 let accessTokenProvider: (() => string | null) | null = null;
 let onUnauthorized: (() => void) | null = null;
 let onTimeout: (() => void) | null = null;
+let onRefreshAuth: (() => Promise<string | null>) | null = null;
 
 export function configureApiClient(options: {
   getAccessToken: () => string | null;
+  onRefreshAuth: () => Promise<string | null>;
   onUnauthorized: () => void;
   onTimeout: () => void;
 }) {
   accessTokenProvider = options.getAccessToken;
+  onRefreshAuth = options.onRefreshAuth;
   onUnauthorized = options.onUnauthorized;
   onTimeout = options.onTimeout;
 }
@@ -56,27 +59,16 @@ export function getFriendlyApiError(error: unknown, fallback = "Terjadi kesalaha
 
 type RequestOptions = RequestInit & {
   auth?: boolean;
+  retried?: boolean;
 };
 
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers = new Headers(options.headers);
-  const hasBody = Boolean(options.body);
-
-  if (hasBody && !headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  if (options.auth !== false) {
-    const token = accessTokenProvider?.();
-    if (token) headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  let response: Response;
+async function fetchWithTimeout(path: string, options: RequestOptions, headers: Headers) {
+  const { retried: _retried, ...requestOptions } = options;
   try {
-    response = await fetch(`${baseUrl}${path}`, {
-      ...options,
+    return await fetch(`${baseUrl}${path}`, {
+      ...requestOptions,
       headers,
-      signal: options.signal ?? AbortSignal.timeout(requestTimeoutMs),
+      signal: requestOptions.signal ?? AbortSignal.timeout(requestTimeoutMs),
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "TimeoutError") {
@@ -85,6 +77,31 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     }
     throw error;
   }
+}
+
+function headersFor(options: RequestOptions, token?: string | null) {
+  const headers = new Headers(options.headers);
+  const hasBody = Boolean(options.body);
+
+  if (hasBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  return headers;
+}
+
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const token = options.auth !== false ? accessTokenProvider?.() : null;
+  let response = await fetchWithTimeout(path, options, headersFor(options, token));
+
+  if (response.status === 401 && options.auth !== false && !options.retried) {
+    const refreshedToken = await onRefreshAuth?.();
+    if (refreshedToken) {
+      response = await fetchWithTimeout(path, { ...options, retried: true }, headersFor(options, refreshedToken));
+    }
+  }
+
   const envelope = (await response.json().catch(() => ({}))) as ApiEnvelope<T>;
 
   if (!response.ok || envelope.success === false) {

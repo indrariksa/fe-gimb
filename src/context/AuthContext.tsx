@@ -23,6 +23,7 @@ type AuthContextValue = {
 };
 
 const storageKey = "gimb:auth";
+const refreshSkewSeconds = 60;
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function readStoredAuth(): StoredAuth | null {
@@ -43,6 +44,21 @@ function authFromResponse(response: AuthResponse): StoredAuth {
   };
 }
 
+function accessTokenExpiresSoon(token: string) {
+  const [, payload] = token.split(".");
+  if (!payload) return true;
+
+  try {
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+    const decoded = JSON.parse(atob(padded)) as { exp?: number };
+    if (!decoded.exp) return true;
+    return decoded.exp * 1000 <= Date.now() + refreshSkewSeconds * 1000;
+  } catch {
+    return true;
+  }
+}
+
 export function AuthProvider({ children }: PropsWithChildren) {
   const [auth, setAuth] = useState<StoredAuth | null>(() => readStoredAuth());
   const [isLoading, setIsLoading] = useState(true);
@@ -60,6 +76,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     configureApiClient({
       getAccessToken: () => readStoredAuth()?.accessToken ?? null,
+      onRefreshAuth: async () => {
+        const stored = readStoredAuth();
+        if (!stored?.refreshToken) return null;
+        try {
+          const refreshed = await authApi.refreshToken(stored.refreshToken);
+          const nextAuth = authFromResponse(refreshed);
+          persistAuth(nextAuth);
+          return nextAuth.accessToken;
+        } catch (error) {
+          if (error instanceof ApiTimeoutError) throw error;
+          persistAuth(null);
+          return null;
+        }
+      },
       onUnauthorized: () => persistAuth(null),
       onTimeout: () => setShowTimeoutNotice(true),
     });
@@ -77,6 +107,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     async function bootstrap() {
       const stored = readStoredAuth();
       if (!stored?.refreshToken) {
+        if (isMounted) setIsLoading(false);
+        return;
+      }
+      if (stored.accessToken && !accessTokenExpiresSoon(stored.accessToken)) {
         if (isMounted) setIsLoading(false);
         return;
       }

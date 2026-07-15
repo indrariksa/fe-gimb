@@ -8,7 +8,7 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | --- | --- | --- | --- | --- | --- | --- |
 | Login | `src/services/api/auth.ts` | POST | `/auth/login` | `{ email, password }` | `AuthResponse` | `auth:false`; error dilempar sebagai `ApiError`; `LoginPage` menampilkan `err.message` atau `Login gagal`. |
 | Register | `src/services/api/auth.ts` | POST | `/auth/register` | `{ email, password, full_name }` | `AuthResponse` | `auth:false`; `RegisterPage` menampilkan `err.message` atau `Registrasi gagal`. |
-| Refresh token | `src/services/api/auth.ts` | POST | `/auth/refresh` | `{ refresh_token }` | `AuthResponse` | `auth:false`; pending refresh dideduplikasi dengan `pendingRefresh`; bootstrap menghapus session jika gagal selain timeout. |
+| Refresh token | `src/services/api/auth.ts` | POST | `/auth/refresh` | `{ refresh_token }` | `AuthResponse` | `auth:false`; pending refresh dideduplikasi dengan `pendingRefresh`; bootstrap hanya refresh jika access token expired/akan expired; refresh gagal selain timeout menghapus session. |
 | Me | `src/services/api/auth.ts` | GET | `/me` | Tidak ada | `User` | Protected request; 401 menghapus session lokal via API client. |
 | Logout | `src/services/api/auth.ts` | POST | `/auth/logout` | `{ refresh_token }` | `null` | `auth:false`; `AuthContext.logout` menghapus session lokal dulu dan mengabaikan error logout API. |
 
@@ -44,7 +44,7 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 
 | Fitur | File Service | Method | Endpoint | Request | Response | Penanganan Error |
 | --- | --- | --- | --- | --- | --- | --- |
-| Generic request | `src/services/api/client.ts` | Semua | `${baseUrl}${path}` | `RequestInit`, optional `auth:false` | `envelope.data as T` | Non-OK atau `success:false` menjadi `ApiError(status, message, error)`. |
+| Generic request | `src/services/api/client.ts` | Semua | `${baseUrl}${path}` | `RequestInit`, optional `auth:false` | `envelope.data as T` | Non-OK atau `success:false` menjadi `ApiError(status, message, error)`. Protected request dengan `401` mencoba refresh token dan retry request sekali. |
 | Auth header | `src/services/api/client.ts` | Semua protected | Semua path dengan `auth !== false` | Access token dari configured provider | Header `Authorization: Bearer <token>` | Jika token kosong, request tetap dikirim tanpa header. |
 | Timeout | `src/services/api/client.ts` | Semua | Semua | `AbortSignal.timeout(15000)` | Tidak ada | DOMException `TimeoutError` menjadi `ApiTimeoutError` dan memicu timeout notice global. |
-| Unauthorized hook | `src/services/api/client.ts` | Protected | Semua protected | Response status 401 | Tidak ada | Memanggil `onUnauthorized`, yang di `AuthContext` menghapus `gimb:auth`. |
+| Unauthorized hook | `src/services/api/client.ts` | Protected | Semua protected | Response status 401 setelah retry refresh gagal | Tidak ada | Memanggil `onUnauthorized`, yang di `AuthContext` menghapus `gimb:auth`. |
