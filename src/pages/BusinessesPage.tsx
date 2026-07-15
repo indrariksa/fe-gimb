@@ -161,6 +161,7 @@ export function BusinessesPage() {
             <p>Halo {user?.full_name ?? "Owner"}, setiap toko punya riwayat inventarisasi, skor kesehatan, dan rekomendasi yang terpisah.</p>
           </div>
           <Button
+            className="btn--dashboard-hover"
             disabled={hasReachedLimit}
             title={hasReachedLimit ? "Batas toko sudah tercapai" : "Tambah toko baru"}
             onClick={() => document.getElementById("business-create-form")?.scrollIntoView({ behavior: "smooth", block: "center" })}
@@ -211,6 +212,7 @@ export function BusinessesPage() {
                   </div>
                   <div className="business-card__actions">
                     <Button
+                      className="btn--dashboard-hover"
                       variant="secondary"
                       disabled={hasDiagnosis}
                       title={hasDiagnosis ? "Inventory toko ini sudah diisi" : "Input data inventory"}
@@ -304,7 +306,7 @@ export function BusinessesPage() {
             </label>
             <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} placeholder="Contoh: Toko kebutuhan harian dan produk rumah tangga" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
             {error && <p className="form-error">{error}</p>}
-            <Button type="submit" disabled={isCreating || hasReachedLimit}>{isCreating ? "Menyimpan..." : hasReachedLimit ? "Tidak Ada Slot" : "Buat Toko"}</Button>
+            <Button className="btn--shiny-dashboard" type="submit" disabled={isCreating || hasReachedLimit}>{isCreating ? "Menyimpan..." : hasReachedLimit ? "Tidak Ada Slot" : "Buat Toko"}</Button>
           </form>
         </div>
       </section>

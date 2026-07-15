@@ -172,7 +172,7 @@ export function SettingsPage() {
               </div>
             </div>
 
-            <Button type="submit" disabled={isSubmitting}>
+            <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Menyimpan..." : "Simpan password"}
             </Button>
           </form>

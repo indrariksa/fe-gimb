@@ -53,7 +53,7 @@ export function ThemeCustomizer({ scope = "full" }: ThemeCustomizerProps) {
           <input type="color" value={theme.successColor} onChange={(event) => updateTheme({ successColor: event.target.value })} />
         </label>
       </div>
-      <Button variant="secondary" onClick={() => setIsResetConfirmOpen(true)}>Reset Tema</Button>
+      <Button className="btn--dashboard-hover" variant="secondary" onClick={() => setIsResetConfirmOpen(true)}>Reset Tema</Button>
       {isResetConfirmOpen && (
         <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="theme-reset-title">
           <div className="confirm-dialog__card">

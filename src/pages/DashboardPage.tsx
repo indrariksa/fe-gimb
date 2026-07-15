@@ -107,10 +107,10 @@ export function DashboardPage() {
             <p>{business?.name ?? theme.businessName} - Diagnosa terakhir: {formatDate(submission?.created_at)}</p>
           </div>
           <div className="dashboard__actions">
-            <Button variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Sub Skor</Button>
-            <Button>Rekomendasi <Icon name="arrow" size={18} /></Button>
-            <Button variant="dark"><Icon name="download" size={18} /> Excel</Button>
-            <Button variant="dark"><Icon name="file" size={18} /> PDF</Button>
+            <Button className="btn--shiny-dashboard" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Sub Skor</Button>
+            <Button className="btn--dashboard-hover">Rekomendasi <Icon name="arrow" size={18} /></Button>
+            <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark"><Icon name="download" size={18} /> Excel</Button>
+            <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark"><Icon name="file" size={18} /> PDF</Button>
           </div>
         </div>
 

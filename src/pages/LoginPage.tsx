@@ -54,7 +54,7 @@ export function LoginPage() {
             <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} />
           </label>
           {error && <p className="form-error">{error}</p>}
-          <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Login"} <Icon name="arrow" size={18} /></Button>
+          <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Login"} <Icon name="arrow" size={18} /></Button>
         </form>
         <p className="auth-link">Belum punya akun? <Link to="/register">Daftar akun</Link></p>
         <p className="auth-link auth-link--landing"><Link to="/">Kembali ke landing page</Link></p>

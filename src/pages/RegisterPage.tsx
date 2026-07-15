@@ -55,7 +55,7 @@ export function RegisterPage() {
             <input type="password" placeholder="Masukkan Password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} required minLength={8} />
           </label>
           {error && <p className="form-error">{error}</p>}
-          <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Daftar"} <Icon name="arrow" size={18} /></Button>
+          <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Daftar"} <Icon name="arrow" size={18} /></Button>
         </form>
         <p className="auth-link">Sudah punya akun? <Link to="/login">Login</Link></p>
         <p className="auth-link auth-link--landing"><Link to="/">Kembali ke landing page</Link></p>

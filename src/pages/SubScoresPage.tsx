@@ -117,8 +117,8 @@ export function SubScoresPage() {
                 <p>Enam dimensi utama dari hasil analisis inventarisasi terbaru.</p>
               </div>
               <div className="subscores-actions">
-                <Button variant="secondary"><Icon name="download" size={18} /> PDF</Button>
-                <Button><Icon name="download" size={18} /> Excel</Button>
+                <Button className="btn--dashboard-hover btn--dashboard-export" variant="secondary"><Icon name="download" size={18} /> PDF</Button>
+                <Button className="btn--dashboard-hover"><Icon name="download" size={18} /> Excel</Button>
               </div>
             </div>
 

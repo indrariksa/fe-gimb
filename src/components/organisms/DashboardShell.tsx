@@ -219,8 +219,8 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
             <h2 id="logout-title">Keluar dari dashboard?</h2>
             <p>Sesi Anda akan ditutup dan Anda akan diarahkan kembali ke halaman login.</p>
             <div className="confirm-dialog__actions">
-              <Button variant="secondary" onClick={() => setIsLogoutConfirmOpen(false)} disabled={isLoggingOut}>Tidak</Button>
-              <Button onClick={handleLogout} disabled={isLoggingOut}>{isLoggingOut ? "Keluar..." : "Ya, Keluar"}</Button>
+              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => setIsLogoutConfirmOpen(false)} disabled={isLoggingOut}>Tidak</Button>
+              <Button className="btn--shiny-dashboard" onClick={handleLogout} disabled={isLoggingOut}>{isLoggingOut ? "Keluar..." : "Ya, Keluar"}</Button>
             </div>
           </div>
         </div>

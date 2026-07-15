@@ -7,7 +7,6 @@ import { Icon } from "../components/atoms/Icon";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
 import { formatScore } from "../utils/number";
-import { useThemeSettings } from "../theme/ThemeContext";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
@@ -298,7 +297,6 @@ function PaginationControls({ page, pageSize, meta, isLoading, onPageChange, onP
 
 export function AdminPage() {
   const navigate = useNavigate();
-  const { theme, updateTheme } = useThemeSettings();
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -569,9 +567,9 @@ export function AdminPage() {
                               <div className="admin-row-actions">
                                 {business ? (
                                   <>
-                                    <button onClick={() => goToBusinessDashboard(business.public_id)}>Dashboard <Icon name="arrow" size={16} /></button>
-                                    <button onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
-                                    <button onClick={() => goToBusinessInventoryInput(business.public_id)}>Lihat Input <Icon name="arrow" size={16} /></button>
+                                    <button className="admin-row-action--dashboard" onClick={() => goToBusinessDashboard(business.public_id)}>Dashboard <Icon name="arrow" size={16} /></button>
+                                    <button className="admin-row-action--score" onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
+                                    <button className="admin-row-action--input" onClick={() => goToBusinessInventoryInput(business.public_id)}>Lihat Input <Icon name="arrow" size={16} /></button>
                                   </>
                                 ) : (
                                   <span>-</span>
@@ -610,7 +608,7 @@ export function AdminPage() {
                       onChange={(event) => setBusinessLimitInput(event.target.value)}
                     />
                   </label>
-                  <button className="btn" type="submit" disabled={isSavingLimit}>
+                  <button className="btn btn--shiny-dashboard" type="submit" disabled={isSavingLimit}>
                     {isSavingLimit ? "Menyimpan..." : "Simpan Limit"}
                   </button>
                   {settingMessage && <p>{settingMessage}</p>}
@@ -660,9 +658,6 @@ export function AdminPage() {
                 <div className="audit-toolbar" aria-label="Audit log tools">
                   <button type="button" aria-label="Mode layar penuh" onClick={toggleAuditFullscreen}>
                     <Icon name="maximize" size={20} />
-                  </button>
-                  <button type="button" aria-label="Ubah mode warna" onClick={() => updateTheme({ mode: theme.mode === "dark" ? "light" : "dark" })}>
-                    <Icon name={theme.mode === "dark" ? "sun" : "moon"} size={20} />
                   </button>
                   <button
                     type="button"
@@ -840,10 +835,10 @@ export function AdminPage() {
             <h2 id="limit-confirm-title">Simpan perubahan limit?</h2>
             <p>Limit toko per user akan diubah menjadi <strong>{businessLimitInput}</strong>.</p>
             <div className="confirm-dialog__actions">
-              <Button variant="secondary" disabled={isSavingLimit} onClick={() => setIsLimitConfirmOpen(false)}>
+              <Button className="btn--dashboard-hover" variant="secondary" disabled={isSavingLimit} onClick={() => setIsLimitConfirmOpen(false)}>
                 Tidak
               </Button>
-              <Button disabled={isSavingLimit} onClick={confirmBusinessLimitSave}>
+              <Button className="btn--shiny-dashboard" disabled={isSavingLimit} onClick={confirmBusinessLimitSave}>
                 {isSavingLimit ? "Menyimpan..." : "Ya, Simpan"}
               </Button>
             </div>

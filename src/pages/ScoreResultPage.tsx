@@ -117,10 +117,10 @@ export function ScoreResultPage() {
                 <article><span>Target Berikutnya</span><strong>Pertahankan 90+</strong></article>
               </div>
               <div className="score-result-actions">
-                <Button onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>
+                <Button className="btn--shiny-dashboard" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>
                   Lihat Sub Skor <Icon name="arrow" size={18} />
                 </Button>
-                <Button variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>
+                <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>
                   Buka Dashboard
                 </Button>
               </div>
