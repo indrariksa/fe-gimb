@@ -210,8 +210,8 @@ export function InventoryPage() {
               <small>Maksimal 1000 karakter. Informasi ini membantu mentor memberikan rekomendasi yang lebih tajam.</small>
             </label>
             <footer>
-              <Button variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>Batal</Button>
-              <Button onClick={() => setIsConfirmOpen(true)} disabled={isSubmitting}>Simpan & Lanjutkan <Icon name="arrow" size={18} /></Button>
+              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>Batal</Button>
+              <Button className="btn--shiny-dashboard" onClick={() => setIsConfirmOpen(true)} disabled={isSubmitting}>Simpan & Lanjutkan <Icon name="arrow" size={18} /></Button>
             </footer>
           </form>
 
@@ -248,8 +248,8 @@ export function InventoryPage() {
             <h2 id="confirm-title">Data yang diinput sudah benar?</h2>
             <p>Pastikan angka dan informasi bisnis sudah sesuai sebelum sistem mulai melakukan analisis.</p>
             <div className="confirm-dialog__actions">
-              <Button variant="secondary" onClick={() => setIsConfirmOpen(false)} disabled={isSubmitting}>Tidak</Button>
-              <Button onClick={submitInventory} disabled={isSubmitting}>{isSubmitting ? "Menyimpan..." : "Ya, Lanjutkan"}</Button>
+              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => setIsConfirmOpen(false)} disabled={isSubmitting}>Tidak</Button>
+              <Button className="btn--shiny-dashboard" onClick={submitInventory} disabled={isSubmitting}>{isSubmitting ? "Menyimpan..." : "Ya, Lanjutkan"}</Button>
             </div>
           </div>
         </div>

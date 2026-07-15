@@ -3681,6 +3681,26 @@ li,
   text-shadow: 0 1px 14px rgba(5, 15, 31, .24);
 }
 
+.analysis-page .analysis-card h1 {
+  color: #ffffff;
+  text-shadow: 0 2px 18px rgba(5, 15, 31, .36);
+}
+
+.analysis-page .analysis-card p {
+  color: rgba(255, 255, 255, .82);
+  text-shadow: 0 1px 14px rgba(5, 15, 31, .28);
+}
+
+.analysis-page .analysis-step strong,
+.analysis-page .analysis-ring strong {
+  color: #ffffff;
+}
+
+.analysis-page .analysis-ring span,
+.analysis-page .analysis-float {
+  color: rgba(255, 255, 255, .78);
+}
+
 .lead {
   font-size: clamp(1rem, 1.35vw, 1.25rem);
 }
