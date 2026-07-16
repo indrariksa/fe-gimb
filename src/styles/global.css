@@ -295,6 +295,47 @@ a { color: inherit; text-decoration: none; }
   }
 }
 
+@media print {
+  .sidebar,
+  .sidebar-backdrop,
+  .workspace__topbar,
+  .dashboard__actions,
+  .subscores-actions,
+  .admin-inventory-hero__back {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block;
+  }
+
+  .workspace {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .dashboard,
+  .subscores-page,
+  .admin-inventory-page {
+    padding: 0 !important;
+  }
+
+  .panel,
+  .score-card,
+  .health-card,
+  .trend-card,
+  .radar-card,
+  .insight-card,
+  .inventory-insight-card,
+  .subscore-card,
+  .admin-inventory-summary article,
+  .admin-inventory-readout,
+  .admin-inventory-note {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}
+
 .brand { display: flex; align-items: center; gap: 14px; color: var(--sidebar-ink); }
 .brand--compact { color: var(--color-primary); }
 .brand__mark {

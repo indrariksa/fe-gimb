@@ -14,6 +14,7 @@ import type { Business, InventorySubmission } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { clampPercent, formatScore } from "../utils/number";
+import { downloadPdfReport, downloadWorkbook, formatRupiah, reportFilename } from "../utils/exportReport";
 
 function statusTone(score: number): "success" | "warning" | "danger" {
   if (score >= 60) return "success";
@@ -97,6 +98,97 @@ export function DashboardPage() {
   const primaryIssue = submission?.analysis.priority_issues?.[0] ?? "Belum ada prioritas perbaikan. Isi inventarisasi agar sistem dapat membaca area kritis bisnis.";
   const strength = submission?.analysis.strengths?.[0] ?? "Kekuatan utama akan muncul setelah data inventarisasi pertama selesai dianalisis.";
   const recommendation = submission?.analysis.recommendations?.[0] ?? "Rekomendasi strategis akan tersedia setelah proses diagnosis selesai.";
+  const businessName = business?.name ?? submission?.business_name ?? theme.businessName;
+
+  const exportDashboardExcel = () => {
+    if (!submission) return;
+    downloadWorkbook(reportFilename("dashboard-summary", businessName, "xlsx"), [
+      {
+        name: "Ringkasan",
+        rows: [
+          ["Executive Summary Dashboard"],
+          ["Bisnis", businessName],
+          ["Tanggal Diagnosis", formatDate(submission.created_at)],
+          ["Skor Keseluruhan", overallScoreText],
+          ["Status", overallStatus],
+        ],
+      },
+      {
+        name: "Sub Skor",
+        rows: [
+          ["Sub Skor", "Nilai", "Status"],
+          ...cards.map((card) => [card.label, card.score, card.status]),
+        ],
+      },
+      {
+        name: "Diagnosis",
+        rows: [
+          ["Kategori", "Catatan"],
+          ...submission.analysis.priority_issues.map((item) => ["Prioritas Diagnosis", item]),
+          ...submission.analysis.strengths.map((item) => ["Kekuatan Utama", item]),
+          ...submission.analysis.recommendations.map((item) => ["Rekomendasi", item]),
+        ],
+      },
+      {
+        name: "Action Plan",
+        rows: [
+          ["Periode", "Judul", "Deskripsi"],
+          ...(submission.analysis.action_plan ?? []).map((item) => [item.period, item.title, item.description]),
+        ],
+      },
+      {
+        name: "Business Snapshot",
+        rows: [
+          ["Metrik", "Nilai"],
+          ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
+          ["Total Transaksi", submission.six_month_transactions],
+          ["Pelanggan Aktif", submission.active_customers],
+          ["Laba Bersih", formatRupiah(submission.analysis.metrics.net_profit)],
+          ["Total Biaya", formatRupiah(submission.analysis.metrics.total_expense)],
+        ],
+      },
+    ]);
+  };
+
+  const exportDashboardPdf = () => {
+    if (!submission) return;
+    downloadPdfReport({
+      filename: reportFilename("dashboard-summary", businessName, "pdf"),
+      title: "Executive Summary Dashboard",
+      subtitle: `${businessName} - Diagnosis ${formatDate(submission.created_at)}`,
+      summary: [
+        ["Bisnis", businessName],
+        ["Skor Keseluruhan", overallScoreText],
+        ["Status", overallStatus],
+        ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
+        ["Laba Bersih", formatRupiah(submission.analysis.metrics.net_profit)],
+        ["Total Biaya", formatRupiah(submission.analysis.metrics.total_expense)],
+      ],
+      scores: cards.map((card) => ({
+        label: card.label,
+        score: card.score,
+        status: card.status,
+        color: card.tone === "danger" ? "#ef4444" : card.tone === "warning" ? "#f59e0b" : "#10b981",
+      })),
+      sections: [
+        { title: "Prioritas Diagnosis", headers: ["No", "Catatan"], rows: submission.analysis.priority_issues.map((item, index) => [index + 1, item]) },
+        { title: "Kekuatan Utama", headers: ["No", "Catatan"], rows: submission.analysis.strengths.map((item, index) => [index + 1, item]) },
+        { title: "Rekomendasi", headers: ["No", "Catatan"], rows: submission.analysis.recommendations.map((item, index) => [index + 1, item]) },
+        { title: "Action Plan 30 Hari", headers: ["Periode", "Judul", "Deskripsi"], rows: (submission.analysis.action_plan ?? []).map((item) => [item.period, item.title, item.description]) },
+        {
+          title: "Business Snapshot",
+          headers: ["Metrik", "Nilai"],
+          rows: [
+            ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
+            ["Total Transaksi", submission.six_month_transactions],
+            ["Pelanggan Aktif", submission.active_customers],
+            ["Laba Bersih", formatRupiah(submission.analysis.metrics.net_profit)],
+            ["Total Biaya", formatRupiah(submission.analysis.metrics.total_expense)],
+          ],
+        },
+      ],
+    });
+  };
 
   return (
     <DashboardShell activeView="dashboard">
@@ -112,8 +204,8 @@ export function DashboardPage() {
               Lihat Input <Icon name="file" size={18} />
             </Button>
             <Button className="btn--dashboard-hover">Rekomendasi <Icon name="arrow" size={18} /></Button>
-            <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark"><Icon name="download" size={18} /> Excel</Button>
-            <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark"><Icon name="file" size={18} /> PDF</Button>
+            <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark" disabled={!submission} onClick={exportDashboardExcel}><Icon name="download" size={18} /> Excel</Button>
+            <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark" disabled={!submission} onClick={exportDashboardPdf}><Icon name="file" size={18} /> PDF</Button>
           </div>
         </div>
 

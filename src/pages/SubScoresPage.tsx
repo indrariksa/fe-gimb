@@ -9,6 +9,7 @@ import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useAuth } from "../context/AuthContext";
 import { clampPercent, formatScore } from "../utils/number";
+import { downloadPdfReport, downloadWorkbook, formatRupiah, reportFilename } from "../utils/exportReport";
 
 type SubScoreItem = {
   key: string;
@@ -241,6 +242,94 @@ export function SubScoresPage() {
     };
   }, [submission, metrics]);
 
+  const businessName = business?.name ?? submission?.business_name ?? "Bisnis";
+
+  const exportSubScoresExcel = () => {
+    if (!submission || !inventoryInsights) return;
+    const reportMetrics = submission.analysis.metrics;
+    downloadWorkbook(reportFilename("sub-scores-analysis", businessName, "xlsx"), [
+      {
+        name: "Ringkasan",
+        rows: [
+          ["Detailed Analysis Report"],
+          ["Bisnis", businessName],
+          ["Tanggal Diagnosis", new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(submission.created_at))],
+          ["Skor Keseluruhan", formatScore(submission.analysis.overall_score)],
+          ["Status", submission.analysis.status],
+        ],
+      },
+      {
+        name: "Sub Dimensi",
+        rows: [
+          ["Sub Dimensi", "Nilai", "Status", "Deskripsi"],
+          ...items.map((item) => [item.shortLabel, item.score, statusShort(item.score), item.description]),
+        ],
+      },
+      {
+        name: "Keuangan",
+        rows: [
+          ["Metrik", "Nilai"],
+          ...inventoryInsights.financialItems.map((item) => [item.label, item.value]),
+          ["Laba per Rp 100 Omzet", inventoryInsights.profitPerHundred],
+          ["Aset", submission.asset_value],
+          ["Modal", submission.capital_investment],
+          ["Laba", reportMetrics.net_profit],
+        ],
+        currencyColumns: [1],
+      },
+      {
+        name: "Biaya",
+        rows: [
+          ["Kategori", "Nominal", "Persentase"],
+          ...inventoryInsights.costItems.map((item) => [item.label, item.value, item.percent ?? ""]),
+        ],
+        currencyColumns: [1],
+      },
+      {
+        name: "Pelanggan",
+        rows: [
+          ["Metrik", "Nilai"],
+          ...inventoryInsights.customerItems.map((item) => [item.label, item.value]),
+          ["Retensi", formatPercent(inventoryInsights.retentionRate)],
+          ...inventoryInsights.customerQualityItems.map((item) => [item.label, item.formatted]),
+        ],
+      },
+    ]);
+  };
+
+  const exportSubScoresPdf = () => {
+    if (!submission || !inventoryInsights) return;
+    const reportMetrics = submission.analysis.metrics;
+    downloadPdfReport({
+      filename: reportFilename("sub-scores-analysis", businessName, "pdf"),
+      title: "Detailed Analysis Report",
+      subtitle: `${businessName} - Diagnosis ${new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(submission.created_at))}`,
+      summary: [
+        ["Bisnis", businessName],
+        ["Skor Keseluruhan", formatScore(submission.analysis.overall_score)],
+        ["Status", submission.analysis.status],
+        ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
+        ["Laba Bersih", formatRupiah(reportMetrics.net_profit)],
+        ["Total Biaya", formatRupiah(reportMetrics.total_expense)],
+      ],
+      scores: items.map((item) => ({
+        label: item.shortLabel,
+        score: item.score,
+        status: statusShort(item.score),
+        color: item.color,
+      })),
+      sections: [
+        { title: "Sub Dimensi", headers: ["Dimensi", "Nilai", "Status", "Deskripsi"], rows: items.map((item) => [item.shortLabel, formatScore(item.score), statusShort(item.score), item.description]) },
+        { title: "Alokasi Biaya", headers: ["Kategori", "Nominal", "Persentase"], rows: inventoryInsights.costItems.map((item) => [item.label, formatRupiah(item.value), item.percent ?? "-"]) },
+        { title: "Ringkasan Arus Uang", headers: ["Metrik", "Nilai"], rows: [...inventoryInsights.financialItems.map((item) => [item.label, formatRupiah(item.value)]), ["Laba per Rp 100 Omzet", formatRupiah(inventoryInsights.profitPerHundred)]] },
+        { title: "Customer Funnel", headers: ["Metrik", "Jumlah"], rows: [...inventoryInsights.customerItems.map((item) => [item.label, item.formatted]), ["Retensi", formatPercent(inventoryInsights.retentionRate)]] },
+        { title: "Efisiensi Transaksi & Beban SDM", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.gauges.map((item) => [item.label, item.value, item.note]) },
+        { title: "Keseimbangan Modal", headers: ["Metrik", "Nilai"], rows: inventoryInsights.capitalItems.map((item) => [item.label, formatRupiah(item.value)]) },
+        { title: "Kualitas Transaksi & Pelanggan", headers: ["Metrik", "Nilai"], rows: inventoryInsights.customerQualityItems.map((item) => [item.label, item.formatted]) },
+      ],
+    });
+  };
+
   return (
     <DashboardShell activeView="subscores" title="Dashboard 6 Sub Skor Bisnis">
       <section className="subscores-page">
@@ -256,8 +345,8 @@ export function SubScoresPage() {
                 <p>Enam dimensi utama dari hasil analisis inventarisasi terbaru.</p>
               </div>
               <div className="subscores-actions">
-                <Button className="btn--dashboard-hover btn--dashboard-export" variant="secondary"><Icon name="download" size={18} /> PDF</Button>
-                <Button className="btn--dashboard-hover"><Icon name="download" size={18} /> Excel</Button>
+                <Button className="btn--dashboard-hover btn--dashboard-export" variant="secondary" disabled={!submission || !inventoryInsights} onClick={exportSubScoresPdf}><Icon name="download" size={18} /> PDF</Button>
+                <Button className="btn--dashboard-hover" disabled={!submission || !inventoryInsights} onClick={exportSubScoresExcel}><Icon name="download" size={18} /> Excel</Button>
               </div>
             </div>
 

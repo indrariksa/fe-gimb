@@ -85,6 +85,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/types.ts` | Type UI umum: `View`, `ThemeSettings`, `InventoryField`. | Saat mengubah view enum, navigasi, theme, atau inventory field model. |
 | `src/utils/formValidation.ts` | Sanitasi text dan validasi string sederhana. | Saat mengubah validasi form lokal. |
 | `src/utils/number.ts` | `formatScore`, `clampPercent`. | Saat mengubah formatting score/progress. |
+| `src/utils/exportReport.ts` | `downloadPdfReport`, `downloadWorkbook`, formatter Rupiah, dan filename export. | Saat mengubah export PDF/Excel frontend. |
 | `src/vite-env.d.ts` | Type env Vite. | Saat menambah type env custom jika diperlukan. |
 
 ## Existing Docs

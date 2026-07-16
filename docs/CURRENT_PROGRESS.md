@@ -34,6 +34,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Score result page.
 - Dashboard diagnosis dengan score ring, score cards, action plan 30 hari dari `analysis.action_plan`, business snapshot, dan insight cards yang readable di light/dark mode.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory, dan legend.
+- Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
 - Settings page untuk ubah password mandiri dan warna tema lokal.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
 - Admin dashboard:
@@ -77,7 +78,7 @@ Redirect/fallback:
 
 - Theme settings masih lokal dan copy menyebut siap disambungkan ke backend.
 - Landing page masih punya copy "Form Inventarisasi ... siap disimpan lokal sebelum integrasi backend", padahal form inventory sekarang memanggil backend.
-- Tombol `Rekomendasi`, export `Excel/PDF`, dan `Upgrade Plan` terlihat sebagai UI tetapi belum ditemukan aksi nyata.
+- Tombol `Rekomendasi` dan `Upgrade Plan` terlihat sebagai UI tetapi belum ditemukan aksi nyata.
 - Service `listBusinessInventories` dan `adminInventorySubmissions` tersedia, tetapi belum ditemukan pemakaian di halaman.
 - Admin audit search/filter bekerja pada audit log yang sudah dimuat untuk halaman saat ini, bukan query server-side.
 
@@ -122,7 +123,6 @@ Hasil: kedua perintah exit code `0`.
 
 - Apakah `scoring_version` perlu menjadi kontrak frontend atau tetap internal backend.
 - Apakah landing copy lama tentang integrasi backend masih diinginkan.
-- Apakah tombol export PDF/Excel perlu implementasi nyata atau memang placeholder UI.
 - Apakah audit search/filter perlu server-side agar mencari seluruh log.
 - Apakah admin inventory detail perlu endpoint submitter/detail user daripada mengambil 100 user pertama.
 - Apakah perlu test runner/lint formal untuk CI.

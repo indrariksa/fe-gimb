@@ -52,6 +52,7 @@ Konfigurasi:
 | `src/services/api` | HTTP client, service per domain, dan type kontrak API. |
 | `src/data` | Data statis dashboard fallback dan field inventarisasi. |
 | `src/utils` | Helper validasi form dan angka. |
+| `src/utils/exportReport.ts` | Helper export report PDF berbasis data dan workbook XLSX dengan format Rupiah. |
 | `src/styles/global.css` | Semua styling global, layout, responsive, dark mode. |
 | `public/gimb-icon.svg` | Ikon SVG ringan untuk favicon browser dan brand mark aplikasi. |
 
@@ -364,6 +365,7 @@ Script test: Belum teridentifikasi.
 - Score result page.
 - Dashboard diagnosis dengan score cards, action plan 30 hari dari `analysis.action_plan`, dan business snapshot.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional dari data inventarisasi, dan legend.
+- Export PDF report berbasis data dan workbook XLSX rapi untuk dashboard summary dan sub-scores analysis.
 - Settings page untuk ubah password mandiri dan tema lokal.
 - Admin dashboard summary.
 - Card ringkasan admin dan user memakai efek holographic ringan saat hover.
@@ -395,7 +397,7 @@ Script test: Belum teridentifikasi.
 - Tidak ada client-side schema validation library; validasi masih helper sederhana dan HTML validation.
 - Tidak ditemukan penyimpanan tema ke backend; tema saat ini lokal.
 - Landing page copy masih menyebut form inventarisasi siap disimpan lokal sebelum integrasi backend, padahal fitur inventory sudah memanggil backend. Perlu dikonfirmasi apakah copy masih diinginkan.
-- Tombol dashboard seperti `Rekomendasi`, `Excel`, `PDF`, `Upgrade Plan`, dan export di sub-scores belum terlihat memiliki implementasi aksi nyata selain tampilan tombol.
+- Tombol `Rekomendasi` dan `Upgrade Plan` belum terlihat memiliki implementasi aksi nyata selain tampilan tombol.
 - Search audit log berlaku pada data halaman audit yang sedang dimuat, bukan seluruh server-side result.
 - Halaman detail inventory memakai endpoint admin saat dibuka admin dan endpoint user saat dibuka user; mode admin masih mengambil `adminUsers({ limit: 100 })` untuk mencari submitter, sehingga user di luar 100 pertama bisa tidak ditemukan.
 - `BusinessHealthAnalysis` frontend belum memiliki field `scoring_version`.
