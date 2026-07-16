@@ -4173,6 +4173,28 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   box-shadow: 0 14px 28px color-mix(in srgb, var(--bar-color, var(--color-primary)) 32%, transparent);
 }
 
+.insight-margin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 13px 15px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 28%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--surface));
+}
+
+.insight-margin span {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.insight-margin b {
+  color: var(--color-accent);
+  font-size: 1.2rem;
+}
+
 .customer-funnel {
   display: grid;
   gap: 12px;

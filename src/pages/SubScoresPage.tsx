@@ -163,6 +163,7 @@ export function SubScoresPage() {
     ];
     const financialMax = Math.max(1, ...financialItems.map((item) => Math.abs(item.value)));
     const profitPerHundred = safeDivide(metrics.net_profit, submission.six_month_revenue) * 100;
+    const remainingMargin = profitPerHundred;
 
     const customerItems: InventoryInsightBar[] = [
       { label: "Pelanggan Baru", value: submission.new_customers, formatted: formatCompactNumber(submission.new_customers), color: "#3b82f6" },
@@ -231,6 +232,7 @@ export function SubScoresPage() {
       financialItems,
       financialMax,
       profitPerHundred,
+      remainingMargin,
       customerItems,
       customerMax,
       gauges,
@@ -271,6 +273,7 @@ export function SubScoresPage() {
           ["Metrik", "Nilai"],
           ...inventoryInsights.financialItems.map((item) => [item.label, item.value]),
           ["Laba per Rp 100 Omzet", inventoryInsights.profitPerHundred],
+          ["Margin Laba Bersih", formatPercent(inventoryInsights.remainingMargin)],
           ["Aset", submission.asset_value],
           ["Modal", submission.capital_investment],
           ["Laba", reportMetrics.net_profit],
@@ -321,7 +324,7 @@ export function SubScoresPage() {
       sections: [
         { title: "Sub Dimensi", headers: ["Dimensi", "Nilai", "Status", "Deskripsi"], rows: items.map((item) => [item.shortLabel, formatScore(item.score), statusShort(item.score), item.description]) },
         { title: "Alokasi Biaya", headers: ["Kategori", "Nominal", "Persentase"], rows: inventoryInsights.costItems.map((item) => [item.label, formatRupiah(item.value), item.percent ?? "-"]) },
-        { title: "Ringkasan Arus Uang", headers: ["Metrik", "Nilai"], rows: [...inventoryInsights.financialItems.map((item) => [item.label, formatRupiah(item.value)]), ["Laba per Rp 100 Omzet", formatRupiah(inventoryInsights.profitPerHundred)]] },
+        { title: "Ringkasan Arus Uang", headers: ["Metrik", "Nilai"], rows: [...inventoryInsights.financialItems.map((item) => [item.label, formatRupiah(item.value)]), ["Laba per Rp 100 Omzet", formatRupiah(inventoryInsights.profitPerHundred)], ["Margin Laba Bersih", formatPercent(inventoryInsights.remainingMargin)]] },
         { title: "Customer Funnel", headers: ["Metrik", "Jumlah"], rows: [...inventoryInsights.customerItems.map((item) => [item.label, item.formatted]), ["Retensi", formatPercent(inventoryInsights.retentionRate)]] },
         { title: "Efisiensi Transaksi & Beban SDM", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.gauges.map((item) => [item.label, item.value, item.note]) },
         { title: "Keseimbangan Modal", headers: ["Metrik", "Nilai"], rows: inventoryInsights.capitalItems.map((item) => [item.label, formatRupiah(item.value)]) },
@@ -422,7 +425,6 @@ export function SubScoresPage() {
                   <div>
                     <span>Data Inventarisasi</span>
                     <h3>Insight Operasional Tambahan</h3>
-                    <p>Visual ini memakai nominal, pelanggan, aset, modal, dan produktivitas agar tidak mengulang grafik skor.</p>
                   </div>
                   <b>6 visual</b>
                 </div>
@@ -465,6 +467,10 @@ export function SubScoresPage() {
                           <b>{item.formatted}</b>
                         </div>
                       ))}
+                    </div>
+                    <div className="insight-margin">
+                      <span>Margin Laba Bersih</span>
+                      <b>{formatPercent(inventoryInsights.remainingMargin)}</b>
                     </div>
                   </article>
 

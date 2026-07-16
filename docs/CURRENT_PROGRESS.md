@@ -33,7 +33,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Analysis progress page berbasis timer lokal.
 - Score result page.
 - Dashboard diagnosis dengan score ring, score cards, action plan 30 hari dari `analysis.action_plan`, business snapshot, dan insight cards yang readable di light/dark mode.
-- Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory, dan legend.
+- Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend.
 - Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
 - Settings page untuk ubah password mandiri dan warna tema lokal.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
