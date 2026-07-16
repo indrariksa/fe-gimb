@@ -4,6 +4,8 @@ import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
 import { inventoryFields } from "../data/inventoryFields";
 import * as adminApi from "../services/api/admin";
+import * as businessApi from "../services/api/businesses";
+import { useAuth } from "../context/AuthContext";
 import type { Business, InventorySubmission, User } from "../services/api/types";
 import { formatScore } from "../utils/number";
 
@@ -56,11 +58,13 @@ function shortValue(value: string, length = 10) {
 export function AdminInventoryDetailPage() {
   const { businessId } = useParams();
   const navigate = useNavigate();
+  const { isAdmin, user } = useAuth();
   const [business, setBusiness] = useState<Business | null>(null);
   const [submission, setSubmission] = useState<InventorySubmission | null>(null);
   const [submitter, setSubmitter] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const backPath = isAdmin ? "/admin#diagnoses" : "/businesses";
 
   useEffect(() => {
     let isMounted = true;
@@ -71,16 +75,20 @@ export function AdminInventoryDetailPage() {
       setError("");
 
       try {
-        const [businessData, submissionData, usersData] = await Promise.all([
-          adminApi.adminBusiness(businessId),
-          adminApi.adminLatestBusinessInventory(businessId),
-          adminApi.adminUsers({ limit: 100, offset: 0 }),
+        const getBusiness = isAdmin ? adminApi.adminBusiness : businessApi.getBusiness;
+        const getLatestInventory = isAdmin ? adminApi.adminLatestBusinessInventory : businessApi.latestBusinessInventory;
+        const [businessData, submissionData] = await Promise.all([
+          getBusiness(businessId),
+          getLatestInventory(businessId),
         ]);
+        const submitterData = isAdmin
+          ? (await adminApi.adminUsers({ limit: 100, offset: 0 })).items.find((item) => item.id === submissionData.user_id) ?? null
+          : user;
 
         if (!isMounted) return;
         setBusiness(businessData);
         setSubmission(submissionData);
-        setSubmitter(usersData.items.find((user) => user.id === submissionData.user_id) ?? null);
+        setSubmitter(submitterData);
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat detail data inventarisasi");
       } finally {
@@ -92,7 +100,7 @@ export function AdminInventoryDetailPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId]);
+  }, [businessId, isAdmin, user]);
 
   const fieldGroups = useMemo(() => {
     if (!submission) return [];
@@ -126,21 +134,21 @@ export function AdminInventoryDetailPage() {
   ] : [];
 
   return (
-    <DashboardShell activeView="admin" title="Detail Data Inventarisasi">
+    <DashboardShell activeView={isAdmin ? "admin" : "dashboard"} title="Detail Data Inventarisasi">
       <section className="admin-inventory-page">
         {isLoading && <article className="panel empty-state">Memuat detail data inventarisasi...</article>}
         {error && !isLoading && (
           <article className="panel empty-state">
             <span className="empty-state__icon"><Icon name="alert" /></span>
             <strong>{error}</strong>
-            <button className="btn" type="button" onClick={() => navigate("/admin#diagnoses")}>Kembali ke Monitoring</button>
+            <button className="btn" type="button" onClick={() => navigate(backPath)}>Kembali</button>
           </article>
         )}
 
         {!isLoading && !error && submission && (
           <>
             <div className="admin-inventory-hero">
-              <button type="button" className="admin-inventory-hero__back" onClick={() => navigate("/admin#diagnoses")}>
+              <button type="button" className="admin-inventory-hero__back" onClick={() => navigate(backPath)}>
                 <Icon name="arrow" size={18} />
                 Kembali
               </button>

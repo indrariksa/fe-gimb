@@ -108,6 +108,9 @@ export function DashboardPage() {
           </div>
           <div className="dashboard__actions">
             <Button className="btn--shiny-dashboard" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Sub Skor</Button>
+            <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/inventory-input`)}>
+              Lihat Input <Icon name="file" size={18} />
+            </Button>
             <Button className="btn--dashboard-hover">Rekomendasi <Icon name="arrow" size={18} /></Button>
             <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark"><Icon name="download" size={18} /> Excel</Button>
             <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark"><Icon name="file" size={18} /> PDF</Button>

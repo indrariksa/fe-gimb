@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { HolographicCard } from "../components/molecules/HolographicCard";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
 import { formatScore } from "../utils/number";
@@ -517,11 +518,11 @@ export function AdminPage() {
         {!isLoading && !error && (
           <>
             <div className="admin-grid">
-              <article className="admin-metric panel"><span>Total User</span><strong>{summary?.users ?? 0}</strong></article>
-              <article className="admin-metric panel"><span>User Aktif</span><strong>{summary?.active_users ?? 0}</strong></article>
-              <article className="admin-metric panel"><span>Toko</span><strong>{summary?.businesses ?? 0}</strong></article>
-              <article className="admin-metric panel"><span>Submission</span><strong>{summary?.inventory_submissions ?? 0}</strong></article>
-              <article className="admin-metric panel"><span>Limit toko/user</span><strong>{businessLimit?.value ?? 2}</strong></article>
+              <HolographicCard className="admin-metric panel"><span>Total User</span><strong>{summary?.users ?? 0}</strong></HolographicCard>
+              <HolographicCard className="admin-metric panel"><span>User Aktif</span><strong>{summary?.active_users ?? 0}</strong></HolographicCard>
+              <HolographicCard className="admin-metric panel"><span>Toko</span><strong>{summary?.businesses ?? 0}</strong></HolographicCard>
+              <HolographicCard className="admin-metric panel"><span>Submission</span><strong>{summary?.inventory_submissions ?? 0}</strong></HolographicCard>
+              <HolographicCard className="admin-metric panel"><span>Limit toko/user</span><strong>{businessLimit?.value ?? 2}</strong></HolographicCard>
             </div>
 
             <div className="admin-layout">

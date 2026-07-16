@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, ubah password mandiri, daftar toko, form inventarisasi bisnis, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, dan admin dashboard.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, dan admin dashboard.
 
 ## Tujuan Aplikasi
 
@@ -103,6 +103,7 @@ Protected route umum:
 - `/businesses/:businessId/dashboard`
 - `/businesses/:businessId/score`
 - `/businesses/:businessId/sub-scores`
+- `/businesses/:businessId/inventory-input`
 - `/businesses/:businessId/inventory/new`
 - `/businesses/:businessId/analysis`
 - `/settings`
@@ -281,6 +282,7 @@ Styling:
 
 - satu CSS global besar di `src/styles/global.css`;
 - CSS custom properties untuk warna, surface, font, shadow, dark mode;
+- `HolographicCard` memakai event mouse ringan dan CSS variable untuk efek tilt/glow pada card ringkasan admin dan user, dengan fallback `prefers-reduced-motion`;
 - SVG `public/gimb-icon.svg` dipakai sebagai favicon browser dan brand mark di komponen `Brand`;
 - font diimport dari Google Fonts di CSS;
 - class naming dominan BEM-ish seperti `block__element--modifier`;
@@ -356,12 +358,14 @@ Script test: Belum teridentifikasi.
 - Pengecekan inventory existing per business.
 - Draft inventory lokal per business.
 - Submit inventory ke backend.
+- Detail data inventarisasi bisa dibuka user dari dashboard toko dan daftar toko.
 - Analysis loading page berbasis timer/progress lokal.
 - Score result page.
 - Dashboard diagnosis dengan score cards, action plan 30 hari dari `analysis.action_plan`, dan business snapshot.
 - Sub-scores page dengan card, radar SVG, bar chart, dan legend.
 - Settings page untuk ubah password mandiri dan tema lokal.
 - Admin dashboard summary.
+- Card ringkasan admin dan user memakai efek holographic ringan saat hover.
 - Admin monitoring diagnosis dengan pagination.
 - Admin update business limit.
 - Admin user list dan update status.
@@ -392,5 +396,5 @@ Script test: Belum teridentifikasi.
 - Landing page copy masih menyebut form inventarisasi siap disimpan lokal sebelum integrasi backend, padahal fitur inventory sudah memanggil backend. Perlu dikonfirmasi apakah copy masih diinginkan.
 - Tombol dashboard seperti `Rekomendasi`, `Excel`, `PDF`, `Upgrade Plan`, dan export di sub-scores belum terlihat memiliki implementasi aksi nyata selain tampilan tombol.
 - Search audit log berlaku pada data halaman audit yang sedang dimuat, bukan seluruh server-side result.
-- Halaman admin inventory detail mengambil `adminUsers({ limit: 100 })` untuk mencari submitter; perilaku jika user tidak ada di 100 pertama perlu dikonfirmasi.
+- Halaman detail inventory memakai endpoint admin saat dibuka admin dan endpoint user saat dibuka user; mode admin masih mengambil `adminUsers({ limit: 100 })` untuk mencari submitter, sehingga user di luar 100 pertama bisa tidak ditemukan.
 - `BusinessHealthAnalysis` frontend belum memiliki field `scoring_version`.

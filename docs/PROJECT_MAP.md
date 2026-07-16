@@ -56,6 +56,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |
 | `src/components/atoms/TextField.tsx` | Field input dengan prefix/suffix/note/example. | Saat mengubah field inventory/theme input. |
 | `src/components/molecules/Brand.tsx` | Brand/logo text dan brand mark dari SVG publik. | Saat mengubah brand display. |
+| `src/components/molecules/HolographicCard.tsx` | Wrapper card ringan dengan mouse tilt dan CSS variable untuk efek holographic. | Saat mengubah animasi card ringkasan. |
 | `src/components/molecules/ScoreCard.tsx` | Score card reusable. | Saat mengubah card score dashboard. |
 
 ## Pages
@@ -73,7 +74,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, legend. | Saat mengubah visualisasi sub-score. |
 | `src/pages/SettingsPage.tsx` | Pengaturan ubah password mandiri dan tema lokal. | Saat mengubah settings atau keamanan akun. |
 | `src/pages/AdminPage.tsx` | Admin summary, diagnosis, limit, users, audit logs. | Saat mengubah fitur admin utama. |
-| `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory untuk admin. | Saat mengubah review detail inventory admin. |
+| `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role. | Saat mengubah review/detail inventory. |
 
 ## Data, Types, Utilities
 

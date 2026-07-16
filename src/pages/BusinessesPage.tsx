@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { HolographicCard } from "../components/molecules/HolographicCard";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { useAuth } from "../context/AuthContext";
 import * as businessApi from "../services/api/businesses";
@@ -171,22 +172,22 @@ export function BusinessesPage() {
         </div>
 
         <div className="business-summary">
-          <article>
+          <HolographicCard>
             <span>Total toko</span>
             <strong>{businesses.length} dari {businessLimit}</strong>
-          </article>
-          <article>
+          </HolographicCard>
+          <HolographicCard>
             <span>Perlu input</span>
             <strong>{needInputCount}</strong>
-          </article>
-          <article>
+          </HolographicCard>
+          <HolographicCard>
             <span>Sudah ada hasil</span>
             <strong>{completedBusinessIds.size}</strong>
-          </article>
-          <article>
+          </HolographicCard>
+          <HolographicCard>
             <span>Status diagnosis</span>
             <strong className={isDiagnosisComplete ? "is-good" : "is-warning"}>{diagnosisStatus}</strong>
-          </article>
+          </HolographicCard>
         </div>
 
         <div className="business-layout">
@@ -227,6 +228,15 @@ export function BusinessesPage() {
                       onClick={() => navigate(`/businesses/${business.public_id}/dashboard`)}
                     >
                       Dashboard <Icon name="arrow" size={18} />
+                    </Button>
+                    <Button
+                      className="btn--dashboard-hover"
+                      variant="secondary"
+                      disabled={!hasDiagnosis}
+                      title={hasDiagnosis ? "Lihat detail data inventarisasi" : "Isi inventory dulu untuk melihat detail input"}
+                      onClick={() => navigate(`/businesses/${business.public_id}/inventory-input`)}
+                    >
+                      Lihat Input <Icon name="file" size={18} />
                     </Button>
                   </div>
                   {hasDiagnosis ? (

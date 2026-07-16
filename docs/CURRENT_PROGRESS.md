@@ -26,6 +26,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Daftar toko user.
 - Create toko dengan validasi lokal dan business limit dari backend.
 - Status inventory tiap toko melalui latest inventory check.
+- Detail data inventarisasi untuk user dari dashboard toko dan daftar toko.
 - Form inventarisasi business-scoped.
 - Draft inventory per business di localStorage.
 - Confirmation dialog submit inventory.
@@ -37,6 +38,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
 - Admin dashboard:
   - summary metrics;
+  - efek holographic ringan pada card summary;
   - diagnosis watchlist dengan pagination;
   - update business limit;
   - user list dengan pagination, update status, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
@@ -57,6 +59,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/businesses/:businessId/dashboard`
 - `/businesses/:businessId/score`
 - `/businesses/:businessId/sub-scores`
+- `/businesses/:businessId/inventory-input`
 - `/businesses/:businessId/inventory/new`
 - `/businesses/:businessId/analysis`
 - `/settings`
@@ -86,7 +89,7 @@ Catatan penting yang ditemukan:
 
 - Tidak ada field `scoring_version` di type `BusinessHealthAnalysis` frontend.
 - `AdminPage.updateStatus` tidak memiliki try/catch lokal saat update user status.
-- `AdminInventoryDetailPage` mencari submitter dari `adminUsers({ limit: 100, offset: 0 })`, sehingga user di luar 100 pertama bisa tidak ditemukan.
+- `AdminInventoryDetailPage` pada mode admin mencari submitter dari `adminUsers({ limit: 100, offset: 0 })`, sehingga user di luar 100 pertama bisa tidak ditemukan.
 
 ## Test atau Build yang Tersedia
 

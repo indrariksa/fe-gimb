@@ -20,10 +20,10 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | Ambil business limit | `src/services/api/businesses.ts` | GET | `/settings/business-limit` | Tidak ada | `BusinessLimitSetting` | Protected request; error halaman ditampilkan di `BusinessesPage`. |
 | List businesses | `src/services/api/businesses.ts` | GET | `/businesses?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<Business>` | Protected request; error ditampilkan sebagai `Gagal memuat toko` atau message API. |
 | Create business | `src/services/api/businesses.ts` | POST | `/businesses` | `{ name, industry?, description? }` | `Business` | `BusinessesPage` memakai `getFriendlyApiError(err, "Gagal membuat toko")`. |
-| Detail business | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}` | Path `publicId` | `Business` | Protected request; halaman menampilkan message error/fallback. |
+| Detail business | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}` | Path `publicId` | `Business` | Protected request; halaman dashboard/score/subscore/detail inventory menampilkan message error/fallback. |
 | Create business inventory | `src/services/api/businesses.ts` | POST | `/businesses/{publicId}/inventory-submissions` | `InventoryPayload` | `InventorySubmission` dengan `analysis.action_plan` 30 hari | `InventoryPage` memakai `getFriendlyApiError(err, "Gagal menyimpan inventarisasi")`. |
 | List business inventories | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}/inventory-submissions?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<InventorySubmission>` | Protected request; tidak ditemukan pemakaian di halaman saat ini. |
-| Latest business inventory | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` dengan `analysis.action_plan` 30 hari | Beberapa halaman menangkap error untuk fallback `null` atau status belum ada data; 401 tetap menghapus session. |
+| Latest business inventory | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` dengan `analysis.action_plan` 30 hari | Dipakai dashboard/score/subscore/detail inventory user; beberapa halaman menangkap error untuk fallback `null` atau status belum ada data; 401 tetap menghapus session. |
 
 ## Admin
 

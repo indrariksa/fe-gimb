@@ -29,6 +29,7 @@ export function App() {
               <Route path="/businesses/:businessId/dashboard" element={<DashboardPage />} />
               <Route path="/businesses/:businessId/score" element={<ScoreResultPage />} />
               <Route path="/businesses/:businessId/sub-scores" element={<SubScoresPage />} />
+              <Route path="/businesses/:businessId/inventory-input" element={<AdminInventoryDetailPage />} />
               <Route path="/businesses/:businessId/inventory/new" element={<InventoryPage />} />
               <Route path="/businesses/:businessId/analysis" element={<AnalysisPage />} />
               <Route path="/settings" element={<SettingsPage />} />
