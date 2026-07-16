@@ -1641,6 +1641,69 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
     var(--soft);
 }
 
+.route-loader {
+  align-content: center;
+  gap: 16px;
+  font-weight: 850;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-weight: 850;
+}
+
+.loading-state .route-loader__spinner {
+  width: 32px;
+  flex: 0 0 auto;
+}
+
+.loading-state--inline {
+  min-height: 42px;
+  color: var(--muted);
+}
+
+.loading-state--inline .route-loader__spinner {
+  width: 24px;
+}
+
+.route-loader__content {
+  min-height: auto;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.route-loader__content .route-loader__spinner {
+  width: 58px;
+}
+
+.route-loader__spinner {
+  width: 58px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side, var(--surface) 64%, transparent 66%),
+    conic-gradient(from 0deg, var(--color-primary), var(--color-accent), var(--color-success), transparent 78%);
+  box-shadow:
+    0 16px 42px color-mix(in srgb, var(--color-primary) 24%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 14%, transparent);
+  animation: routeLoaderSpin .85s linear infinite;
+}
+
+@keyframes routeLoaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loader__spinner {
+    animation: none;
+  }
+}
+
 .auth-card {
   width: min(100%, 460px);
   padding: 34px;
@@ -2054,6 +2117,14 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   padding: 28px;
   text-align: center;
   font-weight: 800;
+}
+
+.route-loader .route-loader__content {
+  min-height: auto;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .dashboard-empty {

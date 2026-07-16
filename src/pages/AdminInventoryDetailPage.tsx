@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { inventoryFields } from "../data/inventoryFields";
 import * as adminApi from "../services/api/admin";
 import * as businessApi from "../services/api/businesses";
@@ -138,7 +139,7 @@ export function AdminInventoryDetailPage() {
   return (
     <DashboardShell activeView={isAdmin ? "admin" : "inventoryInput"} title="Detail Data Inventarisasi">
       <section className="admin-inventory-page">
-        {isLoading && <article className="panel empty-state">Memuat detail data inventarisasi...</article>}
+        {isLoading && <LoadingState>Memuat detail data inventarisasi...</LoadingState>}
         {error && !isLoading && (
           <article className="panel empty-state retry-state">
             <span className="empty-state__icon"><Icon name="alert" /></span>

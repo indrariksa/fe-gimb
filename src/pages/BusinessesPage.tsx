@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { useAuth } from "../context/AuthContext";
@@ -195,7 +196,7 @@ export function BusinessesPage() {
 
         <div className="business-layout">
           <div className="business-list">
-            {isLoading && <article className="panel empty-state">Memuat toko...</article>}
+            {isLoading && <LoadingState>Memuat toko...</LoadingState>}
             {!isLoading && loadError && (
               <article className="panel empty-state retry-state">
                 <span>{loadError}</span>

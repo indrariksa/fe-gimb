@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
@@ -337,7 +338,7 @@ export function SubScoresPage() {
   return (
     <DashboardShell activeView="subscores" title="Dashboard 6 Sub Skor Bisnis">
       <section className="subscores-page">
-        {isLoading && <article className="panel empty-state">Memuat sub skor...</article>}
+        {isLoading && <LoadingState>Memuat sub skor...</LoadingState>}
         {error && (
           <article className="panel empty-state retry-state">
             <span>{error}</span>

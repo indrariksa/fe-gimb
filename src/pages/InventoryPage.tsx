@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { TextField } from "../components/atoms/TextField";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { inventoryFields } from "../data/inventoryFields";
@@ -170,7 +171,7 @@ export function InventoryPage() {
     <DashboardShell activeView="inventory" title="Input Inventarisasi Masalah">
       <section className="inventory-page">
         {isCheckingAccess ? (
-          <article className="panel empty-state">Memeriksa status inventarisasi...</article>
+          <LoadingState>Memeriksa status inventarisasi...</LoadingState>
         ) : loadError ? (
           <article className="panel empty-state retry-state">
             <span>{loadError}</span>

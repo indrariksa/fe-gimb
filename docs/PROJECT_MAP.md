@@ -54,6 +54,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |
 | `src/components/atoms/Button.tsx` | Button base dengan variant. | Saat menambah variant/button behavior. |
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |
+| `src/components/atoms/LoadingState.tsx` | Loading state reusable dengan spinner theme-aware. | Saat mengubah tampilan loading halaman/table. |
 | `src/components/atoms/TextField.tsx` | Field input dengan prefix/suffix/note/example. | Saat mengubah field inventory/theme input. |
 | `src/components/molecules/Brand.tsx` | Brand/logo text dan brand mark dari SVG publik. | Saat mengubah brand display. |
 | `src/components/molecules/HolographicCard.tsx` | Wrapper card ringan dengan mouse tilt dan CSS variable untuk efek holographic. | Saat mengubah animasi card ringkasan. |

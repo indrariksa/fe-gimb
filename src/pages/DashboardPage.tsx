@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { ScoreCard } from "../components/molecules/ScoreCard";
 import { RadarProfile } from "../components/organisms/RadarProfile";
 import { TrendChart } from "../components/organisms/TrendChart";
@@ -210,7 +211,7 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {isLoading && <article className="panel empty-state">Memuat dashboard bisnis...</article>}
+        {isLoading && <LoadingState>Memuat dashboard bisnis...</LoadingState>}
         {error && (
           <article className="panel empty-state retry-state">
             <span>{error}</span>

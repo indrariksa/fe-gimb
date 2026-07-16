@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
@@ -515,7 +516,7 @@ export function AdminPage() {
           <p>Pantau user, toko, dan submission inventarisasi yang masuk ke sistem.</p>
         </div>
 
-        {isLoading && <article className="panel empty-state">Memuat data admin...</article>}
+        {isLoading && <LoadingState>Memuat data admin...</LoadingState>}
         {error && (
           <article className="panel empty-state retry-state">
             <span>{error}</span>
@@ -569,7 +570,7 @@ export function AdminPage() {
                         </tr>
                       )}
                       {!diagnosisError && isDiagnosisLoading && (
-                        <tr><td colSpan={5}>Memuat monitoring diagnosis...</td></tr>
+                        <tr><td colSpan={5}><LoadingState inline>Memuat monitoring diagnosis...</LoadingState></td></tr>
                       )}
                       {!diagnosisError && !isDiagnosisLoading && diagnosisRows.length === 0 && (
                         <tr><td colSpan={5}>Belum ada hasil diagnosis yang bisa dipantau.</td></tr>
@@ -653,7 +654,7 @@ export function AdminPage() {
                       </button>
                     </article>
                   )}
-                  {!userError && isUserLoading && <article>Memuat user...</article>}
+                  {!userError && isUserLoading && <LoadingState inline>Memuat user...</LoadingState>}
                   {!userError && !isUserLoading && users.length === 0 && <article>Belum ada user.</article>}
                   {!userError && !isUserLoading && users.map((user) => (
                     <article key={user.id}>
@@ -754,7 +755,7 @@ export function AdminPage() {
                       </button>
                     </article>
                   )}
-                  {!auditError && isAuditLoading && <article className="audit-empty">Memuat audit log...</article>}
+                  {!auditError && isAuditLoading && <LoadingState className="audit-empty">Memuat audit log...</LoadingState>}
                   {!auditError && !isAuditLoading && auditLogs.length === 0 && <article className="audit-empty">Belum ada audit log.</article>}
                   {!auditError && !isAuditLoading && auditLogs.length > 0 && visibleAuditLogs.length === 0 && (
                     <article className="audit-empty">Tidak ada log yang cocok di halaman ini.</article>

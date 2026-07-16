@@ -13,7 +13,8 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Session auth di `localStorage` key `gimb:auth`.
 - Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
 - API client fetch wrapper dengan timeout 15 detik, retry timeout sekali untuk request GET/HEAD, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
-- Route guard authenticated, admin-only, dan user-only.
+- Route guard authenticated, admin-only, user-only, dan loader sesi dengan spinner ringan.
+- Loading state halaman/table memakai spinner reusable yang mengikuti tema.
 - Redirect role:
   - admin ke `/admin`;
   - user ke `/businesses`.

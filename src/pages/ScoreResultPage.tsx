@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { LoadingState } from "../components/atoms/LoadingState";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
@@ -80,7 +81,7 @@ export function ScoreResultPage() {
   return (
     <DashboardShell activeView="score" title="Hasil Skor">
       <section className="score-result-page">
-        {isLoading && <article className="panel empty-state">Memuat hasil diagnosis...</article>}
+        {isLoading && <LoadingState>Memuat hasil diagnosis...</LoadingState>}
         {error && (
           <article className="panel empty-state retry-state">
             <span>{error}</span>

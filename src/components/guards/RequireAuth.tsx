@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { LoadingState } from "../atoms/LoadingState";
 import { useAuth } from "../../context/AuthContext";
 
 type RequireAuthProps = {
@@ -11,7 +12,11 @@ export function RequireAuth({ adminOnly = false, userOnly = false }: RequireAuth
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
-    return <main className="route-loader">Memuat sesi...</main>;
+    return (
+      <main className="route-loader">
+        <LoadingState className="route-loader__content">Memuat sesi...</LoadingState>
+      </main>
+    );
   }
 
   if (!isAuthenticated) {
