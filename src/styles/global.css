@@ -267,6 +267,32 @@ a { color: inherit; text-decoration: none; }
     transform: none !important;
     transition: border-color .2s ease, box-shadow .2s ease;
   }
+  .subscore-card,
+  .subscore-radar,
+  .subscore-bars,
+  .inventory-insight-card,
+  .insight-gauge,
+  .score-legend article,
+  .customer-funnel div,
+  .chart-legend button,
+  .capital-bars i,
+  .subscore-chart__bar i,
+  .subscore-card__top span,
+  .cost-donut,
+  .dashboard .health-card,
+  .dashboard .score-card,
+  .dashboard .trend-card,
+  .dashboard .radar-card,
+  .dashboard .snapshot-card,
+  .dashboard .insight-card,
+  .admin-inventory-hero,
+  .admin-inventory-hero__score,
+  .admin-inventory-summary article,
+  .admin-inventory-readout,
+  .admin-inventory-note,
+  .admin-inventory-values--page article {
+    transform: none !important;
+  }
 }
 
 .brand { display: flex; align-items: center; gap: 14px; color: var(--sidebar-ink); }
@@ -1095,6 +1121,107 @@ a { color: inherit; text-decoration: none; }
   --insight-action: #f1b65f;
   --insight-icon-bg: #173f3d;
   --insight-icon: #75f0d1;
+}
+
+.dashboard .health-card,
+.dashboard .score-card,
+.dashboard .trend-card,
+.dashboard .radar-card,
+.dashboard .snapshot-card,
+.dashboard .insight-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: transform .2s ease, border-color .22s ease, box-shadow .22s ease, filter .22s ease;
+}
+
+.dashboard .health-card::after,
+.dashboard .score-card::after,
+.dashboard .trend-card::after,
+.dashboard .radar-card::after,
+.dashboard .snapshot-card::after,
+.dashboard .insight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(120deg, transparent 0 40%, rgba(255,255,255,.18) 50%, transparent 62%),
+    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--color-primary) 9%, transparent), transparent 34%);
+  transition: opacity .2s ease;
+}
+
+.dashboard .health-card > *,
+.dashboard .score-card > *,
+.dashboard .trend-card > *,
+.dashboard .radar-card > *,
+.dashboard .snapshot-card > *,
+.dashboard .insight-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard .health-card:hover,
+.dashboard .score-card:hover,
+.dashboard .trend-card:hover,
+.dashboard .radar-card:hover,
+.dashboard .snapshot-card:hover,
+.dashboard .insight-card:hover,
+.dashboard .health-card:focus-within,
+.dashboard .score-card:focus-within,
+.dashboard .trend-card:focus-within,
+.dashboard .radar-card:focus-within,
+.dashboard .snapshot-card:focus-within,
+.dashboard .insight-card:focus-within {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-primary) 28%, var(--line));
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--color-primary) 10%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.dashboard .health-card:hover::after,
+.dashboard .score-card:hover::after,
+.dashboard .trend-card:hover::after,
+.dashboard .radar-card:hover::after,
+.dashboard .snapshot-card:hover::after,
+.dashboard .insight-card:hover::after,
+.dashboard .health-card:focus-within::after,
+.dashboard .score-card:focus-within::after,
+.dashboard .trend-card:focus-within::after,
+.dashboard .radar-card:focus-within::after,
+.dashboard .snapshot-card:focus-within::after,
+.dashboard .insight-card:focus-within::after {
+  opacity: 1;
+}
+
+.dashboard .score-card__icon,
+.dashboard .snapshot-card__icon,
+.dashboard .insight-card > span {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.dashboard .score-card:hover .score-card__icon,
+.dashboard .snapshot-card:hover .snapshot-card__icon,
+.dashboard .insight-card:hover > span {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--color-primary) 13%, transparent);
+}
+
+.dashboard .score-card:hover .meter i {
+  filter: saturate(1.12);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--color-primary) 24%, transparent);
+}
+
+:root[data-theme="dark"] .dashboard .health-card::after,
+:root[data-theme="dark"] .dashboard .score-card::after,
+:root[data-theme="dark"] .dashboard .trend-card::after,
+:root[data-theme="dark"] .dashboard .radar-card::after,
+:root[data-theme="dark"] .dashboard .snapshot-card::after,
+:root[data-theme="dark"] .dashboard .insight-card::after {
+  display: none;
 }
 
 .form-hero { max-width: 860px; margin-bottom: 28px; }
@@ -2276,6 +2403,13 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
     radial-gradient(circle at 82% 22%, color-mix(in srgb, var(--color-primary) 22%, transparent), transparent 30%),
     linear-gradient(135deg, color-mix(in srgb, var(--surface) 92%, var(--color-primary)), var(--surface));
   box-shadow: 0 22px 70px color-mix(in srgb, var(--color-primary) 10%, transparent);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.admin-inventory-hero:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 34%, var(--line));
+  box-shadow: 0 26px 76px color-mix(in srgb, var(--color-primary) 13%, transparent);
 }
 
 .admin-inventory-hero::after {
@@ -2363,6 +2497,13 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--line));
   border-radius: 22px;
   background: color-mix(in srgb, var(--surface) 90%, var(--color-primary));
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.admin-inventory-hero:hover .admin-inventory-hero__score {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--line));
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 .admin-inventory-hero__score strong {
@@ -2389,6 +2530,20 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   gap: 16px;
   min-width: 0;
   padding: 18px 20px;
+  transition: transform .2s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.admin-inventory-summary article:hover,
+.admin-inventory-summary article:focus-within,
+.admin-inventory-readout:hover,
+.admin-inventory-readout:focus-within,
+.admin-inventory-note:hover,
+.admin-inventory-note:focus-within {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-primary) 28%, var(--line));
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--color-primary) 10%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .admin-inventory-summary article > div {
@@ -2406,6 +2561,13 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   border-radius: 14px;
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 10%, var(--surface));
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.admin-inventory-summary article:hover > span,
+.admin-inventory-note:hover > span {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--color-primary) 13%, transparent);
 }
 
 .admin-inventory-summary strong {
@@ -2451,6 +2613,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   display: grid;
   gap: 26px;
   padding: clamp(22px, 3vw, 34px);
+  transition: transform .2s ease, border-color .22s ease, box-shadow .22s ease;
 }
 
 .admin-inventory-group {
@@ -2485,6 +2648,15 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 5%, transparent), transparent 62%),
     var(--surface);
+  transition: transform .18s ease, border-color .2s ease, background-color .2s ease;
+}
+
+.admin-inventory-values--page article:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 24%, var(--line));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 8%, transparent), transparent 62%),
+    var(--surface);
 }
 
 .admin-inventory-values--page article strong {
@@ -2500,6 +2672,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .admin-inventory-note {
   padding: 22px;
+  transition: transform .2s ease, border-color .22s ease, box-shadow .22s ease;
 }
 
 .admin-inventory-note h3 {
@@ -3355,6 +3528,9 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .subscore-card {
   --subscore-color: var(--color-primary);
   --subscore-width: 0%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 270px;
   padding: 28px;
   border: 1px solid var(--line);
@@ -3364,6 +3540,56 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
     var(--surface);
   box-shadow: 0 10px 34px rgba(16, 33, 59, .08);
   animation: cardLift .55s ease both;
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.subscore-card::after,
+.inventory-insight-card::after,
+.subscore-radar::after,
+.subscore-bars::after,
+.score-legend article::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(120deg, transparent 0 34%, rgba(255,255,255,.34) 45%, transparent 58%),
+    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--color-primary) 14%, transparent), transparent 34%);
+  transition: opacity .22s ease, transform .28s ease;
+  transform: translateX(-8%);
+}
+
+.subscore-card > *,
+.inventory-insight-card > *,
+.subscore-radar > *,
+.subscore-bars > *,
+.score-legend article > * {
+  position: relative;
+  z-index: 1;
+}
+
+.subscore-card:hover,
+.subscore-card:focus-within {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--subscore-color) 42%, var(--line));
+  box-shadow:
+    0 24px 58px color-mix(in srgb, var(--subscore-color) 18%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--subscore-color) 12%, transparent);
+}
+
+.subscore-card:hover::after,
+.subscore-card:focus-within::after,
+.inventory-insight-card:hover::after,
+.inventory-insight-card:focus-within::after,
+.subscore-radar:hover::after,
+.subscore-radar:focus-within::after,
+.subscore-bars:hover::after,
+.subscore-bars:focus-within::after,
+.score-legend article:hover::after,
+.score-legend article:focus-within::after {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .subscore-card:nth-child(2) { animation-delay: .05s; }
@@ -3389,6 +3615,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   background: color-mix(in srgb, var(--subscore-color) 10%, var(--surface));
   font-size: 1.7rem;
   font-weight: 950;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .subscore-card__top b {
@@ -3434,6 +3661,19 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   border-radius: inherit;
   background: var(--subscore-color);
   animation: meterGrow .8s ease both;
+  transition: filter .2s ease, box-shadow .2s ease;
+}
+
+.subscore-card:hover .subscore-card__top span,
+.subscore-card:focus-within .subscore-card__top span {
+  transform: translateY(-2px) rotate(-3deg) scale(1.04);
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--subscore-color) 20%, transparent);
+}
+
+.subscore-card:hover .subscore-meter i,
+.subscore-card:focus-within .subscore-meter i {
+  filter: saturate(1.14);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--subscore-color) 38%, transparent);
 }
 
 .subscore-scale {
@@ -3454,7 +3694,22 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .subscore-radar,
 .subscore-bars,
 .score-legend {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 28px;
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.subscore-radar:hover,
+.subscore-radar:focus-within,
+.subscore-bars:hover,
+.subscore-bars:focus-within {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--color-primary) 34%, var(--line));
+  box-shadow:
+    0 22px 54px color-mix(in srgb, var(--color-primary) 14%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .subscore-radar h3,
@@ -3489,10 +3744,18 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   fill: color-mix(in srgb, var(--color-primary) 18%, transparent) !important;
   stroke: var(--color-primary) !important;
   stroke-width: 4 !important;
+  transition: filter .22s ease, transform .22s ease;
+  transform-origin: center;
 }
 
 .subscore-radar circle {
   fill: var(--color-primary);
+}
+
+.subscore-radar:hover .subscore-radar__area,
+.subscore-radar:focus-within .subscore-radar__area {
+  filter: drop-shadow(0 10px 12px color-mix(in srgb, var(--color-primary) 20%, transparent));
+  transform: scale(1.02);
 }
 
 .subscore-radar__point {
@@ -3604,6 +3867,13 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   background: var(--bar-color);
   box-shadow: 0 12px 28px color-mix(in srgb, var(--bar-color) 28%, transparent);
   animation: barRise .75s ease both;
+  transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+}
+
+.subscore-chart__bar:hover i {
+  transform: translateY(-3px);
+  filter: saturate(1.15);
+  box-shadow: 0 18px 34px color-mix(in srgb, var(--bar-color) 36%, transparent);
 }
 
 .subscore-chart__bar span {
@@ -3612,6 +3882,437 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-size: .8rem;
   font-weight: 850;
   text-align: center;
+}
+
+.inventory-insights {
+  margin-top: 24px;
+}
+
+.inventory-insights__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.inventory-insights__heading span {
+  color: var(--color-primary);
+  font-size: var(--text-caption);
+  font-weight: 850;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.inventory-insights__heading h3 {
+  margin: 6px 0;
+  color: var(--ink);
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
+}
+
+.inventory-insights__heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.inventory-insights__heading b {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  border-radius: 999px;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--surface));
+}
+
+.inventory-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.inventory-insight-card {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  padding: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--color-primary) 8%, transparent), transparent 34%),
+    var(--surface);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.inventory-insight-card:hover,
+.inventory-insight-card:focus-within {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--color-primary) 34%, var(--line));
+  box-shadow:
+    0 24px 58px color-mix(in srgb, var(--color-primary) 15%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.inventory-insight-card h4 {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 1.2rem;
+}
+
+.inventory-insight-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.inventory-insight-card--cost {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+}
+
+.cost-donut {
+  width: 138px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, var(--surface) 0 48%, transparent 50%),
+    conic-gradient(var(--cost-gradient));
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--color-primary) 12%, transparent);
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+}
+
+.inventory-insight-card:hover .cost-donut,
+.inventory-insight-card:focus-within .cost-donut {
+  transform: rotate(-4deg) scale(1.04);
+  filter: saturate(1.08);
+  box-shadow: 0 22px 46px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.cost-donut strong,
+.cost-donut span {
+  grid-area: 1 / 1;
+}
+
+.cost-donut strong {
+  margin-top: -14px;
+  color: var(--ink);
+  font-size: 1.35rem;
+}
+
+.cost-donut span {
+  margin-top: 36px;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.chart-legend {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 9px;
+}
+
+.chart-legend button {
+  --legend-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 750;
+  cursor: help;
+  border-radius: 10px;
+  transition: color .18s ease, background-color .18s ease, transform .18s ease;
+}
+
+.chart-legend button:hover,
+.chart-legend button:focus-visible {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--legend-color) 8%, transparent);
+  transform: translateX(3px);
+}
+
+.chart-legend button > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--legend-color);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--legend-color) 45%, transparent);
+}
+
+.chart-legend b {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: var(--ink);
+}
+
+.chart-legend em {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  color: var(--legend-color);
+  font-style: normal;
+  white-space: nowrap;
+  transition: max-width .18s ease, opacity .18s ease;
+}
+
+.chart-legend button:hover em,
+.chart-legend button:focus-visible em {
+  max-width: 72px;
+  opacity: 1;
+}
+
+.insight-bars,
+.ratio-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.customer-quality-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.insight-bar-row {
+  display: grid;
+  grid-template-columns: minmax(112px, .9fr) minmax(0, 1.4fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.insight-bar-row span,
+.ratio-list span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.insight-bar-row div {
+  height: 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 45%, transparent);
+  overflow: hidden;
+}
+
+.insight-bar-row i,
+.ratio-list i {
+  display: block;
+  width: var(--bar-width, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bar-color, var(--color-primary));
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--bar-color, var(--color-primary)) 22%, transparent);
+  animation: meterGrow .7s ease both;
+  transition: filter .18s ease, box-shadow .18s ease;
+}
+
+.insight-bar-row b {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.insight-bar-row:hover i {
+  filter: saturate(1.18);
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--bar-color, var(--color-primary)) 32%, transparent);
+}
+
+.customer-funnel {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.customer-funnel div {
+  width: var(--funnel-width);
+  min-width: min(100%, 220px);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--funnel-color), color-mix(in srgb, var(--funnel-color) 74%, #111827));
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--funnel-color) 22%, transparent);
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.customer-funnel div:hover {
+  transform: translateX(5px) scale(1.01);
+  filter: saturate(1.1);
+  box-shadow: 0 20px 38px color-mix(in srgb, var(--funnel-color) 32%, transparent);
+}
+
+.customer-funnel span,
+.customer-funnel strong {
+  color: inherit;
+}
+
+.inventory-insight-card--funnel small {
+  display: block;
+  margin-top: 16px;
+  color: var(--color-success);
+  font-weight: 850;
+}
+
+.insight-gauge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.insight-gauge {
+  --gauge-color: var(--color-primary);
+  --gauge-value: 0%;
+  min-height: 150px;
+  padding: 15px;
+  border: 1px solid color-mix(in srgb, var(--gauge-color) 20%, var(--line));
+  border-radius: 18px;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(var(--gauge-color) var(--gauge-value), color-mix(in srgb, var(--line) 62%, transparent) 0) border-box;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.insight-gauge span,
+.insight-gauge small {
+  display: block;
+  color: var(--muted);
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.insight-gauge strong {
+  display: block;
+  margin: 16px 0 6px;
+  color: var(--gauge-color);
+  font-size: 1.35rem;
+}
+
+.insight-gauge:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--gauge-color) 42%, var(--line));
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--gauge-color) 16%, transparent);
+}
+
+.capital-bars {
+  height: 230px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.capital-bars div {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto minmax(40px, 1fr) auto;
+  gap: 10px;
+  height: 100%;
+  text-align: center;
+}
+
+.capital-bars span,
+.capital-bars b {
+  color: var(--muted);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.capital-bars i {
+  width: min(72%, 54px);
+  height: var(--capital-height);
+  align-self: end;
+  justify-self: center;
+  border-radius: 16px 16px 6px 6px;
+  background: var(--capital-color);
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--capital-color) 24%, transparent);
+  animation: barRise .75s ease both;
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.capital-bars div:hover i {
+  transform: translateY(-4px);
+  filter: saturate(1.14);
+  box-shadow: 0 22px 42px color-mix(in srgb, var(--capital-color) 32%, transparent);
+}
+
+.ratio-list div {
+  display: grid;
+  gap: 8px;
+}
+
+.customer-quality-list div {
+  display: grid;
+  gap: 9px;
+}
+
+.ratio-list span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.customer-quality-list span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.ratio-list b {
+  color: var(--ink);
+}
+
+.customer-quality-list b {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.ratio-list i {
+  --bar-color: var(--ratio-color);
+  --bar-width: var(--ratio-width);
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--ratio-color) 0 var(--ratio-width), transparent var(--ratio-width)),
+    color-mix(in srgb, var(--line) 52%, transparent);
+  box-shadow: none;
+}
+
+.customer-quality-list i {
+  display: block;
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--quality-color) 0 var(--quality-width), transparent var(--quality-width)),
+    color-mix(in srgb, var(--line) 52%, transparent);
+  transition: filter .18s ease, box-shadow .18s ease;
+}
+
+.customer-quality-list div:hover i {
+  filter: saturate(1.16);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--quality-color) 22%, transparent);
 }
 
 .score-legend {
@@ -3625,8 +4326,19 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .score-legend article {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 20px;
   border-radius: 16px;
+  transition: transform .2s ease, box-shadow .22s ease, filter .22s ease;
+}
+
+.score-legend article:hover,
+.score-legend article:focus-within {
+  transform: translateY(-4px);
+  filter: saturate(1.04);
+  box-shadow: 0 18px 36px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .score-legend article.critical { background: color-mix(in srgb, var(--color-danger) 16%, var(--surface)); }
@@ -3896,6 +4608,7 @@ dt,
 .trend-card,
 .radar-card,
 .insight-card,
+.inventory-insight-card,
 .inventory-form,
 .progress-card,
 .theme-panel,
@@ -3964,6 +4677,7 @@ dt,
 :root[data-theme="dark"] .trend-card,
 :root[data-theme="dark"] .radar-card,
 :root[data-theme="dark"] .insight-card,
+:root[data-theme="dark"] .inventory-insight-card,
 :root[data-theme="dark"] .inventory-form,
 :root[data-theme="dark"] .progress-card,
 :root[data-theme="dark"] .theme-panel,
@@ -3992,6 +4706,14 @@ dt,
 :root[data-theme="dark"] .admin-setting-form textarea {
   background: var(--surface-soft);
   border-color: var(--border-strong);
+}
+
+:root[data-theme="dark"] .subscores-page .subscore-card::after,
+:root[data-theme="dark"] .subscores-page .inventory-insight-card::after,
+:root[data-theme="dark"] .subscores-page .subscore-radar::after,
+:root[data-theme="dark"] .subscores-page .subscore-bars::after,
+:root[data-theme="dark"] .subscores-page .score-legend article::after {
+  display: none;
 }
 
 .subscore-bars {
@@ -4066,6 +4788,7 @@ dt,
   .business-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .score-result-hero,
   .subscore-visual-grid { grid-template-columns: 1fr; }
+  .inventory-insight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .subscore-visual-grid,
   .subscore-radar,
   .subscore-bars {
@@ -4311,6 +5034,7 @@ dt,
   .subscore-card,
   .subscore-radar,
   .subscore-bars,
+  .inventory-insight-card,
   .score-legend {
     width: 100%;
     min-width: 0;
@@ -4319,6 +5043,8 @@ dt,
   }
   .subscore-radar h3,
   .subscore-bars h3,
+  .inventory-insights__heading h3,
+  .inventory-insight-card h4,
   .score-legend h3 {
     font-size: 1.25rem;
     line-height: 1.18;
@@ -4362,6 +5088,31 @@ dt,
   .subscore-chart__bar b {
     padding: 5px 8px;
     font-size: .68rem;
+  }
+  .inventory-insights__heading {
+    align-items: start;
+    flex-direction: column;
+  }
+  .inventory-insight-grid,
+  .insight-gauge-grid,
+  .inventory-insight-card--cost {
+    grid-template-columns: 1fr;
+  }
+  .cost-donut {
+    width: 128px;
+    justify-self: center;
+  }
+  .insight-bar-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .customer-funnel div {
+    min-width: 0;
+    width: 100%;
+  }
+  .capital-bars {
+    height: 210px;
+    gap: 10px;
   }
   .admin-page {
     overflow-x: hidden;

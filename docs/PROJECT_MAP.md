@@ -71,7 +71,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/AnalysisPage.tsx` | Progress animation dan CTA score. | Saat mengubah flow setelah submit. |
 | `src/pages/ScoreResultPage.tsx` | Hasil skor keseluruhan. | Saat mengubah score summary. |
 | `src/pages/DashboardPage.tsx` | Dashboard diagnosis utama. | Saat mengubah summary dashboard/user insight. |
-| `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, legend. | Saat mengubah visualisasi sub-score. |
+| `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, insight inventory operasional, dan legend. | Saat mengubah visualisasi sub-score atau data inventarisasi. |
 | `src/pages/SettingsPage.tsx` | Pengaturan ubah password mandiri dan tema lokal. | Saat mengubah settings atau keamanan akun. |
 | `src/pages/AdminPage.tsx` | Admin summary, diagnosis, limit, users, audit logs. | Saat mengubah fitur admin utama. |
 | `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role. | Saat mengubah review/detail inventory. |
@@ -82,7 +82,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | --- | --- | --- |
 | `src/data/inventoryFields.ts` | Sumber label/order/note/example field inventory. | Wajib dibaca sebelum mengubah form inventory atau payload mapping. |
 | `src/data/dashboardData.ts` | Fallback score cards/trend sample. | Saat mengubah fallback visual sebelum data ada. |
-| `src/types.ts` | Type UI umum: `View`, `ThemeSettings`, `InventoryField`. | Saat mengubah view enum/theme/inventory field model. |
+| `src/types.ts` | Type UI umum: `View`, `ThemeSettings`, `InventoryField`. | Saat mengubah view enum, navigasi, theme, atau inventory field model. |
 | `src/utils/formValidation.ts` | Sanitasi text dan validasi string sederhana. | Saat mengubah validasi form lokal. |
 | `src/utils/number.ts` | `formatScore`, `clampPercent`. | Saat mengubah formatting score/progress. |
 | `src/vite-env.d.ts` | Type env Vite. | Saat menambah type env custom jika diperlukan. |

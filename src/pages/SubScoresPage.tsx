@@ -20,6 +20,14 @@ type SubScoreItem = {
   icon: string;
 };
 
+type InventoryInsightBar = {
+  label: string;
+  value: number;
+  formatted: string;
+  color: string;
+  percent?: string;
+};
+
 function statusShort(score: number) {
   if (score >= 80) return "Sangat Sehat";
   if (score >= 60) return "Sehat";
@@ -48,6 +56,28 @@ function axisPoint(index: number, radius: number) {
   const center = 115;
   const angle = -Math.PI / 2 + (index * Math.PI * 2) / 6;
   return `${center + Math.cos(angle) * radius},${center + Math.sin(angle) * radius}`;
+}
+
+function safeDivide(value: number, divider: number) {
+  return divider > 0 ? value / divider : 0;
+}
+
+function formatCompactCurrency(value: number) {
+  return new Intl.NumberFormat("id-ID", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value || 0);
+}
+
+function formatCompactNumber(value: number) {
+  return new Intl.NumberFormat("id-ID", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value || 0);
+}
+
+function formatPercent(value: number) {
+  return `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value || 0)}%`;
 }
 
 export function SubScoresPage() {
@@ -101,6 +131,115 @@ export function SubScoresPage() {
   }, [submission]);
 
   const radarPoints = items.map((item, index) => radarPoint(index, item.score)).join(" ");
+  const metrics = submission?.analysis.metrics;
+
+  const inventoryInsights = useMemo(() => {
+    if (!submission || !metrics) return null;
+
+    const rawCostItems: InventoryInsightBar[] = [
+      { label: "HPP", value: submission.cogs, formatted: `Rp ${formatCompactCurrency(submission.cogs)}`, color: "#3b82f6" },
+      { label: "Operasional", value: submission.operational_cost, formatted: `Rp ${formatCompactCurrency(submission.operational_cost)}`, color: "#10b981" },
+      { label: "Gaji", value: submission.salary_cost, formatted: `Rp ${formatCompactCurrency(submission.salary_cost)}`, color: "#f59e0b" },
+      { label: "Marketing", value: submission.marketing_cost, formatted: `Rp ${formatCompactCurrency(submission.marketing_cost)}`, color: "#ec4899" },
+    ];
+    const costTotal = rawCostItems.reduce((total, item) => total + item.value, 0);
+    const costItems = rawCostItems.map((item) => ({
+      ...item,
+      percent: formatPercent(safeDivide(item.value, costTotal) * 100),
+    }));
+    let costCursor = 0;
+    const costGradient = costItems.map((item) => {
+      const start = costCursor;
+      const end = costCursor + safeDivide(item.value, costTotal) * 100;
+      costCursor = end;
+      return `${item.color} ${start}% ${end}%`;
+    }).join(", ");
+
+    const financialItems: InventoryInsightBar[] = [
+      { label: "Omzet 6 Bulan", value: submission.six_month_revenue, formatted: `Rp ${formatCompactCurrency(submission.six_month_revenue)}`, color: "#3b82f6" },
+      { label: "Total Biaya", value: metrics.total_expense, formatted: `Rp ${formatCompactCurrency(metrics.total_expense)}`, color: "#ef4444" },
+      { label: "Laba Bersih", value: metrics.net_profit, formatted: `Rp ${formatCompactCurrency(metrics.net_profit)}`, color: metrics.net_profit >= 0 ? "#10b981" : "#ef4444" },
+    ];
+    const financialMax = Math.max(1, ...financialItems.map((item) => Math.abs(item.value)));
+    const profitPerHundred = safeDivide(metrics.net_profit, submission.six_month_revenue) * 100;
+
+    const customerItems: InventoryInsightBar[] = [
+      { label: "Pelanggan Baru", value: submission.new_customers, formatted: formatCompactNumber(submission.new_customers), color: "#3b82f6" },
+      { label: "Repeat Customer", value: submission.repeat_customers, formatted: formatCompactNumber(submission.repeat_customers), color: "#8b5cf6" },
+      { label: "Pelanggan Aktif", value: submission.active_customers, formatted: formatCompactNumber(submission.active_customers), color: "#10b981" },
+    ];
+    const customerMax = Math.max(1, ...customerItems.map((item) => item.value));
+
+    const gauges = [
+      {
+        label: "Nilai rata-rata transaksi",
+        value: `Rp ${formatCompactCurrency(metrics.average_transaction_value)}`,
+        note: `${formatCompactNumber(submission.six_month_transactions)} transaksi`,
+        percent: Math.min(100, safeDivide(metrics.average_transaction_value, 500000) * 100),
+        color: "#3b82f6",
+      },
+      {
+        label: "Rata-rata gaji per karyawan",
+        value: `Rp ${formatCompactCurrency(metrics.salary_per_employee)}`,
+        note: `Total gaji Rp ${formatCompactCurrency(submission.salary_cost)}`,
+        percent: Math.min(100, safeDivide(metrics.salary_per_employee, 10000000) * 100),
+        color: "#10b981",
+      },
+      {
+        label: "Rasio laba terhadap modal",
+        value: formatPercent(safeDivide(metrics.net_profit, submission.capital_investment) * 100),
+        note: `Modal Rp ${formatCompactCurrency(submission.capital_investment)}`,
+        percent: Math.min(100, Math.max(0, safeDivide(metrics.net_profit, submission.capital_investment) * 100)),
+        color: "#f59e0b",
+      },
+    ];
+
+    const capitalItems: InventoryInsightBar[] = [
+      { label: "Aset", value: submission.asset_value, formatted: `Rp ${formatCompactCurrency(submission.asset_value)}`, color: "#8b5cf6" },
+      { label: "Modal", value: submission.capital_investment, formatted: `Rp ${formatCompactCurrency(submission.capital_investment)}`, color: "#ec4899" },
+      { label: "Laba", value: metrics.net_profit, formatted: `Rp ${formatCompactCurrency(metrics.net_profit)}`, color: "#10b981" },
+    ];
+    const capitalMax = Math.max(1, ...capitalItems.map((item) => Math.abs(item.value)));
+    const customerQualityItems: InventoryInsightBar[] = [
+      {
+        label: "Omzet per pelanggan aktif",
+        value: safeDivide(submission.six_month_revenue, submission.active_customers),
+        formatted: `Rp ${formatCompactCurrency(safeDivide(submission.six_month_revenue, submission.active_customers))}`,
+        color: "#3b82f6",
+      },
+      {
+        label: "Transaksi per pelanggan aktif",
+        value: safeDivide(submission.six_month_transactions, submission.active_customers),
+        formatted: `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(safeDivide(submission.six_month_transactions, submission.active_customers))}x`,
+        color: "#10b981",
+      },
+      {
+        label: "Repeat dari pelanggan aktif",
+        value: safeDivide(submission.repeat_customers, submission.active_customers) * 100,
+        formatted: formatPercent(safeDivide(submission.repeat_customers, submission.active_customers) * 100),
+        color: "#8b5cf6",
+      },
+    ];
+    const customerQualityMax = Math.max(1, ...customerQualityItems.map((item) => item.value));
+
+    return {
+      costItems,
+      costTotal,
+      costGradient: costGradient || "var(--color-primary) 0% 100%",
+      costBreakdownLabel: costItems.map((item) => `${item.label}: ${item.percent}`).join(", "),
+      financialItems,
+      financialMax,
+      profitPerHundred,
+      customerItems,
+      customerMax,
+      gauges,
+      capitalItems,
+      capitalMax,
+      customerQualityItems,
+      customerQualityMax,
+      retentionRate: metrics.retention_rate,
+    };
+  }, [submission, metrics]);
 
   return (
     <DashboardShell activeView="subscores" title="Dashboard 6 Sub Skor Bisnis">
@@ -187,6 +326,124 @@ export function SubScoresPage() {
                 </div>
               </section>
             </div>
+
+            {inventoryInsights && (
+              <section className="inventory-insights">
+                <div className="inventory-insights__heading">
+                  <div>
+                    <span>Data Inventarisasi</span>
+                    <h3>Insight Operasional Tambahan</h3>
+                    <p>Visual ini memakai nominal, pelanggan, aset, modal, dan produktivitas agar tidak mengulang grafik skor.</p>
+                  </div>
+                  <b>6 visual</b>
+                </div>
+
+                <div className="inventory-insight-grid">
+                  <article className="panel inventory-insight-card inventory-insight-card--cost">
+                    <div>
+                      <h4>Alokasi Biaya</h4>
+                      <p>Uang keluar terbesar terlihat dari komposisi biaya utama.</p>
+                    </div>
+                    <div
+                      className="cost-donut"
+                      title={inventoryInsights.costBreakdownLabel}
+                      aria-label={`Persentase alokasi biaya: ${inventoryInsights.costBreakdownLabel}`}
+                      style={{ "--cost-gradient": inventoryInsights.costGradient } as CSSProperties}
+                    >
+                      <strong>{formatPercent(safeDivide(submission.marketing_cost, inventoryInsights.costTotal) * 100)}</strong>
+                      <span>Marketing</span>
+                    </div>
+                    <div className="chart-legend">
+                      {inventoryInsights.costItems.map((item) => (
+                        <button key={item.label} type="button" style={{ "--legend-color": item.color } as CSSProperties}>
+                          <span><i /> {item.label}</span>
+                          <b>{item.formatted}<em>{item.percent}</em></b>
+                        </button>
+                      ))}
+                    </div>
+                  </article>
+
+                  <article className="panel inventory-insight-card inventory-insight-card--bars">
+                    <div>
+                      <h4>Ringkasan Arus Uang</h4>
+                      <p>Setiap Rp 100 omzet menghasilkan sekitar Rp {formatCompactCurrency(inventoryInsights.profitPerHundred)} laba bersih.</p>
+                    </div>
+                    <div className="insight-bars">
+                      {inventoryInsights.financialItems.map((item) => (
+                        <div className="insight-bar-row" key={item.label}>
+                          <span>{item.label}</span>
+                          <div><i style={{ "--bar-color": item.color, "--bar-width": `${safeDivide(Math.abs(item.value), inventoryInsights.financialMax) * 100}%` } as CSSProperties} /></div>
+                          <b>{item.formatted}</b>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+
+                  <article className="panel inventory-insight-card inventory-insight-card--funnel">
+                    <div>
+                      <h4>Customer Funnel</h4>
+                      <p>Perbandingan pelanggan baru, repeat, dan aktif.</p>
+                    </div>
+                    <div className="customer-funnel">
+                      {inventoryInsights.customerItems.map((item) => (
+                        <div key={item.label} style={{ "--funnel-color": item.color, "--funnel-width": `${Math.max(12, safeDivide(item.value, inventoryInsights.customerMax) * 100)}%` } as CSSProperties}>
+                          <span>{item.label}</span>
+                          <strong>{item.formatted}</strong>
+                        </div>
+                      ))}
+                    </div>
+                    <small>Retensi {formatPercent(inventoryInsights.retentionRate)}</small>
+                  </article>
+
+                  <article className="panel inventory-insight-card inventory-insight-card--gauges">
+                    <div>
+                      <h4>Efisiensi Transaksi & Beban SDM</h4>
+                      <p>Rasio cepat dari transaksi, beban gaji, dan modal.</p>
+                    </div>
+                    <div className="insight-gauge-grid">
+                      {inventoryInsights.gauges.map((gauge) => (
+                        <div className="insight-gauge" key={gauge.label} style={{ "--gauge-color": gauge.color, "--gauge-value": `${gauge.percent}%` } as CSSProperties}>
+                          <span>{gauge.label}</span>
+                          <strong>{gauge.value}</strong>
+                          <small>{gauge.note}</small>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+
+                  <article className="panel inventory-insight-card inventory-insight-card--capital">
+                    <div>
+                      <h4>Keseimbangan Modal</h4>
+                      <p>Melihat posisi modal, aset, dan laba yang sudah terbentuk.</p>
+                    </div>
+                    <div className="capital-bars">
+                      {inventoryInsights.capitalItems.map((item) => (
+                        <div key={item.label}>
+                          <span>{item.label}</span>
+                          <i style={{ "--capital-color": item.color, "--capital-height": `${Math.max(8, safeDivide(Math.abs(item.value), inventoryInsights.capitalMax) * 100)}%` } as CSSProperties} />
+                          <b>{item.formatted}</b>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+
+                  <article className="panel inventory-insight-card inventory-insight-card--quality">
+                    <div>
+                      <h4>Kualitas Transaksi & Pelanggan</h4>
+                      <p>Melihat nilai pelanggan aktif dan potensi repeat business.</p>
+                    </div>
+                    <div className="customer-quality-list">
+                      {inventoryInsights.customerQualityItems.map((item) => (
+                        <div key={item.label}>
+                          <span>{item.label}<b>{item.formatted}</b></span>
+                          <i style={{ "--quality-color": item.color, "--quality-width": `${Math.max(8, safeDivide(item.value, inventoryInsights.customerQualityMax) * 100)}%` } as CSSProperties} />
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+                </div>
+              </section>
+            )}
 
             <section className="panel score-legend">
               <h3>Interpretasi & Skala Skor</h3>

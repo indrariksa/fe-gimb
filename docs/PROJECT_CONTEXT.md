@@ -142,6 +142,7 @@ Navigasi user:
 - Dashboard;
 - Hasil Skor;
 - Sub Skor;
+- Hasil Input;
 - Input Masalah.
 
 Navigasi admin:
@@ -152,7 +153,7 @@ Navigasi admin:
 - User;
 - Audit Log.
 
-User navigation untuk dashboard/score/subscore disabled jika belum ada `businessId` atau belum ada hasil inventory. DashboardShell mengecek hasil inventory terbaru lewat endpoint latest inventory.
+User navigation untuk dashboard/score/subscore/hasil input disabled jika belum ada `businessId` atau belum ada hasil inventory. DashboardShell mengecek hasil inventory terbaru lewat endpoint latest inventory.
 
 ## Autentikasi
 
@@ -362,7 +363,7 @@ Script test: Belum teridentifikasi.
 - Analysis loading page berbasis timer/progress lokal.
 - Score result page.
 - Dashboard diagnosis dengan score cards, action plan 30 hari dari `analysis.action_plan`, dan business snapshot.
-- Sub-scores page dengan card, radar SVG, bar chart, dan legend.
+- Sub-scores page dengan card, radar SVG, bar chart, insight operasional dari data inventarisasi, dan legend.
 - Settings page untuk ubah password mandiri dan tema lokal.
 - Admin dashboard summary.
 - Card ringkasan admin dan user memakai efek holographic ringan saat hover.

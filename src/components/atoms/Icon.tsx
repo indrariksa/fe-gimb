@@ -1,10 +1,11 @@
 type IconProps = {
-  name: "chart" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check" | "search" | "filter" | "refresh" | "maximize";
+  name: "chart" | "dashboard" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check" | "search" | "filter" | "refresh" | "maximize";
   size?: number;
 };
 
 const paths: Record<IconProps["name"], string[]> = {
   chart: ["M4 19V9", "M10 19V5", "M16 19v-7", "M22 19V3"],
+  dashboard: ["M4 14a8 8 0 1 1 16 0", "M12 14l4-4", "M7 14h.01", "M9 9h.01", "M15 9h.01", "M17 14h.01", "M6 19h12"],
   home: ["M3 11l9-8 9 8", "M5 10v10h14V10", "M9 20v-6h6v6"],
   alert: ["M12 3 2 21h20L12 3Z", "M12 9v5", "M12 17h.01"],
   grid: ["M4 4h6v6H4z", "M14 4h6v6h-6z", "M4 14h6v6H4z", "M14 14h6v6h-6z"],

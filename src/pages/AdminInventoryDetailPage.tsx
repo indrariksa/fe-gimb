@@ -134,7 +134,7 @@ export function AdminInventoryDetailPage() {
   ] : [];
 
   return (
-    <DashboardShell activeView={isAdmin ? "admin" : "dashboard"} title="Detail Data Inventarisasi">
+    <DashboardShell activeView={isAdmin ? "admin" : "inventoryInput"} title="Detail Data Inventarisasi">
       <section className="admin-inventory-page">
         {isLoading && <article className="panel empty-state">Memuat detail data inventarisasi...</article>}
         {error && !isLoading && (
