@@ -44,6 +44,7 @@ export function DashboardPage() {
   const [submission, setSubmission] = useState<InventorySubmission | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -76,7 +77,7 @@ export function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId, isAdmin]);
+  }, [businessId, isAdmin, reloadKey]);
 
   const cards = useMemo(() => {
     if (!submission?.analysis?.sub_scores) return scoreCards;
@@ -210,7 +211,14 @@ export function DashboardPage() {
         </div>
 
         {isLoading && <article className="panel empty-state">Memuat dashboard bisnis...</article>}
-        {error && <article className="panel empty-state">{error}</article>}
+        {error && (
+          <article className="panel empty-state retry-state">
+            <span>{error}</span>
+            <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
+              Coba lagi <Icon name="refresh" size={18} />
+            </Button>
+          </article>
+        )}
         {!isLoading && !error && !submission && (
           <article className="panel dashboard-empty">
             <span><Icon name="alert" /></span>

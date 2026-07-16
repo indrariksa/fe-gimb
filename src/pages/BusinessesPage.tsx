@@ -70,11 +70,14 @@ export function BusinessesPage() {
   const [industrySearch, setIndustrySearch] = useState("");
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const loadBusinesses = async () => {
     setIsLoading(true);
+    setLoadError("");
     try {
       const [response, limitSetting] = await Promise.all([
         businessApi.listBusinesses(),
@@ -94,7 +97,7 @@ export function BusinessesPage() {
       );
       setCompletedBusinessIds(new Set(completedIds.filter((id): id is string => Boolean(id))));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat toko");
+      setLoadError(err instanceof Error ? err.message : "Gagal memuat toko");
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +116,7 @@ export function BusinessesPage() {
 
   useEffect(() => {
     loadBusinesses();
-  }, []);
+  }, [reloadKey]);
 
   const create = async (event: FormEvent) => {
     event.preventDefault();
@@ -193,14 +196,22 @@ export function BusinessesPage() {
         <div className="business-layout">
           <div className="business-list">
             {isLoading && <article className="panel empty-state">Memuat toko...</article>}
-            {!isLoading && businesses.length === 0 && (
+            {!isLoading && loadError && (
+              <article className="panel empty-state retry-state">
+                <span>{loadError}</span>
+                <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
+                  Coba lagi <Icon name="refresh" size={18} />
+                </Button>
+              </article>
+            )}
+            {!isLoading && !loadError && businesses.length === 0 && (
               <article className="panel empty-state business-empty">
                 <span><Icon name="home" /></span>
                 <h3>Belum ada toko</h3>
                 <p>Buat toko pertama untuk mulai mengisi inventarisasi dan melihat dashboard diagnosis.</p>
               </article>
             )}
-            {businesses.map((business) => {
+            {!loadError && businesses.map((business) => {
               const hasDiagnosis = completedBusinessIds.has(business.public_id);
 
               return (

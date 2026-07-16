@@ -12,7 +12,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Ubah password mandiri dari halaman settings.
 - Session auth di `localStorage` key `gimb:auth`.
 - Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
-- API client fetch wrapper dengan timeout 15 detik, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
+- API client fetch wrapper dengan timeout 15 detik, retry timeout sekali untuk request GET/HEAD, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
 - Route guard authenticated, admin-only, dan user-only.
 - Redirect role:
   - admin ke `/admin`;
@@ -24,6 +24,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - theme toggle;
   - logout confirmation.
 - Daftar toko user.
+- Halaman user utama menyediakan tombol coba lagi saat load data gagal.
 - Create toko dengan validasi lokal dan business limit dari backend.
 - Status inventory tiap toko melalui latest inventory check.
 - Detail data inventarisasi untuk user dari dashboard toko dan daftar toko.
@@ -43,7 +44,8 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - diagnosis watchlist dengan pagination;
   - update business limit;
   - user list dengan pagination, update status, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
-  - audit log list dengan pagination, search/filter lokal, detail expand, reload, fullscreen.
+  - audit log list dengan pagination, search/filter lokal, detail expand, reload, fullscreen, dan kolom row rata kiri;
+  - tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory detail/input readout page.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.

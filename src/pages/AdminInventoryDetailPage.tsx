@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
+import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { inventoryFields } from "../data/inventoryFields";
 import * as adminApi from "../services/api/admin";
@@ -64,6 +65,7 @@ export function AdminInventoryDetailPage() {
   const [submitter, setSubmitter] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
   const backPath = isAdmin ? "/admin#diagnoses" : "/businesses";
 
   useEffect(() => {
@@ -100,7 +102,7 @@ export function AdminInventoryDetailPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId, isAdmin, user]);
+  }, [businessId, isAdmin, user, reloadKey]);
 
   const fieldGroups = useMemo(() => {
     if (!submission) return [];
@@ -138,10 +140,13 @@ export function AdminInventoryDetailPage() {
       <section className="admin-inventory-page">
         {isLoading && <article className="panel empty-state">Memuat detail data inventarisasi...</article>}
         {error && !isLoading && (
-          <article className="panel empty-state">
+          <article className="panel empty-state retry-state">
             <span className="empty-state__icon"><Icon name="alert" /></span>
             <strong>{error}</strong>
-            <button className="btn" type="button" onClick={() => navigate(backPath)}>Kembali</button>
+            <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
+              Coba lagi <Icon name="refresh" size={18} />
+            </Button>
+            <Button variant="secondary" onClick={() => navigate(backPath)}>Kembali</Button>
           </article>
         )}
 

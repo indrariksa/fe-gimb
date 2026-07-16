@@ -229,6 +229,7 @@ HTTP client:
 - `src/services/api/client.ts`;
 - wrapper `fetch`;
 - timeout `15_000` ms via `AbortSignal.timeout`;
+- retry timeout otomatis sekali untuk request `GET`/`HEAD` setelah 2 detik;
 - envelope API: `ApiEnvelope<T>`.
 
 Header auth:
@@ -245,7 +246,7 @@ Error handling:
 - `ApiTimeoutError` untuk timeout;
 - `getFriendlyApiError` memberi pesan khusus untuk 429, 413, >=500, dan network `TypeError`;
 - `401` pada protected request mencoba refresh token dan retry request sekali sebelum session lokal dihapus;
-- timeout memunculkan notice global `role="alert"` selama 5 detik.
+- timeout setelah retry otomatis gagal memunculkan notice global `role="alert"` selama 5 detik.
 
 Tidak ada interceptor library seperti Axios. Pola interceptor dibuat manual melalui `configureApiClient`.
 
@@ -357,6 +358,7 @@ Script test: Belum teridentifikasi.
 - Session persistence, lazy refresh token saat bootstrap, dan refresh-on-401 sekali.
 - Route guard user/admin.
 - User business list/create dengan business limit.
+- Halaman user yang memuat data bisnis/diagnosis/detail input menampilkan tombol coba lagi saat load gagal.
 - Pengecekan inventory existing per business.
 - Draft inventory lokal per business.
 - Submit inventory ke backend.
@@ -373,6 +375,7 @@ Script test: Belum teridentifikasi.
 - Admin update business limit.
 - Admin user list dan update status.
 - Admin audit log list dengan pagination, filter level, search lokal per halaman, expand detail, reload, fullscreen.
+- Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
 - Dark/light mode dan theme colors.
 

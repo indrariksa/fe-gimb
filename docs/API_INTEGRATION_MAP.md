@@ -45,7 +45,7 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 
 | Fitur | File Service | Method | Endpoint | Request | Response | Penanganan Error |
 | --- | --- | --- | --- | --- | --- | --- |
-| Generic request | `src/services/api/client.ts` | Semua | `${baseUrl}${path}` | `RequestInit`, optional `auth:false` | `envelope.data as T` | Non-OK atau `success:false` menjadi `ApiError(status, message, error)`. Protected request dengan `401` mencoba refresh token dan retry request sekali. |
+| Generic request | `src/services/api/client.ts` | Semua | `${baseUrl}${path}` | `RequestInit`, optional `auth:false` | `envelope.data as T` | Non-OK atau `success:false` menjadi `ApiError(status, message, error)`. Protected request dengan `401` mencoba refresh token dan retry request sekali. Request `GET`/`HEAD` yang timeout dicoba ulang otomatis sekali setelah 2 detik. |
 | Auth header | `src/services/api/client.ts` | Semua protected | Semua path dengan `auth !== false` | Access token dari configured provider | Header `Authorization: Bearer <token>` | Jika token kosong, request tetap dikirim tanpa header. |
-| Timeout | `src/services/api/client.ts` | Semua | Semua | `AbortSignal.timeout(15000)` | Tidak ada | DOMException `TimeoutError` menjadi `ApiTimeoutError` dan memicu timeout notice global. |
+| Timeout | `src/services/api/client.ts` | Semua | Semua | `AbortSignal.timeout(15000)` | Tidak ada | DOMException `TimeoutError` pada request `GET`/`HEAD` dicoba ulang otomatis sekali; jika tetap gagal menjadi `ApiTimeoutError` dan memicu timeout notice global. |
 | Unauthorized hook | `src/services/api/client.ts` | Protected | Semua protected | Response status 401 setelah retry refresh gagal | Tidak ada | Memanggil `onUnauthorized`, yang di `AuthContext` menghapus `gimb:auth`. |

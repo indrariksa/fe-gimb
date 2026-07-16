@@ -101,8 +101,10 @@ export function InventoryPage() {
   const [values, setValues] = useState<Record<string, string>>(() => readDraft(businessId));
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [isCheckingAccess, setIsCheckingAccess] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const completed = inventoryFields.filter((field) => values[field.id]).length;
   const progress = Math.round((completed / inventoryFields.length) * 100);
 
@@ -114,6 +116,7 @@ export function InventoryPage() {
     let isMounted = true;
     async function loadBusiness() {
       setIsCheckingAccess(true);
+      setLoadError("");
       try {
         const [detail, latestSubmission] = await Promise.all([
           businessApi.getBusiness(businessId),
@@ -129,7 +132,7 @@ export function InventoryPage() {
 
         setBusiness(detail);
       } catch (err) {
-        if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat toko");
+        if (isMounted) setLoadError(err instanceof Error ? err.message : "Gagal memuat toko");
       } finally {
         if (isMounted) setIsCheckingAccess(false);
       }
@@ -138,7 +141,7 @@ export function InventoryPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId, navigate]);
+  }, [businessId, navigate, reloadKey]);
 
   const submitInventory = async () => {
     setError("");
@@ -168,6 +171,13 @@ export function InventoryPage() {
       <section className="inventory-page">
         {isCheckingAccess ? (
           <article className="panel empty-state">Memeriksa status inventarisasi...</article>
+        ) : loadError ? (
+          <article className="panel empty-state retry-state">
+            <span>{loadError}</span>
+            <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
+              Coba lagi <Icon name="refresh" size={18} />
+            </Button>
+          </article>
         ) : (
         <>
         <div className="form-hero">

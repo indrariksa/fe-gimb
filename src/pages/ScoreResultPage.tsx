@@ -39,6 +39,7 @@ export function ScoreResultPage() {
   const [submission, setSubmission] = useState<InventorySubmission | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -68,7 +69,7 @@ export function ScoreResultPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId, isAdmin]);
+  }, [businessId, isAdmin, reloadKey]);
 
   const score = submission?.analysis.overall_score ?? 0;
   const progress = clampPercent(score);
@@ -80,7 +81,14 @@ export function ScoreResultPage() {
     <DashboardShell activeView="score" title="Hasil Skor">
       <section className="score-result-page">
         {isLoading && <article className="panel empty-state">Memuat hasil diagnosis...</article>}
-        {error && <article className="panel empty-state">{error}</article>}
+        {error && (
+          <article className="panel empty-state retry-state">
+            <span>{error}</span>
+            <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
+              Coba lagi <Icon name="refresh" size={18} />
+            </Button>
+          </article>
+        )}
 
         {!isLoading && !error && submission && (
           <>

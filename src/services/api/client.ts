@@ -3,6 +3,7 @@ import type { ApiEnvelope } from "./types";
 const defaultBaseUrl = "http://127.0.0.1:8080/api/v1";
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? defaultBaseUrl;
 const requestTimeoutMs = 15_000;
+const timeoutRetryDelayMs = 2_000;
 export const timeoutMessage = "Koneksi ke server terlalu lama. Silakan coba lagi.";
 
 let accessTokenProvider: (() => string | null) | null = null;
@@ -62,21 +63,40 @@ type RequestOptions = RequestInit & {
   retried?: boolean;
 };
 
+function sleep(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function canRetryTimeout(options: RequestInit) {
+  const method = (options.method ?? "GET").toUpperCase();
+  return !options.signal && (method === "GET" || method === "HEAD");
+}
+
 async function fetchWithTimeout(path: string, options: RequestOptions, headers: Headers) {
   const { retried: _retried, ...requestOptions } = options;
-  try {
-    return await fetch(`${baseUrl}${path}`, {
-      ...requestOptions,
-      headers,
-      signal: requestOptions.signal ?? AbortSignal.timeout(requestTimeoutMs),
-    });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "TimeoutError") {
-      onTimeout?.();
-      throw new ApiTimeoutError();
+  const attempts = canRetryTimeout(requestOptions) ? 2 : 1;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fetch(`${baseUrl}${path}`, {
+        ...requestOptions,
+        headers,
+        signal: requestOptions.signal ?? AbortSignal.timeout(requestTimeoutMs),
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "TimeoutError") {
+        if (attempt < attempts - 1) {
+          await sleep(timeoutRetryDelayMs);
+          continue;
+        }
+        onTimeout?.();
+        throw new ApiTimeoutError();
+      }
+      throw error;
     }
-    throw error;
   }
+
+  throw new ApiTimeoutError();
 }
 
 function headersFor(options: RequestOptions, token?: string | null) {

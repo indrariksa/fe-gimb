@@ -308,12 +308,15 @@ export function AdminPage() {
   const [diagnosisPage, setDiagnosisPage] = useState(0);
   const [diagnosisPageSize, setDiagnosisPageSize] = useState(defaultDiagnosisPageSize);
   const [diagnosisMeta, setDiagnosisMeta] = useState(() => emptyPaginationMeta(defaultDiagnosisPageSize));
+  const [adminReloadKey, setAdminReloadKey] = useState(0);
   const [userPage, setUserPage] = useState(0);
   const [userPageSize, setUserPageSize] = useState(defaultUserPageSize);
   const [userMeta, setUserMeta] = useState(() => emptyPaginationMeta(defaultUserPageSize));
+  const [userReloadKey, setUserReloadKey] = useState(0);
   const [auditPage, setAuditPage] = useState(0);
   const [auditPageSize, setAuditPageSize] = useState(defaultAuditPageSize);
   const [auditMeta, setAuditMeta] = useState(() => emptyPaginationMeta(defaultAuditPageSize));
+  const [diagnosisReloadKey, setDiagnosisReloadKey] = useState(0);
   const [auditReloadKey, setAuditReloadKey] = useState(0);
   const [auditSearch, setAuditSearch] = useState("");
   const [auditLevelFilter, setAuditLevelFilter] = useState<AuditLevelFilter>("all");
@@ -360,7 +363,7 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [adminReloadKey]);
 
   useEffect(() => {
     let isMounted = true;
@@ -391,7 +394,7 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [userPage, userPageSize]);
+  }, [userPage, userPageSize, userReloadKey]);
 
   useEffect(() => {
     let isMounted = true;
@@ -422,7 +425,7 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [diagnosisPage, diagnosisPageSize]);
+  }, [diagnosisPage, diagnosisPageSize, diagnosisReloadKey]);
 
   useEffect(() => {
     let isMounted = true;
@@ -513,7 +516,14 @@ export function AdminPage() {
         </div>
 
         {isLoading && <article className="panel empty-state">Memuat data admin...</article>}
-        {error && <article className="panel empty-state">{error}</article>}
+        {error && (
+          <article className="panel empty-state retry-state">
+            <span>{error}</span>
+            <Button className="btn--dashboard-hover" onClick={() => setAdminReloadKey((current) => current + 1)}>
+              Coba lagi <Icon name="refresh" size={18} />
+            </Button>
+          </article>
+        )}
 
         {!isLoading && !error && (
           <>
@@ -546,7 +556,18 @@ export function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {diagnosisError && <tr><td colSpan={5}>{diagnosisError}</td></tr>}
+                      {diagnosisError && (
+                        <tr>
+                          <td colSpan={5}>
+                            <div className="table-retry-state">
+                              <span>{diagnosisError}</span>
+                              <button type="button" onClick={() => setDiagnosisReloadKey((current) => current + 1)}>
+                                Coba lagi <Icon name="refresh" size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                       {!diagnosisError && isDiagnosisLoading && (
                         <tr><td colSpan={5}>Memuat monitoring diagnosis...</td></tr>
                       )}
@@ -624,7 +645,14 @@ export function AdminPage() {
                   <b>{userMeta.total} data</b>
                 </div>
                 <div className="data-table">
-                  {userError && <article>{userError}</article>}
+                  {userError && (
+                    <article className="table-retry-state">
+                      <span>{userError}</span>
+                      <button type="button" onClick={() => setUserReloadKey((current) => current + 1)}>
+                        Coba lagi <Icon name="refresh" size={16} />
+                      </button>
+                    </article>
+                  )}
                   {!userError && isUserLoading && <article>Memuat user...</article>}
                   {!userError && !isUserLoading && users.length === 0 && <article>Belum ada user.</article>}
                   {!userError && !isUserLoading && users.map((user) => (
@@ -718,7 +746,14 @@ export function AdminPage() {
                 </div>
 
                 <div className="audit-log-list">
-                  {auditError && <article className="audit-empty">{auditError}</article>}
+                  {auditError && (
+                    <article className="audit-empty table-retry-state">
+                      <span>{auditError}</span>
+                      <button type="button" onClick={() => setAuditReloadKey((current) => current + 1)}>
+                        Coba lagi <Icon name="refresh" size={16} />
+                      </button>
+                    </article>
+                  )}
                   {!auditError && isAuditLoading && <article className="audit-empty">Memuat audit log...</article>}
                   {!auditError && !isAuditLoading && auditLogs.length === 0 && <article className="audit-empty">Belum ada audit log.</article>}
                   {!auditError && !isAuditLoading && auditLogs.length > 0 && visibleAuditLogs.length === 0 && (

@@ -88,6 +88,7 @@ export function SubScoresPage() {
   const [submission, setSubmission] = useState<InventorySubmission | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -117,7 +118,7 @@ export function SubScoresPage() {
     return () => {
       isMounted = false;
     };
-  }, [businessId, isAdmin]);
+  }, [businessId, isAdmin, reloadKey]);
 
   const items = useMemo<SubScoreItem[]>(() => {
     const scores = submission?.analysis.sub_scores;
@@ -337,7 +338,14 @@ export function SubScoresPage() {
     <DashboardShell activeView="subscores" title="Dashboard 6 Sub Skor Bisnis">
       <section className="subscores-page">
         {isLoading && <article className="panel empty-state">Memuat sub skor...</article>}
-        {error && <article className="panel empty-state">{error}</article>}
+        {error && (
+          <article className="panel empty-state retry-state">
+            <span>{error}</span>
+            <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
+              Coba lagi <Icon name="refresh" size={18} />
+            </Button>
+          </article>
+        )}
 
         {!isLoading && !error && submission && (
           <>
