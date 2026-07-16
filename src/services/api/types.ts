@@ -101,8 +101,15 @@ export type BusinessHealthAnalysis = {
   priority_issues: string[];
   strengths: string[];
   recommendations: string[];
+  action_plan?: BusinessActionPlan[];
   confidence_score: number;
   data_quality: string;
+};
+
+export type BusinessActionPlan = {
+  period: string;
+  title: string;
+  description: string;
 };
 
 export type InventorySubmission = {

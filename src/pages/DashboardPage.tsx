@@ -140,7 +140,11 @@ export function DashboardPage() {
               <ScoreCard key={card.label} {...card} />
             ))}
           </div>
-          <TrendChart priorityIssues={submission.analysis.priority_issues} recommendations={submission.analysis.recommendations} />
+          <TrendChart
+            priorityIssues={submission.analysis.priority_issues}
+            recommendations={submission.analysis.recommendations}
+            actionPlan={submission.analysis.action_plan}
+          />
           <RadarProfile submission={submission} />
           <div className="insight-grid">
             <article className="insight-card insight-card--dark">

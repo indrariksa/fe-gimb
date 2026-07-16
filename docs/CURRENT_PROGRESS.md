@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 15 Juli 2026
+Terakhir diperbarui: 16 Juli 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -31,7 +31,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Confirmation dialog submit inventory.
 - Analysis progress page berbasis timer lokal.
 - Score result page.
-- Dashboard diagnosis dengan score ring, score cards, action plan, business snapshot, dan insight cards yang readable di light/dark mode.
+- Dashboard diagnosis dengan score ring, score cards, action plan 30 hari dari `analysis.action_plan`, business snapshot, dan insight cards yang readable di light/dark mode.
 - Sub-scores page dengan card, radar SVG, bar chart, dan legend.
 - Settings page untuk ubah password mandiri dan warna tema lokal.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.

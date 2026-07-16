@@ -358,7 +358,7 @@ Script test: Belum teridentifikasi.
 - Submit inventory ke backend.
 - Analysis loading page berbasis timer/progress lokal.
 - Score result page.
-- Dashboard diagnosis dengan score cards, action plan, dan business snapshot.
+- Dashboard diagnosis dengan score cards, action plan 30 hari dari `analysis.action_plan`, dan business snapshot.
 - Sub-scores page dengan card, radar SVG, bar chart, dan legend.
 - Settings page untuk ubah password mandiri dan tema lokal.
 - Admin dashboard summary.

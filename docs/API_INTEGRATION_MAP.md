@@ -21,9 +21,9 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | List businesses | `src/services/api/businesses.ts` | GET | `/businesses?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<Business>` | Protected request; error ditampilkan sebagai `Gagal memuat toko` atau message API. |
 | Create business | `src/services/api/businesses.ts` | POST | `/businesses` | `{ name, industry?, description? }` | `Business` | `BusinessesPage` memakai `getFriendlyApiError(err, "Gagal membuat toko")`. |
 | Detail business | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}` | Path `publicId` | `Business` | Protected request; halaman menampilkan message error/fallback. |
-| Create business inventory | `src/services/api/businesses.ts` | POST | `/businesses/{publicId}/inventory-submissions` | `InventoryPayload` | `InventorySubmission` | `InventoryPage` memakai `getFriendlyApiError(err, "Gagal menyimpan inventarisasi")`. |
+| Create business inventory | `src/services/api/businesses.ts` | POST | `/businesses/{publicId}/inventory-submissions` | `InventoryPayload` | `InventorySubmission` dengan `analysis.action_plan` 30 hari | `InventoryPage` memakai `getFriendlyApiError(err, "Gagal menyimpan inventarisasi")`. |
 | List business inventories | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}/inventory-submissions?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<InventorySubmission>` | Protected request; tidak ditemukan pemakaian di halaman saat ini. |
-| Latest business inventory | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` | Beberapa halaman menangkap error untuk fallback `null` atau status belum ada data; 401 tetap menghapus session. |
+| Latest business inventory | `src/services/api/businesses.ts` | GET | `/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` dengan `analysis.action_plan` 30 hari | Beberapa halaman menangkap error untuk fallback `null` atau status belum ada data; 401 tetap menghapus session. |
 
 ## Admin
 
@@ -38,7 +38,7 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | Admin businesses | `src/services/api/admin.ts` | GET | `/admin/businesses?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<Business>` | Error digabung dalam loading admin utama. |
 | Admin business detail | `src/services/api/admin.ts` | GET | `/admin/businesses/{publicId}` | Path `publicId` | `Business` | Halaman score/dashboard/subscore/detail inventory menampilkan message error/fallback. |
 | Diagnosis watchlist | `src/services/api/admin.ts` | GET | `/admin/diagnosis-watchlist?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<InventorySubmission>` | `AdminPage` mengosongkan list/meta dan menampilkan `Gagal memuat monitoring diagnosis` atau message error. |
-| Latest admin business inventory | `src/services/api/admin.ts` | GET | `/admin/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` | Halaman admin/user shared menampilkan message error/fallback; `DashboardShell` menangkap error untuk disable nav. |
+| Latest admin business inventory | `src/services/api/admin.ts` | GET | `/admin/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` dengan `analysis.action_plan` 30 hari | Halaman admin/user shared menampilkan message error/fallback; `DashboardShell` menangkap error untuk disable nav. |
 | Admin inventory submissions | `src/services/api/admin.ts` | GET | `/admin/inventory-submissions?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<InventorySubmission>` | Service tersedia; tidak ditemukan pemakaian halaman saat ini. |
 
 ## API Client Behavior

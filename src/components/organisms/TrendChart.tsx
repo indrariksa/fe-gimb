@@ -1,8 +1,10 @@
 import { Icon } from "../atoms/Icon";
+import type { BusinessActionPlan } from "../../services/api/types";
 
 type ActionPlanProps = {
   priorityIssues: string[];
   recommendations: string[];
+  actionPlan?: BusinessActionPlan[];
 };
 
 const fallbackSteps = [
@@ -11,14 +13,20 @@ const fallbackSteps = [
   "Evaluasi biaya promosi agar setiap rupiah menghasilkan transaksi.",
 ];
 
-function buildSteps(priorityIssues: string[], recommendations: string[]) {
+function buildSteps(priorityIssues: string[], recommendations: string[], actionPlan?: BusinessActionPlan[]) {
+  if (actionPlan?.length) {
+    return actionPlan.slice(0, 3);
+  }
   const merged = [...(priorityIssues ?? []), ...(recommendations ?? [])].filter(Boolean);
-  return (merged.length ? merged : fallbackSteps).slice(0, 3);
+  return (merged.length ? merged : fallbackSteps).slice(0, 3).map((description, index) => ({
+    period: ["Minggu 1", "Minggu 2", "Minggu 3-4"][index],
+    title: `Fokus ${index + 1}`,
+    description,
+  }));
 }
 
-export function TrendChart({ priorityIssues, recommendations }: ActionPlanProps) {
-  const steps = buildSteps(priorityIssues, recommendations);
-  const labels = ["Minggu 1", "Minggu 2", "Minggu 3-4"];
+export function TrendChart({ priorityIssues, recommendations, actionPlan }: ActionPlanProps) {
+  const steps = buildSteps(priorityIssues, recommendations, actionPlan);
   return (
     <section className="panel trend-card action-plan-card">
       <div className="panel__header">
@@ -30,11 +38,12 @@ export function TrendChart({ priorityIssues, recommendations }: ActionPlanProps)
       </div>
       <div className="action-plan">
         {steps.map((step, index) => (
-          <article key={`${labels[index]}-${step}`}>
+          <article key={`${step.period}-${step.title}-${index}`}>
             <span>{index + 1}</span>
             <div>
-              <small>{labels[index]}</small>
-              <p>{step}</p>
+              <small>{step.period}</small>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
             </div>
             <Icon name="arrow" size={18} />
           </article>

@@ -34,7 +34,9 @@ Perbarui dokumentasi apabila perubahan memengaruhi:
 - struktur folder, file penting, komponen, service, hook, utility, atau type;
 - validasi, state management, localStorage, konfigurasi, atau environment;
 - build, test, lint, deployment, atau keputusan teknis;
-- risiko, kendala, TODO, atau pekerjaan lanjutan.
+- risiko, kendala, TODO, atau pekerjaan lanjutan;
+- kontrak API backend yang digunakan frontend, termasuk endpoint, request;
+  response, status code, pagination, filter, sorting, autentikasi, dan error;
 
 Gunakan ketentuan berikut:
 
@@ -52,6 +54,36 @@ Gunakan ketentuan berikut:
   atau penanganan error.
 - Perbarui `docs/CURRENT_PROGRESS.md` setelah pekerjaan selesai atau ketika
   kondisi project berubah secara berarti.
+
+## Sinkronisasi Kontrak Backend dan Frontend
+
+Frontend menggunakan kontrak API dari backend sebagai sumber data.
+
+Setiap perubahan yang memengaruhi endpoint, request, response, status code,
+autentikasi, role, pagination, filter, sorting, atau error backend harus
+diperiksa dampaknya terhadap frontend.
+
+Ketentuan:
+
+1. Jika kontrak API backend berubah, periksa dan perbarui:
+   - type atau interface TypeScript;
+   - API client atau service;
+   - hook atau state yang memakai data tersebut;
+   - halaman atau komponen terkait;
+   - validasi dan pesan error;
+   - dokumentasi integrasi API frontend.
+2. Jangan mengubah type frontend agar berbeda dari response backend aktual.
+3. Jangan menghapus fallback atau field lama sebelum memastikan backend dan
+   seluruh pemakai frontend sudah disesuaikan.
+4. Jika backend mendukung PostgreSQL dan MySQL, frontend tidak perlu memiliki
+   implementasi khusus per database selama kontrak API keduanya sama.
+5. Jika perilaku API berbeda antara PostgreSQL dan MySQL, tandai sebagai
+   masalah backend dan jangan membuat workaround diam-diam di frontend tanpa
+   permintaan pengguna.
+6. Pertahankan perilaku loading, empty state, error state, pagination, dan
+   akses berdasarkan role setelah perubahan integrasi API.
+7. Jangan menyatakan integrasi frontend selesai apabila type sudah diubah
+   tetapi halaman atau service pemakainya belum diperiksa.
 
 ## Aturan CURRENT_PROGRESS.md
 
@@ -84,6 +116,9 @@ Saat memperbaruinya:
 13. Jangan menambahkan perubahan kecil seperti typo atau formatting, kecuali
     perubahan tersebut memengaruhi perilaku atau pemahaman project.
 14. Cantumkan tanggal pembaruan terakhir pada bagian awal dokumen.
+15. Jika perubahan backend berdampak pada frontend, catat status penyesuaian
+    type, service API, halaman, dan komponen terkait. Jangan menyatakan
+    integrasi selesai apabila baru salah satu bagian yang diperbarui.
 
 Sebelum menyelesaikan tugas:
 

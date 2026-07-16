@@ -51,7 +51,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/organisms/DashboardShell.tsx` | Layout authenticated, sidebar, nav, topbar, logout, inventory-result nav guard. | Saat mengubah navigasi, shell, logout UI, role nav, sidebar mobile/collapse. |
 | `src/components/organisms/LandingHero.tsx` | Hero landing dan CTA. | Saat mengubah landing page atas. |
 | `src/components/organisms/RadarProfile.tsx` | Business snapshot dari inventory metrics. | Saat mengubah snapshot dashboard. |
-| `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari issues/recommendations. | Saat mengubah rekomendasi dashboard. |
+| `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |
 | `src/components/atoms/Button.tsx` | Button base dengan variant. | Saat menambah variant/button behavior. |
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |
 | `src/components/atoms/TextField.tsx` | Field input dengan prefix/suffix/note/example. | Saat mengubah field inventory/theme input. |
