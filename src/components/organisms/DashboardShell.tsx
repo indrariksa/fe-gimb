@@ -47,6 +47,9 @@ type NavigationItem = {
   sectionId?: string;
 };
 
+type NotificationFilter = "all" | "unread";
+type RealtimeStatus = "connecting" | "connected" | "reconnecting";
+
 export function DashboardShell({ activeView, title = "Smart Business Dashboard", children }: DashboardShellProps) {
   const { theme, updateTheme } = useThemeSettings();
   const { businessId } = useParams();
@@ -60,8 +63,13 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationFilter, setNotificationFilter] = useState<NotificationFilter>("all");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("connecting");
+  const [toastNotification, setToastNotification] = useState<AdminNotification | null>(null);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const notificationMenuRef = useRef<HTMLDivElement | null>(null);
+  const accountMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem(sidebarCollapsedStorageKey, String(isCollapsed));
@@ -124,21 +132,27 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     let reconnectTimer = 0;
     let isClosed = false;
 
-    const connect = () => {
+    const connect = (isReconnect = false) => {
+      setRealtimeStatus(isReconnect ? "reconnecting" : "connecting");
       socket = new WebSocket(notificationApi.notificationWebSocketUrl(accessToken));
+      socket.onopen = () => setRealtimeStatus("connected");
       socket.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data) as NotificationEvent;
           if (payload.type !== "notification.created") return;
           setNotifications((current) => [payload.notification, ...current.filter((item) => item.id !== payload.notification.id)].slice(0, 10));
           setUnreadCount((current) => current + 1);
+          setToastNotification(payload.notification);
           window.dispatchEvent(new CustomEvent("gimb:admin-notification", { detail: payload.notification }));
         } catch {
           // Ignore malformed realtime payloads; REST remains the source of truth.
         }
       };
       socket.onclose = () => {
-        if (!isClosed) reconnectTimer = window.setTimeout(connect, 3000);
+        if (!isClosed) {
+          setRealtimeStatus("reconnecting");
+          reconnectTimer = window.setTimeout(() => connect(true), 3000);
+        }
       };
     };
 
@@ -151,6 +165,12 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   }, [accessToken, isAdmin]);
 
   useEffect(() => {
+    if (!toastNotification) return;
+    const timeout = window.setTimeout(() => setToastNotification(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [toastNotification]);
+
+  useEffect(() => {
     if (!isNotificationOpen) return;
     const closeOnOutsideClick = (event: MouseEvent) => {
       if (!notificationMenuRef.current?.contains(event.target as Node)) {
@@ -160,6 +180,17 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     document.addEventListener("mousedown", closeOnOutsideClick);
     return () => document.removeEventListener("mousedown", closeOnOutsideClick);
   }, [isNotificationOpen]);
+
+  useEffect(() => {
+    if (!isAccountMenuOpen) return;
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [isAccountMenuOpen]);
 
   const needsBusiness = !businessId;
   const userNavigation: NavigationItem[] = [
@@ -237,6 +268,22 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     await notificationApi.markAllNotificationsRead().catch(() => undefined);
   };
 
+  const visibleNotifications = notificationFilter === "unread"
+    ? notifications.filter((notification) => !notification.read_at)
+    : notifications;
+
+  const realtimeLabel = realtimeStatus === "connected" ? "Realtime aktif" : realtimeStatus === "connecting" ? "Menghubungkan realtime" : "Menyambungkan ulang";
+
+  const openSettings = () => {
+    setIsAccountMenuOpen(false);
+    navigateToView("settings");
+  };
+
+  const confirmLogout = () => {
+    setIsAccountMenuOpen(false);
+    setIsLogoutConfirmOpen(true);
+  };
+
   return (
     <div className={`app-shell ${isCollapsed ? "is-collapsed" : ""}`}>
       <button
@@ -297,20 +344,28 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
             </button>
             {isAdmin && (
               <div className={`notification-menu ${isNotificationOpen ? "is-open" : ""}`} ref={notificationMenuRef}>
-                <button className="notification-bell" onClick={() => setIsNotificationOpen((current) => !current)} aria-label="Buka notifikasi" aria-expanded={isNotificationOpen}>
+                <button className="notification-bell" onClick={() => setIsNotificationOpen((current) => !current)} aria-label="Buka notifikasi" aria-expanded={isNotificationOpen} title={realtimeLabel}>
                   <Icon name="bell" />
+                  <i className={`notification-bell__status notification-bell__status--${realtimeStatus}`} aria-label={realtimeLabel} />
                   {unreadCount > 0 && <span>{unreadCount > 99 ? "99+" : unreadCount}</span>}
                 </button>
                 {isNotificationOpen && (
                   <div className="notification-menu__panel">
                     <header>
-                      <strong>Notifikasi</strong>
+                      <div>
+                        <strong>Notifikasi</strong>
+                        <small>{realtimeLabel}</small>
+                      </div>
                       <button onClick={markAllNotificationsRead} disabled={unreadCount === 0}>Tandai dibaca</button>
                     </header>
-                    {notifications.length === 0 ? (
+                    <div className="notification-filter" role="tablist" aria-label="Filter notifikasi">
+                      <button className={notificationFilter === "all" ? "is-active" : ""} onClick={() => setNotificationFilter("all")} role="tab" aria-selected={notificationFilter === "all"}>Semua</button>
+                      <button className={notificationFilter === "unread" ? "is-active" : ""} onClick={() => setNotificationFilter("unread")} role="tab" aria-selected={notificationFilter === "unread"}>Belum dibaca</button>
+                    </div>
+                    {visibleNotifications.length === 0 ? (
                       <p>Belum ada notifikasi.</p>
                     ) : (
-                      notifications.map((notification) => (
+                      visibleNotifications.map((notification) => (
                         <button
                           key={notification.id}
                           className={!notification.read_at ? "is-unread" : ""}
@@ -329,11 +384,40 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
               <strong>{user?.full_name ?? theme.ownerName}</strong>
               <small>{user?.role === "admin" ? "Admin" : user?.email ?? theme.businessName}</small>
             </span>
-            <span className="avatar">{(user?.full_name ?? theme.ownerName).slice(0, 1)}</span>
+            <div className={`account-menu ${isAccountMenuOpen ? "is-open" : ""}`} ref={accountMenuRef}>
+              <button
+                className="avatar account-menu__button"
+                onClick={() => setIsAccountMenuOpen((current) => !current)}
+                aria-label="Buka menu akun"
+                aria-expanded={isAccountMenuOpen}
+              >
+                {(user?.full_name ?? theme.ownerName).slice(0, 1)}
+              </button>
+              {isAccountMenuOpen && (
+                <div className="account-menu__panel">
+                  <div className="account-menu__profile">
+                    <div>
+                      <strong>{user?.full_name ?? theme.ownerName}</strong>
+                      <small>{user?.email ?? theme.businessName}</small>
+                      <b>{user?.role === "admin" ? "Admin" : "User"}</b>
+                    </div>
+                  </div>
+                  <button onClick={openSettings}><Icon name="settings" size={18} /> Pengaturan</button>
+                  <button onClick={confirmLogout}><Icon name="logout" size={18} /> Keluar</button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
         {children}
       </main>
+      {toastNotification && (
+        <button className="notification-toast" onClick={() => openNotification(toastNotification)} role="status">
+          <span><Icon name="bell" size={18} /></span>
+          <strong>{toastNotification.title}</strong>
+          <small>{toastNotification.message}</small>
+        </button>
+      )}
       {isLogoutConfirmOpen && (
         <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title">
           <div className="confirm-dialog__card">

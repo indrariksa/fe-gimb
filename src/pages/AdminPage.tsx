@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
@@ -34,12 +34,6 @@ function formatAction(action: string) {
 function shortValue(value: string, length = 12) {
   if (!value) return "-";
   return value.length > length ? `${value.slice(0, length)}...` : value;
-}
-
-function metadataPreview(metadata: Record<string, unknown>) {
-  const entries = Object.entries(metadata).filter(([, value]) => value !== null && value !== undefined && value !== "");
-  if (entries.length === 0) return "-";
-  return entries.slice(0, 2).map(([key, value]) => `${key}: ${String(value)}`).join(", ");
 }
 
 type AuditLevel = "info" | "warning" | "error";
@@ -119,24 +113,6 @@ function auditTags(log: AuditLog) {
   const actionParts = log.action.split(".").filter(Boolean);
   const metadataKeys = Object.keys(log.metadata ?? {}).slice(0, 3);
   return Array.from(new Set([log.entity_type, ...actionParts, ...metadataKeys].filter(Boolean))).slice(0, 6);
-}
-
-function auditSearchValue(log: AuditLog) {
-  return [
-    log.action,
-    auditActor(log),
-    auditEntity(log),
-    log.service ?? "",
-    log.endpoint ?? "",
-    log.message ?? "",
-    typeof log.status_code === "number" ? String(log.status_code) : "",
-    typeof log.duration_ms === "number" ? String(log.duration_ms) : "",
-    log.entity_type,
-    log.ip_address,
-    log.user_agent,
-    metadataPreview(log.metadata ?? {}),
-    JSON.stringify(log.metadata ?? {}),
-  ].join(" ").toLowerCase();
 }
 
 const paginationSizeOptions = [5, 10, 20, 50];
@@ -320,6 +296,7 @@ export function AdminPage() {
   const [realtimeRefreshKey, setRealtimeRefreshKey] = useState(0);
   const [diagnosisReloadKey, setDiagnosisReloadKey] = useState(0);
   const [auditReloadKey, setAuditReloadKey] = useState(0);
+  const [auditSoftReloadKey, setAuditSoftReloadKey] = useState(0);
   const [auditSearch, setAuditSearch] = useState("");
   const [auditLevelFilter, setAuditLevelFilter] = useState<AuditLevelFilter>("all");
   const [isAuditFilterOpen, setIsAuditFilterOpen] = useState(false);
@@ -439,6 +416,8 @@ export function AdminPage() {
         const response = await adminApi.adminAuditLogs({
           limit: auditPageSize,
           offset,
+          level: auditLevelFilter,
+          search: auditSearch,
         });
         if (isMounted) {
           setAuditLogs(response.items);
@@ -458,7 +437,33 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [auditPage, auditPageSize, auditReloadKey]);
+  }, [auditLevelFilter, auditPage, auditPageSize, auditReloadKey, auditSearch]);
+
+  useEffect(() => {
+    if (auditSoftReloadKey === 0) return;
+    let isMounted = true;
+    async function refreshAuditLogs() {
+      const offset = auditPage * auditPageSize;
+      try {
+        const response = await adminApi.adminAuditLogs({
+          limit: auditPageSize,
+          offset,
+          level: auditLevelFilter,
+          search: auditSearch,
+        });
+        if (isMounted) {
+          setAuditLogs(response.items);
+          setAuditMeta(normalizePaginationMeta(response.meta, response.items.length, auditPageSize, offset));
+        }
+      } catch {
+        // Keep current logs visible; hard reload/retry still reports errors.
+      }
+    }
+    refreshAuditLogs();
+    return () => {
+      isMounted = false;
+    };
+  }, [auditLevelFilter, auditPage, auditPageSize, auditSearch, auditSoftReloadKey]);
 
   useEffect(() => {
     const refreshOnNotification = () => {
@@ -481,7 +486,7 @@ export function AdminPage() {
           adminApi.adminBusinessLimit(),
           adminApi.adminBusinesses({ limit: 100, offset: 0 }),
           adminApi.adminDiagnosisWatchlist({ limit: diagnosisPageSize, offset: diagnosisOffset }),
-          adminApi.adminAuditLogs({ limit: auditPageSize, offset: auditOffset }),
+          adminApi.adminAuditLogs({ limit: auditPageSize, offset: auditOffset, level: auditLevelFilter, search: auditSearch }),
         ]);
         if (!isMounted) return;
         setSummary(summaryData);
@@ -501,17 +506,7 @@ export function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, [auditPage, auditPageSize, diagnosisPage, diagnosisPageSize, realtimeRefreshKey]);
-
-  const visibleAuditLogs = useMemo(() => {
-    const normalizedSearch = auditSearch.trim().toLowerCase();
-    return auditLogs.filter((log) => {
-      const level = auditLevel(log);
-      const matchesLevel = auditLevelFilter === "all" || level === auditLevelFilter;
-      const matchesSearch = normalizedSearch.length === 0 || auditSearchValue(log).includes(normalizedSearch);
-      return matchesLevel && matchesSearch;
-    });
-  }, [auditLogs, auditLevelFilter, auditSearch]);
+  }, [auditLevelFilter, auditPage, auditPageSize, auditSearch, diagnosisPage, diagnosisPageSize, realtimeRefreshKey]);
 
   const updateStatus = async (userId: string, status: UserStatus) => {
     const updated = await adminApi.updateUserStatus(userId, status);
@@ -542,6 +537,7 @@ export function AdminPage() {
   const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
   const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
   const goToBusinessInventoryInput = (publicId: string) => navigate(`/admin/businesses/${publicId}/inventory-input`);
+  const hasAuditFilter = auditLevelFilter !== "all" || auditSearch.trim() !== "";
   const toggleAuditFullscreen = () => {
     const panel = document.getElementById("audit-logs");
     if (!panel) return;
@@ -737,7 +733,7 @@ export function AdminPage() {
                     type="button"
                     aria-label="Muat ulang audit log"
                     disabled={isAuditLoading}
-                    onClick={() => setAuditReloadKey((current) => current + 1)}
+                    onClick={() => setAuditSoftReloadKey((current) => current + 1)}
                   >
                     <Icon name="refresh" size={20} />
                   </button>
@@ -746,7 +742,7 @@ export function AdminPage() {
                 <div className="audit-heading">
                   <div>
                     <h3>Logs</h3>
-                    <p>{visibleAuditLogs.length} of {auditMeta.total} logs</p>
+                    <p>{auditLogs.length} of {auditMeta.total} logs</p>
                   </div>
                   <span>{auditLevelFilter === "all" ? "Semua level" : auditLevelLabel(auditLevelFilter)}</span>
                 </div>
@@ -756,7 +752,10 @@ export function AdminPage() {
                     <Icon name="search" size={22} />
                     <input
                       value={auditSearch}
-                      onChange={(event) => setAuditSearch(event.target.value)}
+                      onChange={(event) => {
+                        setAuditSearch(event.target.value);
+                        setAuditPage(0);
+                      }}
                       placeholder="Cari log berdasarkan aksi, actor, target, IP, atau metadata..."
                     />
                   </label>
@@ -779,6 +778,7 @@ export function AdminPage() {
                             className={auditLevelFilter === level ? "is-active" : ""}
                             onClick={() => {
                               setAuditLevelFilter(level);
+                              setAuditPage(0);
                               setIsAuditFilterOpen(false);
                             }}
                           >
@@ -800,11 +800,10 @@ export function AdminPage() {
                     </article>
                   )}
                   {!auditError && isAuditLoading && <LoadingState className="audit-empty">Memuat audit log...</LoadingState>}
-                  {!auditError && !isAuditLoading && auditLogs.length === 0 && <article className="audit-empty">Belum ada audit log.</article>}
-                  {!auditError && !isAuditLoading && auditLogs.length > 0 && visibleAuditLogs.length === 0 && (
-                    <article className="audit-empty">Tidak ada log yang cocok di halaman ini.</article>
+                  {!auditError && !isAuditLoading && auditLogs.length === 0 && (
+                    <article className="audit-empty">{hasAuditFilter ? "Tidak ada log yang cocok." : "Belum ada audit log."}</article>
                   )}
-                  {!isAuditLoading && !auditError && visibleAuditLogs.map((log) => {
+                  {!isAuditLoading && !auditError && auditLogs.map((log) => {
                     const level = auditLevel(log);
                     const isExpanded = expandedAuditId === log.id;
                     const tags = auditTags(log);
@@ -929,3 +928,4 @@ export function AdminPage() {
     </DashboardShell>
   );
 }
+

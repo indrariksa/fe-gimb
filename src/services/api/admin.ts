@@ -5,8 +5,14 @@ export function adminSummary() {
   return apiRequest<AdminSummary>("/admin/dashboard/summary");
 }
 
-export function adminAuditLogs(params = { limit: 50, offset: 0 }) {
-  return apiRequest<ListResponse<AuditLog>>(`/admin/audit-logs?limit=${params.limit}&offset=${params.offset}`);
+export function adminAuditLogs(params: { limit: number; offset: number; level?: string; search?: string } = { limit: 50, offset: 0 }) {
+  const query = new URLSearchParams({
+    limit: String(params.limit),
+    offset: String(params.offset),
+  });
+  if (params.level && params.level !== "all") query.set("level", params.level);
+  if (params.search?.trim()) query.set("search", params.search.trim());
+  return apiRequest<ListResponse<AuditLog>>(`/admin/audit-logs?${query.toString()}`);
 }
 
 export function adminBusinessLimit() {

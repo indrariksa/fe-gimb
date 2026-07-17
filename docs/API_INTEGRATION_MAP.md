@@ -30,7 +30,7 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | Fitur | File Service | Method | Endpoint | Request | Response | Penanganan Error |
 | --- | --- | --- | --- | --- | --- | --- |
 | Admin summary | `src/services/api/admin.ts` | GET | `/admin/dashboard/summary` | Tidak ada | `AdminSummary` | `AdminPage` menampilkan `Gagal memuat dashboard admin` atau message error. |
-| Audit logs | `src/services/api/admin.ts` | GET | `/admin/audit-logs?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<AuditLog>` | `AdminPage` mengosongkan list/meta dan menampilkan `Gagal memuat audit log` atau message error. |
+| Audit logs | `src/services/api/admin.ts` | GET | `/admin/audit-logs?limit={limit}&offset={offset}&level={level}&search={search}` | Query `limit`, `offset`, optional `level`, optional `search` | `ListResponse<AuditLog>` | Search/filter diproses server-side agar pagination mengikuti hasil filter; `AdminPage` mengosongkan list/meta dan menampilkan `Gagal memuat audit log` atau message error. |
 | Admin business limit | `src/services/api/admin.ts` | GET | `/admin/settings/business-limit` | Tidak ada | `BusinessLimitSetting` | Error digabung dalam loading admin utama. |
 | Update business limit | `src/services/api/admin.ts` | PATCH | `/admin/settings/business-limit` | `{ value }` | `BusinessLimitSetting` | `AdminPage` menampilkan setting message sukses/gagal. |
 | Admin users | `src/services/api/admin.ts` | GET | `/admin/users?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<User>` | Backend mengurutkan user biasa terbaru lebih dulu dan akun admin paling akhir; error digabung dalam loading admin utama atau detail inventory admin. |

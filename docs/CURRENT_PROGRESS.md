@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 17 Juli 2026
+Terakhir diperbarui: 18 Juli 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -45,7 +45,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - diagnosis watchlist dengan pagination;
   - update business limit;
   - user list dengan pagination, update status, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
-  - audit log list dengan pagination, search/filter lokal, detail expand, reload, fullscreen, dan kolom row rata kiri;
+  - audit log list dengan pagination, search/filter server-side, detail expand, reload seamless, fullscreen, dan kolom row rata kiri;
   - tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin bell notification:
   - load recent notifications;
@@ -88,8 +88,6 @@ Redirect/fallback:
 - Landing page masih punya copy "Form Inventarisasi ... siap disimpan lokal sebelum integrasi backend", padahal form inventory sekarang memanggil backend.
 - Tombol `Rekomendasi` dan `Upgrade Plan` terlihat sebagai UI tetapi belum ditemukan aksi nyata.
 - Service `listBusinessInventories` dan `adminInventorySubmissions` tersedia, tetapi belum ditemukan pemakaian di halaman.
-- Admin audit search/filter bekerja pada audit log yang sudah dimuat untuk halaman saat ini, bukan query server-side.
-
 ## TODO yang Ditemukan
 
 Tidak ditemukan marker `TODO`, `FIXME`, `HACK`, atau `XXX` di source frontend.
@@ -131,7 +129,6 @@ Hasil: kedua perintah exit code `0`.
 
 - Apakah `scoring_version` perlu menjadi kontrak frontend atau tetap internal backend.
 - Apakah landing copy lama tentang integrasi backend masih diinginkan.
-- Apakah audit search/filter perlu server-side agar mencari seluruh log.
 - Apakah admin inventory detail perlu endpoint submitter/detail user daripada mengambil 100 user pertama.
 - Apakah perlu test runner/lint formal untuk CI.
 - WebSocket notification frontend mengirim access token di query string karena browser WebSocket native tidak mendukung custom Authorization header.

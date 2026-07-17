@@ -377,7 +377,7 @@ Script test: Belum teridentifikasi.
 - Admin monitoring diagnosis dengan pagination.
 - Admin update business limit.
 - Admin user list dan update status.
-- Admin audit log list dengan pagination, filter level, search lokal per halaman, expand detail, reload, fullscreen.
+- Admin audit log list dengan pagination, filter level dan search server-side, expand detail, reload, fullscreen.
 - Admin bell notification dengan unread count, dropdown recent notifications, mark read/read all, dan WebSocket reconnect sederhana.
 - Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
@@ -405,6 +405,5 @@ Script test: Belum teridentifikasi.
 - Tidak ditemukan penyimpanan tema ke backend; tema saat ini lokal.
 - Landing page copy masih menyebut form inventarisasi siap disimpan lokal sebelum integrasi backend, padahal fitur inventory sudah memanggil backend. Perlu dikonfirmasi apakah copy masih diinginkan.
 - Tombol `Rekomendasi` dan `Upgrade Plan` belum terlihat memiliki implementasi aksi nyata selain tampilan tombol.
-- Search audit log berlaku pada data halaman audit yang sedang dimuat, bukan seluruh server-side result.
 - Halaman detail inventory memakai endpoint admin saat dibuka admin dan endpoint user saat dibuka user; mode admin masih mengambil `adminUsers({ limit: 100 })` untuk mencari submitter, sehingga user di luar 100 pertama bisa tidak ditemukan.
 - `BusinessHealthAnalysis` frontend belum memiliki field `scoring_version`.
