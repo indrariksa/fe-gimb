@@ -317,6 +317,7 @@ export function AdminPage() {
   const [auditPage, setAuditPage] = useState(0);
   const [auditPageSize, setAuditPageSize] = useState(defaultAuditPageSize);
   const [auditMeta, setAuditMeta] = useState(() => emptyPaginationMeta(defaultAuditPageSize));
+  const [realtimeRefreshKey, setRealtimeRefreshKey] = useState(0);
   const [diagnosisReloadKey, setDiagnosisReloadKey] = useState(0);
   const [auditReloadKey, setAuditReloadKey] = useState(0);
   const [auditSearch, setAuditSearch] = useState("");
@@ -458,6 +459,49 @@ export function AdminPage() {
       isMounted = false;
     };
   }, [auditPage, auditPageSize, auditReloadKey]);
+
+  useEffect(() => {
+    const refreshOnNotification = () => {
+      setRealtimeRefreshKey((current) => current + 1);
+    };
+    window.addEventListener("gimb:admin-notification", refreshOnNotification);
+    return () => window.removeEventListener("gimb:admin-notification", refreshOnNotification);
+  }, []);
+
+  useEffect(() => {
+    if (realtimeRefreshKey === 0) return;
+    let isMounted = true;
+
+    async function refreshRealtimeData() {
+      try {
+        const diagnosisOffset = diagnosisPage * diagnosisPageSize;
+        const auditOffset = auditPage * auditPageSize;
+        const [summaryData, limitData, businessesData, diagnosisData, auditData] = await Promise.all([
+          adminApi.adminSummary(),
+          adminApi.adminBusinessLimit(),
+          adminApi.adminBusinesses({ limit: 100, offset: 0 }),
+          adminApi.adminDiagnosisWatchlist({ limit: diagnosisPageSize, offset: diagnosisOffset }),
+          adminApi.adminAuditLogs({ limit: auditPageSize, offset: auditOffset }),
+        ]);
+        if (!isMounted) return;
+        setSummary(summaryData);
+        setBusinessLimit(limitData);
+        setBusinessLimitInput(String(limitData.value));
+        setBusinesses(businessesData.items);
+        setDiagnosisRows(diagnosisData.items);
+        setDiagnosisMeta(normalizePaginationMeta(diagnosisData.meta, diagnosisData.items.length, diagnosisPageSize, diagnosisOffset));
+        setAuditLogs(auditData.items);
+        setAuditMeta(normalizePaginationMeta(auditData.meta, auditData.items.length, auditPageSize, auditOffset));
+      } catch {
+        // Keep the visible data stable; manual reload buttons still show errors when needed.
+      }
+    }
+
+    refreshRealtimeData();
+    return () => {
+      isMounted = false;
+    };
+  }, [auditPage, auditPageSize, diagnosisPage, diagnosisPageSize, realtimeRefreshKey]);
 
   const visibleAuditLogs = useMemo(() => {
     const normalizedSearch = auditSearch.trim().toLowerCase();

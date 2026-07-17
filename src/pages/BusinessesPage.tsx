@@ -225,7 +225,7 @@ export function BusinessesPage() {
                   </div>
                   <div className="business-card__actions">
                     <Button
-                      className="btn--dashboard-hover"
+                      className={hasDiagnosis ? "btn--dashboard-hover" : "btn--shiny-dashboard"}
                       variant="secondary"
                       disabled={hasDiagnosis}
                       title={hasDiagnosis ? "Inventory toko ini sudah diisi" : "Input data inventory"}

@@ -132,6 +132,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           if (payload.type !== "notification.created") return;
           setNotifications((current) => [payload.notification, ...current.filter((item) => item.id !== payload.notification.id)].slice(0, 10));
           setUnreadCount((current) => current + 1);
+          window.dispatchEvent(new CustomEvent("gimb:admin-notification", { detail: payload.notification }));
         } catch {
           // Ignore malformed realtime payloads; REST remains the source of truth.
         }
