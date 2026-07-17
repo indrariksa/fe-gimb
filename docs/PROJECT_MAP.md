@@ -33,6 +33,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/refresh/logout/me/ubah password integration. |
 | `src/services/api/businesses.ts` | User business/inventory endpoints. | Saat mengubah fitur toko/inventory user. |
 | `src/services/api/admin.ts` | Admin endpoints. | Saat mengubah dashboard admin, audit, users, business limit, diagnosis watchlist. |
+| `src/services/api/notifications.ts` | Admin notification REST endpoints dan WebSocket URL helper. | Saat mengubah notifikasi bell admin, unread count, mark read, atau realtime connection. |
 | `src/services/api/types.ts` | Type kontrak API. | Saat backend contract berubah atau field response/request baru dipakai. |
 
 ## Theme dan Styling
@@ -48,7 +49,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 
 | Path | Fungsi | Kapan dibaca/diubah |
 | --- | --- | --- |
-| `src/components/organisms/DashboardShell.tsx` | Layout authenticated, sidebar, nav, topbar, logout, inventory-result nav guard. | Saat mengubah navigasi, shell, logout UI, role nav, sidebar mobile/collapse. |
+| `src/components/organisms/DashboardShell.tsx` | Layout authenticated, sidebar, nav, topbar, logout, inventory-result nav guard, dan bell notifikasi admin. | Saat mengubah navigasi, shell, logout UI, role nav, sidebar mobile/collapse, atau notifikasi admin. |
 | `src/components/organisms/LandingHero.tsx` | Hero landing dan CTA. | Saat mengubah landing page atas. |
 | `src/components/organisms/RadarProfile.tsx` | Business snapshot dari inventory metrics. | Saat mengubah snapshot dashboard. |
 | `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |

@@ -787,6 +787,23 @@ a { color: inherit; text-decoration: none; }
 .mode-toggle.is-dark .mode-toggle__option:last-of-type { color: var(--on-accent); }
 .user-chip small { display: block; color: var(--muted); }
 .avatar { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: var(--on-primary); background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); font-weight: 900; }
+.notification-menu { position: relative; }
+.notification-bell { position: relative; display: grid; place-items: center; width: 38px; height: 38px; border: 0; border-radius: 999px; background: transparent; color: var(--ink); cursor: pointer; transition: background .18s ease, transform .18s ease, color .18s ease; }
+.notification-menu.is-open .notification-bell { background: var(--surface-soft); transform: translateY(-1px) scale(1.04); color: var(--color-primary); }
+.notification-bell span { position: absolute; top: 2px; right: 0; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 800; line-height: 18px; }
+.notification-menu__panel { position: absolute; top: calc(100% + 12px); right: 0; z-index: 30; width: min(340px, calc(100vw - 32px)); max-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); animation: notification-panel-in .16s ease both; transform-origin: top right; }
+.notification-menu__panel header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.notification-menu__panel header button { border: 0; background: transparent; color: var(--color-primary); font-weight: 700; cursor: pointer; }
+.notification-menu__panel header button:disabled { color: var(--muted); cursor: not-allowed; }
+.notification-menu__panel > p { margin: 0; padding: 18px 16px; color: var(--muted); }
+.notification-menu__panel > button { display: grid; gap: 4px; width: 100%; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.notification-menu__panel > button:hover, .notification-menu__panel > button.is-unread { background: var(--surface-soft); }
+.notification-menu__panel > button strong { font-size: 14px; }
+.notification-menu__panel > button span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+@keyframes notification-panel-in {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
 .dashboard, .inventory-page, .settings-page { padding: clamp(22px, 3vw, 38px); }
 .dashboard__intro { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 28px; }

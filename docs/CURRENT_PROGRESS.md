@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 16 Juli 2026
+Terakhir diperbarui: 17 Juli 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -47,6 +47,11 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - user list dengan pagination, update status, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
   - audit log list dengan pagination, search/filter lokal, detail expand, reload, fullscreen, dan kolom row rata kiri;
   - tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
+- Admin bell notification:
+  - load recent notifications;
+  - unread count;
+  - mark one/read all;
+  - WebSocket realtime dengan reconnect sederhana.
 - Admin inventory detail/input readout page.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.
@@ -129,3 +134,4 @@ Hasil: kedua perintah exit code `0`.
 - Apakah audit search/filter perlu server-side agar mencari seluruh log.
 - Apakah admin inventory detail perlu endpoint submitter/detail user daripada mengambil 100 user pertama.
 - Apakah perlu test runner/lint formal untuk CI.
+- WebSocket notification frontend mengirim access token di query string karena browser WebSocket native tidak mendukung custom Authorization header.

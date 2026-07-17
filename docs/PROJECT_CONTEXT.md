@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, dan admin dashboard.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
 
 ## Tujuan Aplikasi
 
@@ -12,6 +12,7 @@ Tujuan utama frontend:
 
 - memberi alur user untuk login/register, membuat atau memilih toko, mengisi inventarisasi, dan melihat hasil diagnosis bisnis;
 - memberi admin dashboard untuk memantau user, toko, diagnosis, audit log, dan limit toko per user;
+- memberi admin notifikasi realtime saat user submit inventory;
 - menyajikan analisis kesehatan bisnis dari backend dalam UI dashboard yang responsif;
 - menyimpan session dan preferensi UI lokal agar pengalaman pengguna tetap berlanjut setelah reload.
 
@@ -71,6 +72,7 @@ Pola utama:
 - session berada di `AuthContext`;
 - tema berada di `ThemeContext`;
 - API call dikelompokkan di `src/services/api`;
+- notifikasi admin memakai REST untuk state awal/read state dan WebSocket untuk event realtime;
 - halaman menyimpan state lokal dengan `useState`, `useEffect`, dan `useMemo`;
 - tidak ada global state library selain React Context.
 
@@ -227,6 +229,7 @@ Base URL:
 HTTP client:
 
 - `src/services/api/client.ts`;
+- `src/services/api/notifications.ts` membentuk URL WebSocket dari `VITE_API_BASE_URL`;
 - wrapper `fetch`;
 - timeout `15_000` ms via `AbortSignal.timeout`;
 - retry timeout otomatis sekali untuk request `GET`/`HEAD` setelah 2 detik;
@@ -375,6 +378,7 @@ Script test: Belum teridentifikasi.
 - Admin update business limit.
 - Admin user list dan update status.
 - Admin audit log list dengan pagination, filter level, search lokal per halaman, expand detail, reload, fullscreen.
+- Admin bell notification dengan unread count, dropdown recent notifications, mark read/read all, dan WebSocket reconnect sederhana.
 - Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
 - Dark/light mode dan theme colors.

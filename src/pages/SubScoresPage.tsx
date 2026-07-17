@@ -30,6 +30,8 @@ type InventoryInsightBar = {
   percent?: string;
 };
 
+const inventoryPeriodMonths = 6;
+
 function statusShort(score: number) {
   if (score >= 80) return "Sangat Sehat";
   if (score >= 60) return "Sehat";
@@ -173,6 +175,7 @@ export function SubScoresPage() {
       { label: "Pelanggan Aktif", value: submission.active_customers, formatted: formatCompactNumber(submission.active_customers), color: "#10b981" },
     ];
     const customerMax = Math.max(1, ...customerItems.map((item) => item.value));
+    const monthlySalaryPerEmployee = safeDivide(submission.salary_cost, inventoryPeriodMonths * submission.employee_count);
 
     const gauges = [
       {
@@ -183,10 +186,10 @@ export function SubScoresPage() {
         color: "#3b82f6",
       },
       {
-        label: "Rata-rata gaji per karyawan",
-        value: `Rp ${formatCompactCurrency(metrics.salary_per_employee)}`,
-        note: `Total gaji Rp ${formatCompactCurrency(submission.salary_cost)}`,
-        percent: Math.min(100, safeDivide(metrics.salary_per_employee, 10000000) * 100),
+        label: "Rata-rata gaji per karyawan / bulan",
+        value: `Rp ${formatCompactCurrency(monthlySalaryPerEmployee)}`,
+        note: `Total gaji 6 bulan Rp ${formatCompactCurrency(submission.salary_cost)}`,
+        percent: Math.min(100, safeDivide(monthlySalaryPerEmployee, 10000000) * 100),
         color: "#10b981",
       },
       {
@@ -206,13 +209,13 @@ export function SubScoresPage() {
     const capitalMax = Math.max(1, ...capitalItems.map((item) => Math.abs(item.value)));
     const customerQualityItems: InventoryInsightBar[] = [
       {
-        label: "Omzet per pelanggan aktif",
+        label: "Omzet 6 bulan per pelanggan aktif",
         value: safeDivide(submission.six_month_revenue, submission.active_customers),
         formatted: `Rp ${formatCompactCurrency(safeDivide(submission.six_month_revenue, submission.active_customers))}`,
         color: "#3b82f6",
       },
       {
-        label: "Transaksi per pelanggan aktif",
+        label: "Transaksi 6 bulan per pelanggan aktif",
         value: safeDivide(submission.six_month_transactions, submission.active_customers),
         formatted: `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(safeDivide(submission.six_month_transactions, submission.active_customers))}x`,
         color: "#10b981",

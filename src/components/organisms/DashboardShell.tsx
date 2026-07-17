@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { View } from "../../types";
@@ -9,6 +9,8 @@ import { useThemeSettings } from "../../theme/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import * as businessApi from "../../services/api/businesses";
 import * as adminApi from "../../services/api/admin";
+import * as notificationApi from "../../services/api/notifications";
+import type { AdminNotification, NotificationEvent } from "../../services/api/types";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
 
@@ -48,7 +50,7 @@ type NavigationItem = {
 export function DashboardShell({ activeView, title = "Smart Business Dashboard", children }: DashboardShellProps) {
   const { theme, updateTheme } = useThemeSettings();
   const { businessId } = useParams();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, accessToken, logout } = useAuth();
   const navigateRoute = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,6 +58,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const [hasInventoryResult, setHasInventoryResult] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [notifications, setNotifications] = useState<AdminNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const notificationMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem(sidebarCollapsedStorageKey, String(isCollapsed));
@@ -87,6 +93,72 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
       isMounted = false;
     };
   }, [businessId, isAdmin]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let isMounted = true;
+    async function loadNotifications() {
+      try {
+        const [list, unread] = await Promise.all([
+          notificationApi.adminNotifications(),
+          notificationApi.unreadNotificationCount(),
+        ]);
+        if (!isMounted) return;
+        setNotifications(list.items);
+        setUnreadCount(unread.count);
+      } catch {
+        if (!isMounted) return;
+        setNotifications([]);
+        setUnreadCount(0);
+      }
+    }
+    loadNotifications();
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (!isAdmin || !accessToken) return;
+    let socket: WebSocket | null = null;
+    let reconnectTimer = 0;
+    let isClosed = false;
+
+    const connect = () => {
+      socket = new WebSocket(notificationApi.notificationWebSocketUrl(accessToken));
+      socket.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data) as NotificationEvent;
+          if (payload.type !== "notification.created") return;
+          setNotifications((current) => [payload.notification, ...current.filter((item) => item.id !== payload.notification.id)].slice(0, 10));
+          setUnreadCount((current) => current + 1);
+        } catch {
+          // Ignore malformed realtime payloads; REST remains the source of truth.
+        }
+      };
+      socket.onclose = () => {
+        if (!isClosed) reconnectTimer = window.setTimeout(connect, 3000);
+      };
+    };
+
+    connect();
+    return () => {
+      isClosed = true;
+      window.clearTimeout(reconnectTimer);
+      socket?.close();
+    };
+  }, [accessToken, isAdmin]);
+
+  useEffect(() => {
+    if (!isNotificationOpen) return;
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!notificationMenuRef.current?.contains(event.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [isNotificationOpen]);
 
   const needsBusiness = !businessId;
   const userNavigation: NavigationItem[] = [
@@ -143,6 +215,25 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     setIsLogoutConfirmOpen(false);
     setIsLoggingOut(false);
     navigateRoute("/login", { replace: true });
+  };
+
+  const openNotification = async (notification: AdminNotification) => {
+    setIsNotificationOpen(false);
+    if (!notification.read_at) {
+      setNotifications((current) => current.map((item) => item.id === notification.id ? { ...item, read_at: new Date().toISOString() } : item));
+      setUnreadCount((current) => Math.max(0, current - 1));
+      await notificationApi.markNotificationRead(notification.id).catch(() => undefined);
+    }
+    const businessPublicId = notification.metadata.business_public_id;
+    if (typeof businessPublicId === "string" && businessPublicId) {
+      navigateRoute(`/admin/businesses/${businessPublicId}/inventory-input`);
+    }
+  };
+
+  const markAllNotificationsRead = async () => {
+    setNotifications((current) => current.map((item) => ({ ...item, read_at: item.read_at ?? new Date().toISOString() })));
+    setUnreadCount(0);
+    await notificationApi.markAllNotificationsRead().catch(() => undefined);
   };
 
   return (
@@ -203,7 +294,36 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
                 <Icon name="moon" size={16} />
               </span>
             </button>
-            <Icon name="bell" />
+            {isAdmin && (
+              <div className={`notification-menu ${isNotificationOpen ? "is-open" : ""}`} ref={notificationMenuRef}>
+                <button className="notification-bell" onClick={() => setIsNotificationOpen((current) => !current)} aria-label="Buka notifikasi" aria-expanded={isNotificationOpen}>
+                  <Icon name="bell" />
+                  {unreadCount > 0 && <span>{unreadCount > 99 ? "99+" : unreadCount}</span>}
+                </button>
+                {isNotificationOpen && (
+                  <div className="notification-menu__panel">
+                    <header>
+                      <strong>Notifikasi</strong>
+                      <button onClick={markAllNotificationsRead} disabled={unreadCount === 0}>Tandai dibaca</button>
+                    </header>
+                    {notifications.length === 0 ? (
+                      <p>Belum ada notifikasi.</p>
+                    ) : (
+                      notifications.map((notification) => (
+                        <button
+                          key={notification.id}
+                          className={!notification.read_at ? "is-unread" : ""}
+                          onClick={() => openNotification(notification)}
+                        >
+                          <strong>{notification.title}</strong>
+                          <span>{notification.message}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             <span>
               <strong>{user?.full_name ?? theme.ownerName}</strong>
               <small>{user?.role === "admin" ? "Admin" : user?.email ?? theme.businessName}</small>

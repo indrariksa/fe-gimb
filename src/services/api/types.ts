@@ -179,3 +179,21 @@ export type AuditLog = {
   metadata: Record<string, unknown>;
   created_at: string;
 };
+
+export type AdminNotification = {
+  id: string;
+  type: "inventory_submitted" | string;
+  title: string;
+  message: string;
+  actor_id: string | null;
+  entity_type: string;
+  entity_id: string;
+  metadata: Record<string, unknown>;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type NotificationEvent = {
+  type: "notification.created";
+  notification: AdminNotification;
+};

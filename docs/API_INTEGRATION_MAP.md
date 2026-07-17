@@ -41,6 +41,16 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | Latest admin business inventory | `src/services/api/admin.ts` | GET | `/admin/businesses/{publicId}/inventory-submissions/latest` | Path `publicId` | `InventorySubmission` dengan `analysis.action_plan` 30 hari dan `analysis.metrics` | Halaman admin/user shared menampilkan message error/fallback; subscore admin memakai data inventory dan metrics untuk insight operasional; `DashboardShell` menangkap error untuk disable nav. |
 | Admin inventory submissions | `src/services/api/admin.ts` | GET | `/admin/inventory-submissions?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<InventorySubmission>` | Service tersedia; tidak ditemukan pemakaian halaman saat ini. |
 
+## Admin Notifications
+
+| Fitur | File Service | Method | Endpoint | Request | Response | Penanganan Error |
+| --- | --- | --- | --- | --- | --- | --- |
+| List notifications | `src/services/api/notifications.ts` | GET | `/admin/notifications?limit={limit}&offset={offset}` | Query `limit`, `offset` | `ListResponse<AdminNotification>` | `DashboardShell` mengosongkan state notifikasi jika gagal memuat. |
+| Unread count | `src/services/api/notifications.ts` | GET | `/admin/notifications/unread-count` | Tidak ada | `{ count: number }` | `DashboardShell` fallback ke `0` jika gagal. |
+| Mark notification read | `src/services/api/notifications.ts` | PATCH | `/admin/notifications/{id}/read` | Tidak ada | `null` | UI melakukan optimistic update dan mengabaikan error agar dropdown tetap responsif. |
+| Mark all notifications read | `src/services/api/notifications.ts` | PATCH | `/admin/notifications/read-all` | Tidak ada | `null` | UI melakukan optimistic update dan mengabaikan error agar dropdown tetap responsif. |
+| Notification WebSocket | `src/services/api/notifications.ts` | WS | `/admin/notifications/ws?access_token={token}` | Access token di query string | `NotificationEvent` | `DashboardShell` reconnect setiap 3 detik jika koneksi tertutup saat admin masih login. |
+
 ## API Client Behavior
 
 | Fitur | File Service | Method | Endpoint | Request | Response | Penanganan Error |
