@@ -178,12 +178,12 @@ Alur:
 9. API client dikonfigurasi dengan provider access token, refresh-on-401 sekali, dan handler unauthorized/timeout.
 10. Jika response protected mendapat `401`, API client mencoba refresh token dan retry request asli sekali.
 11. Jika refresh gagal selain timeout, session lokal dihapus dan user perlu login ulang.
-12. Google login memakai Google Identity Services untuk mendapatkan `id_token`, lalu memanggil `/auth/google`; session yang disimpan tetap sama dengan login biasa.
+12. Google login memakai Google Identity Services untuk mendapatkan `id_token`, lalu memanggil `/auth/google`; session yang disimpan tetap sama dengan login biasa. Komponen Google yang sama juga dipakai Settings untuk menautkan Google lewat `/me/google/link`.
 13. User response memiliki `has_password`, `has_google`, `google_linked_at`, dan `email_verified`; akun Google baru bisa membuat password manual melalui Settings agar login email/password ikut aktif.
 14. Jika login email/password ditolak karena email belum verified, LoginPage menampilkan action resend email verification.
 15. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
 
-Update nama profil serta ubah/setup password mandiri berada di `SettingsPage` dalam dua panel sejajar 50/50 di desktop, dengan panel tema full-width di bawahnya. Form profil memakai `PATCH /me`, menampilkan email, role, dan metode login sebagai field readonly berdasarkan kombinasi `has_password`/`has_google`, lalu menyimpan user terbaru ke session lokal. Jika `has_password=true`, form password memakai `PATCH /me/password` dan meminta password sekarang, password baru, dan konfirmasi password. Jika `has_password=false`, form password memakai `POST /me/password/setup` dan hanya meminta password baru serta konfirmasi; setelah berhasil frontend refresh profile `/me`.
+Update nama profil serta ubah/setup password mandiri berada di `SettingsPage` dalam dua panel sejajar 50/50 di desktop, dengan panel tema full-width di bawahnya. Form profil memakai `PATCH /me`, menampilkan metode login readonly berdasarkan kombinasi `has_password`/`has_google`, menyediakan tombol tautkan Google jika belum tertaut, lalu menyimpan user terbaru ke session lokal. Jika `has_password=true`, form password memakai `PATCH /me/password` dan meminta password sekarang, password baru, dan konfirmasi password. Jika `has_password=false`, form password memakai `POST /me/password/setup` dan hanya meminta password baru serta konfirmasi; setelah berhasil frontend refresh profile `/me`.
 
 Tidak ditemukan penggunaan cookie untuk auth.
 
@@ -384,7 +384,7 @@ Script test: Belum teridentifikasi.
 - Dashboard diagnosis dengan score cards, action plan 30 hari dari `analysis.action_plan`, dan business snapshot.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional dari data inventarisasi, dan legend.
 - Export PDF report berbasis data dan workbook XLSX rapi untuk dashboard summary dan sub-scores analysis.
-- Settings page untuk update nama profil, setup/ubah password mandiri, dan tema lokal full-width.
+- Settings page untuk update nama profil, tautkan Google, setup/ubah password mandiri, dan tema lokal full-width.
 - Admin dashboard summary.
 - Card ringkasan admin dan user memakai efek holographic ringan saat hover.
 - Admin monitoring diagnosis dengan pagination.

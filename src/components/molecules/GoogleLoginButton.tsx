@@ -26,6 +26,8 @@ const isGoogleLoginConfigured = Boolean(googleClientId);
 type GoogleLoginButtonProps = {
   onSuccess: (user: User) => void;
   onError: (message: string) => void;
+  action?: (payload: { id_token: string }) => Promise<User>;
+  label?: string;
 };
 
 function loadGoogleScript() {
@@ -52,8 +54,9 @@ function loadGoogleScript() {
   });
 }
 
-export function GoogleLoginButton({ onSuccess, onError }: GoogleLoginButtonProps) {
+export function GoogleLoginButton({ onSuccess, onError, action, label = "Lanjutkan dengan Google" }: GoogleLoginButtonProps) {
   const { googleLogin } = useAuth();
+  const submitCredential = action ?? googleLogin;
   const buttonRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(isGoogleLoginConfigured);
 
@@ -72,10 +75,10 @@ export function GoogleLoginButton({ onSuccess, onError }: GoogleLoginButtonProps
               return;
             }
             try {
-              const user = await googleLogin({ id_token: response.credential });
+              const user = await submitCredential({ id_token: response.credential });
               onSuccess(user);
             } catch (err) {
-              onError(err instanceof Error ? err.message : "Login Google gagal");
+              onError(err instanceof Error ? err.message : "Proses Google gagal");
             }
           },
         });
@@ -96,7 +99,7 @@ export function GoogleLoginButton({ onSuccess, onError }: GoogleLoginButtonProps
     return () => {
       isMounted = false;
     };
-  }, [googleLogin, onError, onSuccess]);
+  }, [onError, onSuccess, submitCredential]);
 
   return (
     <div className="google-login">
@@ -112,7 +115,7 @@ export function GoogleLoginButton({ onSuccess, onError }: GoogleLoginButtonProps
         }}
       >
         <span aria-hidden="true">G</span>
-        Lanjutkan dengan Google
+        {label}
       </button>
       {isGoogleLoginConfigured && <div ref={buttonRef} className="google-login__button" />}
       {isLoading && <span>Memuat Google Login...</span>}

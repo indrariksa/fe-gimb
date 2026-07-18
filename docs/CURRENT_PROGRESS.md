@@ -12,7 +12,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Halaman verifikasi email `/verify-email` dengan deduplicate request per token, retry sekali untuk `404` sesaat, CTA login yang membawa email agar field login otomatis terisi, countdown resend dari response backend, dan `retry_after_seconds` saat `429`.
 - Halaman sukses registrasi `/registration-success` dengan resend email verification, countdown dari response backend, dan `retry_after_seconds` saat `429`.
 - Login/register Google via Google Identity Services jika `VITE_GOOGLE_CLIENT_ID` diisi.
-- Update nama profile, setup password akun Google-only, dan ubah password mandiri dari halaman settings.
+- Update nama profile, tautkan Google, setup password akun Google-only, dan ubah password mandiri dari halaman settings.
 - Session auth di `localStorage` key `gimb:auth`.
 - Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
 - API client fetch wrapper dengan timeout 15 detik, retry timeout sekali untuk request GET/HEAD, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
@@ -40,7 +40,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Dashboard diagnosis dengan score ring, score cards, action plan 30 hari dari `analysis.action_plan`, business snapshot, dan insight cards yang readable di light/dark mode.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend.
 - Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
-- Settings page untuk update nama profile dengan konfirmasi, email/role/metode login readonly, dan setup/ubah password mandiri dalam layout 50/50, lalu warna tema lokal tampil full-width dengan preview tema mini.
+- Settings page untuk update nama profile dengan konfirmasi, metode login readonly, tautkan Google, dan setup/ubah password mandiri dalam layout 50/50, lalu warna tema lokal tampil full-width dengan preview tema mini.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, document title, dan toggle tema di landing/login/register.
 - Admin dashboard:
   - summary metrics;

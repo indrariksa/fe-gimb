@@ -43,6 +43,13 @@ export function googleLogin(payload: { id_token: string }) {
   });
 }
 
+export function linkGoogleAccount(payload: { id_token: string }) {
+  return apiRequest<User>("/me/google/link", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 export function refreshToken(refresh_token: string) {
   if (!pendingRefresh) {
     pendingRefresh = apiRequest<AuthResponse>("/auth/refresh", {

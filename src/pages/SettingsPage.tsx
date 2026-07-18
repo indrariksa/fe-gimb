@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
+import { GoogleLoginButton } from "../components/molecules/GoogleLoginButton";
 import { ThemeCustomizer } from "../components/molecules/ThemeCustomizer";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { useAuth } from "../context/AuthContext";
@@ -31,7 +32,7 @@ function passwordScore(password: string) {
 }
 
 export function SettingsPage() {
-  const { isAdmin, user, refreshUser, updateProfile } = useAuth();
+  const { isAdmin, user, linkGoogleAccount, refreshUser, updateProfile } = useAuth();
   const [form, setForm] = useState<PasswordForm>(emptyPasswordForm);
   const [profileName, setProfileName] = useState(user?.full_name ?? "");
   const [error, setError] = useState("");
@@ -45,7 +46,6 @@ export function SettingsPage() {
   const notice = error ? { type: "error", message: error } : success ? { type: "success", message: success } : null;
   const hasPassword = user?.has_password ?? true;
   const hasGoogle = user?.has_google ?? false;
-  const roleLabel = isAdmin ? "Admin" : "User";
   const loginMethodLabel = hasPassword && hasGoogle ? "Email & Password + Google" : hasGoogle ? "Google" : "Email & Password";
 
   useEffect(() => {
@@ -96,6 +96,19 @@ export function SettingsPage() {
       setIsProfileSubmitting(false);
     }
   };
+
+  const linkGoogle = useCallback(async (payload: { id_token: string }) => {
+    try {
+      return await linkGoogleAccount(payload);
+    } catch (err) {
+      throw new Error(getFriendlyApiError(err, "Gagal menautkan akun Google. Pastikan email Google sama dengan email akun ini."));
+    }
+  }, [linkGoogleAccount]);
+
+  const handleGoogleLinked = useCallback(() => {
+    setError("");
+    setSuccess("Akun Google berhasil ditautkan.");
+  }, []);
 
   const submitPassword = (event: FormEvent) => {
     event.preventDefault();
@@ -193,17 +206,24 @@ export function SettingsPage() {
                   />
                 </label>
                 <label>
-                  <span>Email</span>
-                  <input type="email" value={user?.email ?? ""} disabled />
-                </label>
-                <label>
-                  <span>Role</span>
-                  <input type="text" value={roleLabel} disabled />
-                </label>
-                <label>
                   <span>Metode login</span>
                   <input type="text" value={loginMethodLabel} disabled />
                 </label>
+              </div>
+              <div className="profile-google-link">
+                {hasGoogle ? (
+                  <Button variant="secondary" type="button" disabled>
+                    Google tertaut
+                  </Button>
+                ) : (
+                  <GoogleLoginButton
+                    label="Tautkan Google"
+                    action={linkGoogle}
+                    onSuccess={handleGoogleLinked}
+                    onError={setError}
+                  />
+                )}
+                <p>Gunakan akun Google dengan email yang sama untuk login lebih cepat.</p>
               </div>
               <Button className="btn--shiny-dashboard" type="submit" disabled={isProfileSubmitting}>
                 Simpan Profil
