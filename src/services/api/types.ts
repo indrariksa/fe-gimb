@@ -14,6 +14,7 @@ export type User = {
   full_name: string;
   role: UserRole;
   status: UserStatus;
+  has_password: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -28,6 +29,11 @@ export type AuthResponse = {
 
 export type ChangePasswordPayload = {
   current_password: string;
+  new_password: string;
+  confirm_password: string;
+};
+
+export type SetupPasswordPayload = {
   new_password: string;
   confirm_password: string;
 };

@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { Brand } from "../components/molecules/Brand";
+import { GoogleLoginButton } from "../components/molecules/GoogleLoginButton";
 import { useAuth } from "../context/AuthContext";
+import type { User } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
 
 export function LoginPage() {
@@ -17,6 +19,11 @@ export function LoginPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const navigateAfterLogin = useCallback((user: User) => {
+    const target = (location.state as { from?: string } | null)?.from;
+    navigate(target && target !== "/login" ? target : user.role === "admin" ? "/admin" : "/businesses", { replace: true });
+  }, [location.state, navigate]);
+
   if (isAuthenticated) {
     return <Navigate to={isAdmin ? "/admin" : "/businesses"} replace />;
   }
@@ -27,8 +34,7 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       const user = await login({ email, password });
-      const target = (location.state as { from?: string } | null)?.from;
-      navigate(target && target !== "/login" ? target : user.role === "admin" ? "/admin" : "/businesses", { replace: true });
+      navigateAfterLogin(user);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login gagal");
     } finally {
@@ -56,6 +62,8 @@ export function LoginPage() {
           {error && <p className="form-error">{error}</p>}
           <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Login"} <Icon name="arrow" size={18} /></Button>
         </form>
+        <div className="auth-divider"><span>atau</span></div>
+        <GoogleLoginButton onSuccess={navigateAfterLogin} onError={setError} />
         <p className="auth-link">Belum punya akun? <Link to="/register">Daftar akun</Link></p>
         <p className="auth-link auth-link--landing"><Link to="/">Kembali ke landing page</Link></p>
       </section>

@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { Brand } from "../components/molecules/Brand";
+import { GoogleLoginButton } from "../components/molecules/GoogleLoginButton";
 import { useAuth } from "../context/AuthContext";
+import type { User } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
 
 export function RegisterPage() {
@@ -14,6 +16,10 @@ export function RegisterPage() {
   const [form, setForm] = useState({ full_name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const navigateAfterAuth = useCallback((user: User) => {
+    navigate(user.role === "admin" ? "/admin" : "/businesses", { replace: true });
+  }, [navigate]);
 
   if (isAuthenticated) {
     return <Navigate to={isAdmin ? "/admin" : "/businesses"} replace />;
@@ -25,7 +31,7 @@ export function RegisterPage() {
     setIsSubmitting(true);
     try {
       const user = await register(form);
-      navigate(user.role === "admin" ? "/admin" : "/businesses", { replace: true });
+      navigateAfterAuth(user);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registrasi gagal");
     } finally {
@@ -57,6 +63,8 @@ export function RegisterPage() {
           {error && <p className="form-error">{error}</p>}
           <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Daftar"} <Icon name="arrow" size={18} /></Button>
         </form>
+        <div className="auth-divider"><span>atau</span></div>
+        <GoogleLoginButton onSuccess={navigateAfterAuth} onError={setError} />
         <p className="auth-link">Sudah punya akun? <Link to="/login">Login</Link></p>
         <p className="auth-link auth-link--landing"><Link to="/">Kembali ke landing page</Link></p>
       </section>

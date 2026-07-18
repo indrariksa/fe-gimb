@@ -31,7 +31,7 @@ function passwordScore(password: string) {
 }
 
 export function SettingsPage() {
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, refreshUser } = useAuth();
   const [form, setForm] = useState<PasswordForm>(emptyPasswordForm);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -40,6 +40,7 @@ export function SettingsPage() {
   const score = useMemo(() => passwordScore(form.newPassword), [form.newPassword]);
   const scoreLabel = score >= 4 ? "Kuat" : score >= 3 ? "Cukup" : form.newPassword ? "Perlu diperkuat" : "Belum diisi";
   const notice = error ? { type: "error", message: error } : success ? { type: "success", message: success } : null;
+  const hasPassword = user?.has_password ?? true;
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -61,7 +62,7 @@ export function SettingsPage() {
     setError("");
     setSuccess("");
 
-    if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
+    if ((hasPassword && !form.currentPassword) || !form.newPassword || !form.confirmPassword) {
       setError("Semua field password wajib diisi.");
       return;
     }
@@ -73,7 +74,7 @@ export function SettingsPage() {
       setError("Konfirmasi password belum sama.");
       return;
     }
-    if (form.currentPassword === form.newPassword) {
+    if (hasPassword && form.currentPassword === form.newPassword) {
       setError("Password baru harus berbeda dari password sekarang.");
       return;
     }
@@ -86,17 +87,25 @@ export function SettingsPage() {
     setSuccess("");
     setIsSubmitting(true);
     try {
-      await authApi.changePassword({
-        current_password: form.currentPassword,
-        new_password: form.newPassword,
-        confirm_password: form.confirmPassword,
-      });
+      if (hasPassword) {
+        await authApi.changePassword({
+          current_password: form.currentPassword,
+          new_password: form.newPassword,
+          confirm_password: form.confirmPassword,
+        });
+      } else {
+        await authApi.setupPassword({
+          new_password: form.newPassword,
+          confirm_password: form.confirmPassword,
+        });
+        await refreshUser();
+      }
       setForm(emptyPasswordForm);
       setIsPasswordConfirmOpen(false);
-      setSuccess("Password berhasil diubah. Sesi Anda tetap aktif.");
+      setSuccess(hasPassword ? "Password berhasil diubah. Sesi Anda tetap aktif." : "Password berhasil dibuat. Sekarang Anda bisa login dengan Google atau email/password.");
     } catch (err) {
       setIsPasswordConfirmOpen(false);
-      setError(err instanceof ApiError ? "Salah mengisi password sekarang." : getFriendlyApiError(err, "Gagal mengubah password."));
+      setError(err instanceof ApiError && hasPassword ? "Salah mengisi password sekarang." : getFriendlyApiError(err, hasPassword ? "Gagal mengubah password." : "Gagal membuat password."));
     } finally {
       setIsSubmitting(false);
     }
@@ -122,22 +131,28 @@ export function SettingsPage() {
               </span>
               <div>
                 <span>{user?.email ?? "Akun aktif"}</span>
-                <h3>Ubah password</h3>
-                <p>Gunakan password unik agar akses dashboard tetap aman.</p>
+                <h3>{hasPassword ? "Ubah password" : "Buat password login"}</h3>
+                <p>
+                  {hasPassword
+                    ? "Gunakan password unik agar akses dashboard tetap aman."
+                    : "Akun Google Anda belum punya password manual. Buat sekali agar bisa login fleksibel."}
+                </p>
               </div>
             </div>
 
             <div className="password-fields">
-              <label>
-                <span>Password sekarang</span>
-                <input
-                  type="password"
-                  autoComplete="current-password"
-                  value={form.currentPassword}
-                  onChange={(event) => updateField("currentPassword", event.target.value)}
-                  placeholder="Masukkan password aktif"
-                />
-              </label>
+              {hasPassword && (
+                <label>
+                  <span>Password sekarang</span>
+                  <input
+                    type="password"
+                    autoComplete="current-password"
+                    value={form.currentPassword}
+                    onChange={(event) => updateField("currentPassword", event.target.value)}
+                    placeholder="Masukkan password aktif"
+                  />
+                </label>
+              )}
               <label>
                 <span>Password baru</span>
                 <input
@@ -173,7 +188,7 @@ export function SettingsPage() {
             </div>
 
             <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Menyimpan..." : "Simpan password"}
+              {isSubmitting ? "Menyimpan..." : hasPassword ? "Simpan password" : "Buat password"}
             </Button>
           </form>
 
@@ -193,8 +208,8 @@ export function SettingsPage() {
               <span className="confirm-dialog__icon">
                 <Icon name="settings" size={34} />
               </span>
-              <h2 id="password-confirm-title">Simpan password baru?</h2>
-              <p>Pastikan password baru sudah benar. Perubahan ini akan dipakai untuk login berikutnya.</p>
+              <h2 id="password-confirm-title">{hasPassword ? "Simpan password baru?" : "Buat password login?"}</h2>
+              <p>{hasPassword ? "Pastikan password baru sudah benar. Perubahan ini akan dipakai untuk login berikutnya." : "Password ini akan mengaktifkan login email/password untuk akun Google Anda."}</p>
               <div className="confirm-dialog__actions">
                 <Button variant="secondary" onClick={() => setIsPasswordConfirmOpen(false)} disabled={isSubmitting}>Batal</Button>
                 <Button onClick={savePassword} disabled={isSubmitting}>{isSubmitting ? "Menyimpan..." : "Ya, Simpan"}</Button>

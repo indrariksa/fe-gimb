@@ -8,8 +8,10 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | --- | --- | --- | --- | --- | --- | --- |
 | Login | `src/services/api/auth.ts` | POST | `/auth/login` | `{ email, password }` | `AuthResponse` | `auth:false`; error dilempar sebagai `ApiError`; `LoginPage` menampilkan `err.message` atau `Login gagal`. |
 | Register | `src/services/api/auth.ts` | POST | `/auth/register` | `{ email, password, full_name }` | `AuthResponse` | `auth:false`; `RegisterPage` menampilkan `err.message` atau `Registrasi gagal`. |
+| Google login | `src/services/api/auth.ts` | POST | `/auth/google` | `{ id_token }` | `AuthResponse` | `GoogleLoginButton` mengambil credential dari Google Identity Services; `AuthContext.googleLogin` menyimpan session seperti login biasa. |
 | Refresh token | `src/services/api/auth.ts` | POST | `/auth/refresh` | `{ refresh_token }` | `AuthResponse` | `auth:false`; pending refresh dideduplikasi dengan `pendingRefresh`; bootstrap hanya refresh jika access token expired/akan expired; refresh gagal selain timeout menghapus session. |
 | Me | `src/services/api/auth.ts` | GET | `/me` | Tidak ada | `User` | Protected request; 401 menghapus session lokal via API client. |
+| Setup password | `src/services/api/auth.ts` | POST | `/me/password/setup` | `{ new_password, confirm_password }` | `null` | Protected request; `SettingsPage` memakai ini ketika `user.has_password === false`, lalu refresh profile lokal. |
 | Ubah password | `src/services/api/auth.ts` | PATCH | `/me/password` | `{ current_password, new_password, confirm_password }` | `null` | Protected request; `SettingsPage` validasi lokal required/min 8/konfirmasi sama dan memakai `getFriendlyApiError`. |
 | Logout | `src/services/api/auth.ts` | POST | `/auth/logout` | `{ refresh_token }` | `null` | `auth:false`; `AuthContext.logout` menghapus session lokal dulu dan mengabaikan error logout API. |
 

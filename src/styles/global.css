@@ -1879,6 +1879,102 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-weight: 800;
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 14px;
+  color: var(--muted);
+  font-size: .86rem;
+  font-weight: 900;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.google-login {
+  display: grid;
+  width: 100%;
+  justify-items: stretch;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.google-login__button {
+  display: grid;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.google-login__fallback {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 72%, var(--color-primary));
+  border-radius: 8px;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 86%, #fff), var(--surface-muted)),
+    var(--surface);
+  box-shadow: 0 16px 34px color-mix(in srgb, #000 20%, transparent);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.google-login__fallback::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 18%, color-mix(in srgb, #fff 42%, transparent) 44%, transparent 68%);
+  opacity: 0;
+  transform: translateX(-45%);
+  transition: transform .35s ease, opacity .2s ease;
+}
+
+.google-login__fallback span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-right: 10px;
+  border-radius: 50%;
+  color: #fff;
+  background: conic-gradient(from -45deg, #4285f4, #34a853, #fbbc05, #ea4335, #4285f4);
+  font-size: .92rem;
+  font-weight: 950;
+}
+
+.google-login__fallback:hover,
+.google-login__fallback:focus-visible {
+  border-color: color-mix(in srgb, var(--color-primary) 62%, var(--line));
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.google-login__fallback:hover::before,
+.google-login__fallback:focus-visible::before {
+  opacity: 1;
+  transform: translateX(45%);
+}
+
+.google-login span {
+  color: var(--muted);
+  font-size: .84rem;
+  font-weight: 800;
+}
+
 .auth-link {
   margin: 22px 0 0;
   text-align: center;

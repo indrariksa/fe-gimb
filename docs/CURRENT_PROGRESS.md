@@ -8,8 +8,9 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 
 - React/Vite SPA dengan BrowserRouter.
 - Landing page untuk Smart Business Dashboard.
-- Login dan register.
-- Ubah password mandiri dari halaman settings.
+- Login dan register email-password.
+- Login/register Google via Google Identity Services jika `VITE_GOOGLE_CLIENT_ID` diisi.
+- Setup password akun Google-only dan ubah password mandiri dari halaman settings.
 - Session auth di `localStorage` key `gimb:auth`.
 - Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
 - API client fetch wrapper dengan timeout 15 detik, retry timeout sekali untuk request GET/HEAD, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
@@ -37,7 +38,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Dashboard diagnosis dengan score ring, score cards, action plan 30 hari dari `analysis.action_plan`, business snapshot, dan insight cards yang readable di light/dark mode.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend.
 - Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
-- Settings page untuk ubah password mandiri dan warna tema lokal.
+- Settings page untuk setup/ubah password mandiri dan warna tema lokal.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
 - Admin dashboard:
   - summary metrics;

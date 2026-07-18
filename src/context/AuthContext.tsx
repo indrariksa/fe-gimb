@@ -18,7 +18,9 @@ type AuthContextValue = {
   isAdmin: boolean;
   isLoading: boolean;
   login: (payload: { email: string; password: string }) => Promise<User>;
+  googleLogin: (payload: { id_token: string }) => Promise<User>;
   register: (payload: { email: string; password: string; full_name: string }) => Promise<User>;
+  refreshUser: () => Promise<User | null>;
   logout: () => Promise<void>;
 };
 
@@ -138,11 +140,26 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return nextAuth.user;
   }, [persistAuth]);
 
+  const handleGoogleLogin = useCallback(async (payload: { id_token: string }) => {
+    const response = await authApi.googleLogin(payload);
+    const nextAuth = authFromResponse(response);
+    persistAuth(nextAuth);
+    return nextAuth.user;
+  }, [persistAuth]);
+
   const handleRegister = useCallback(async (payload: { email: string; password: string; full_name: string }) => {
     const response = await authApi.register(payload);
     const nextAuth = authFromResponse(response);
     persistAuth(nextAuth);
     return nextAuth.user;
+  }, [persistAuth]);
+
+  const refreshUser = useCallback(async () => {
+    const stored = readStoredAuth();
+    if (!stored) return null;
+    const user = await authApi.me();
+    persistAuth({ ...stored, user });
+    return user;
   }, [persistAuth]);
 
   const handleLogout = useCallback(async () => {
@@ -161,9 +178,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     isAdmin: auth?.user.role === "admin",
     isLoading,
     login: handleLogin,
+    googleLogin: handleGoogleLogin,
     register: handleRegister,
+    refreshUser,
     logout: handleLogout,
-  }), [auth, handleLogin, handleLogout, handleRegister, isLoading]);
+  }), [auth, handleGoogleLogin, handleLogin, handleLogout, handleRegister, isLoading, refreshUser]);
 
   return (
     <AuthContext.Provider value={value}>

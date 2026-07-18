@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
 
 ## Tujuan Aplikasi
 
@@ -164,7 +164,7 @@ Autentikasi frontend berada di `src/context/AuthContext.tsx` dan `src/services/a
 
 Alur:
 
-1. Login/register memanggil API auth.
+1. Login/register memanggil API auth; tombol Google muncul jika `VITE_GOOGLE_CLIENT_ID` diisi.
 2. Response auth diubah ke local shape `{ user, accessToken, refreshToken }`.
 3. Data disimpan di `localStorage` key `gimb:auth`.
 4. Saat bootstrap, frontend memakai access token tersimpan jika token masih valid.
@@ -172,9 +172,11 @@ Alur:
 6. API client dikonfigurasi dengan provider access token, refresh-on-401 sekali, dan handler unauthorized/timeout.
 7. Jika response protected mendapat `401`, API client mencoba refresh token dan retry request asli sekali.
 8. Jika refresh gagal selain timeout, session lokal dihapus dan user perlu login ulang.
-9. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
+9. Google login memakai Google Identity Services untuk mendapatkan `id_token`, lalu memanggil `/auth/google`; session yang disimpan tetap sama dengan login biasa.
+10. User response memiliki `has_password`; akun Google baru bisa membuat password manual melalui Settings agar login email/password ikut aktif.
+11. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
 
-Ubah password mandiri berada di `SettingsPage` dan memakai `PATCH /me/password`. Form meminta password sekarang, password baru, dan konfirmasi password; session tetap aktif setelah berhasil.
+Ubah/setup password mandiri berada di `SettingsPage`. Jika `has_password=true`, form memakai `PATCH /me/password` dan meminta password sekarang, password baru, dan konfirmasi password. Jika `has_password=false`, form memakai `POST /me/password/setup` dan hanya meminta password baru serta konfirmasi; setelah berhasil frontend refresh profile `/me`.
 
 Tidak ditemukan penggunaan cookie untuk auth.
 
@@ -261,7 +263,7 @@ Validasi yang teridentifikasi:
 
 - Login: HTML `type=email`, `required`, password `required minLength=8`.
 - Register: nama/email/password required; password `minLength=8`; email `type=email`.
-- Ubah password: semua field required, password baru minimal 8 karakter, konfirmasi harus sama, dan password baru harus berbeda dari password sekarang.
+- Ubah password: untuk akun yang sudah punya password, semua field required, password baru minimal 8 karakter, konfirmasi harus sama, dan password baru harus berbeda dari password sekarang; untuk akun Google-only yang belum punya password, current password tidak ditampilkan dan setup memakai password baru + konfirmasi.
 - Business create:
   - `cleanText`;
   - `validateRequiredText` untuk nama toko dan industri;
@@ -331,8 +333,9 @@ Environment variable frontend:
 | Key | Fungsi |
 | --- | --- |
 | `VITE_API_BASE_URL` | Base URL backend API, contoh path berakhir di `/api/v1`. |
+| `VITE_GOOGLE_CLIENT_ID` | Google Web OAuth Client ID untuk menampilkan tombol Google login/register. |
 
-Jangan menuliskan nilai rahasia. Tidak ditemukan env frontend lain.
+Jangan menuliskan nilai rahasia.
 
 ## Perintah Development, Build, Lint, dan Test
 
@@ -357,7 +360,7 @@ Script test: Belum teridentifikasi.
 ## Fitur Terimplementasi
 
 - Landing page.
-- Login/register dengan redirect role.
+- Login/register email-password dan Google dengan redirect role.
 - Session persistence, lazy refresh token saat bootstrap, dan refresh-on-401 sekali.
 - Route guard user/admin.
 - User business list/create dengan business limit.
@@ -371,7 +374,7 @@ Script test: Belum teridentifikasi.
 - Dashboard diagnosis dengan score cards, action plan 30 hari dari `analysis.action_plan`, dan business snapshot.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional dari data inventarisasi, dan legend.
 - Export PDF report berbasis data dan workbook XLSX rapi untuk dashboard summary dan sub-scores analysis.
-- Settings page untuk ubah password mandiri dan tema lokal.
+- Settings page untuk setup/ubah password mandiri dan tema lokal.
 - Admin dashboard summary.
 - Card ringkasan admin dan user memakai efek holographic ringan saat hover.
 - Admin monitoring diagnosis dengan pagination.
