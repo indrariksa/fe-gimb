@@ -50,6 +50,12 @@ export function linkGoogleAccount(payload: { id_token: string }) {
   });
 }
 
+export function unlinkGoogleAccount() {
+  return apiRequest<User>("/me/google/link", {
+    method: "DELETE",
+  });
+}
+
 export function refreshToken(refresh_token: string) {
   if (!pendingRefresh) {
     pendingRefresh = apiRequest<AuthResponse>("/auth/refresh", {

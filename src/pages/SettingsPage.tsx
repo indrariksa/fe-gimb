@@ -32,7 +32,7 @@ function passwordScore(password: string) {
 }
 
 export function SettingsPage() {
-  const { isAdmin, user, linkGoogleAccount, refreshUser, updateProfile } = useAuth();
+  const { isAdmin, user, linkGoogleAccount, refreshUser, unlinkGoogleAccount, updateProfile } = useAuth();
   const [form, setForm] = useState<PasswordForm>(emptyPasswordForm);
   const [profileName, setProfileName] = useState(user?.full_name ?? "");
   const [error, setError] = useState("");
@@ -41,12 +41,19 @@ export function SettingsPage() {
   const [isProfileSubmitting, setIsProfileSubmitting] = useState(false);
   const [isProfileConfirmOpen, setIsProfileConfirmOpen] = useState(false);
   const [isPasswordConfirmOpen, setIsPasswordConfirmOpen] = useState(false);
+  const [isGoogleUnlinkConfirmOpen, setIsGoogleUnlinkConfirmOpen] = useState(false);
+  const [isGoogleUnlinkSubmitting, setIsGoogleUnlinkSubmitting] = useState(false);
   const score = useMemo(() => passwordScore(form.newPassword), [form.newPassword]);
   const scoreLabel = score >= 4 ? "Kuat" : score >= 3 ? "Cukup" : form.newPassword ? "Perlu diperkuat" : "Belum diisi";
   const notice = error ? { type: "error", message: error } : success ? { type: "success", message: success } : null;
   const hasPassword = user?.has_password ?? true;
   const hasGoogle = user?.has_google ?? false;
   const loginMethodLabel = hasPassword && hasGoogle ? "Email & Password + Google" : hasGoogle ? "Google" : "Email & Password";
+  const googleLinkHint = hasGoogle
+    ? hasPassword
+      ? "Google sudah tertaut. Kamu bisa melepasnya karena login password sudah aktif."
+      : "Buat password manual dulu sebelum melepas Google agar akun tetap bisa login."
+    : "Gunakan akun Google dengan email yang sama untuk login lebih cepat.";
 
   useEffect(() => {
     setProfileName(user?.full_name ?? "");
@@ -109,6 +116,22 @@ export function SettingsPage() {
     setError("");
     setSuccess("Akun Google berhasil ditautkan.");
   }, []);
+
+  const unlinkGoogle = async () => {
+    setError("");
+    setSuccess("");
+    setIsGoogleUnlinkSubmitting(true);
+    try {
+      await unlinkGoogleAccount();
+      setIsGoogleUnlinkConfirmOpen(false);
+      setSuccess("Tautan Google berhasil dilepas.");
+    } catch (err) {
+      setIsGoogleUnlinkConfirmOpen(false);
+      setError(getFriendlyApiError(err, "Gagal melepas tautan Google."));
+    } finally {
+      setIsGoogleUnlinkSubmitting(false);
+    }
+  };
 
   const submitPassword = (event: FormEvent) => {
     event.preventDefault();
@@ -211,9 +234,22 @@ export function SettingsPage() {
                 </label>
               </div>
               <div className="profile-google-link">
-                {hasGoogle ? (
+                {hasGoogle && hasPassword ? (
+                  <Button
+                    className="btn--google-unlink"
+                    variant="secondary"
+                    type="button"
+                    onClick={() => {
+                      setError("");
+                      setSuccess("");
+                      setIsGoogleUnlinkConfirmOpen(true);
+                    }}
+                  >
+                    Lepas tautan Google
+                  </Button>
+                ) : hasGoogle ? (
                   <Button variant="secondary" type="button" disabled>
-                    Google tertaut
+                    Buat password dulu
                   </Button>
                 ) : (
                   <GoogleLoginButton
@@ -223,7 +259,7 @@ export function SettingsPage() {
                     onError={setError}
                   />
                 )}
-                <p>Gunakan akun Google dengan email yang sama untuk login lebih cepat.</p>
+                <p>{googleLinkHint}</p>
               </div>
               <Button className="btn--shiny-dashboard" type="submit" disabled={isProfileSubmitting}>
                 Simpan Profil
@@ -336,6 +372,22 @@ export function SettingsPage() {
               <div className="confirm-dialog__actions">
                 <Button variant="secondary" onClick={() => setIsPasswordConfirmOpen(false)} disabled={isSubmitting}>Batal</Button>
                 <Button onClick={savePassword} disabled={isSubmitting}>{isSubmitting ? "Menyimpan..." : "Ya, Simpan"}</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isGoogleUnlinkConfirmOpen && (
+          <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="google-unlink-confirm-title">
+            <div className="confirm-dialog__card">
+              <span className="confirm-dialog__icon confirm-dialog__icon--danger">
+                <Icon name="alert" size={34} />
+              </span>
+              <h2 id="google-unlink-confirm-title">Lepas tautan Google?</h2>
+              <p>Setelah dilepas, akun ini tidak bisa login menggunakan Google sampai kamu menautkannya kembali.</p>
+              <div className="confirm-dialog__actions">
+                <Button variant="secondary" onClick={() => setIsGoogleUnlinkConfirmOpen(false)} disabled={isGoogleUnlinkSubmitting}>Batal</Button>
+                <Button onClick={unlinkGoogle} disabled={isGoogleUnlinkSubmitting}>{isGoogleUnlinkSubmitting ? "Melepas..." : "Ya, Lepas"}</Button>
               </div>
             </div>
           </div>

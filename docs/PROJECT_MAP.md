@@ -30,7 +30,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | --- | --- | --- |
 | `src/context/AuthContext.tsx` | Session state, localStorage `gimb:auth`, bootstrap refresh, logout, API client config. | Saat mengubah login lifecycle, token storage, refresh behavior, timeout/unauthorized handling. |
 | `src/services/api/client.ts` | Base URL, fetch wrapper, auth header, timeout, retry timeout GET/HEAD, API errors. | Saat mengubah API transport, envelope handling, base URL, timeout/retry, atau friendly errors. |
-| `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/email verification/refresh/logout/me/link Google/setup password/ubah password integration. |
+| `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/email verification/refresh/logout/me/link/unlink Google/setup password/ubah password integration. |
 | `src/services/api/businesses.ts` | User business/inventory endpoints. | Saat mengubah fitur toko/inventory user. |
 | `src/services/api/admin.ts` | Admin endpoints. | Saat mengubah dashboard admin, audit, users, business limit, diagnosis watchlist. |
 | `src/services/api/notifications.ts` | Admin notification REST endpoints dan WebSocket URL helper. | Saat mengubah notifikasi bell admin, unread count, mark read, atau realtime connection. |
@@ -77,7 +77,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/ScoreResultPage.tsx` | Hasil skor keseluruhan. | Saat mengubah score summary. |
 | `src/pages/DashboardPage.tsx` | Dashboard diagnosis utama. | Saat mengubah summary dashboard/user insight. |
 | `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, insight inventory operasional, dan legend. | Saat mengubah visualisasi sub-score atau data inventarisasi. |
-| `src/pages/SettingsPage.tsx` | Pengaturan setup/ubah password mandiri dan tema lokal. | Saat mengubah settings atau keamanan akun. |
+| `src/pages/SettingsPage.tsx` | Pengaturan profil, tautkan/lepas tautan Google, setup/ubah password mandiri, dan tema lokal. | Saat mengubah settings atau keamanan akun. |
 | `src/pages/AdminPage.tsx` | Admin summary, diagnosis, limit, users, audit logs. | Saat mengubah fitur admin utama. |
 | `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role. | Saat mengubah review/detail inventory. |
 

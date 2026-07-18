@@ -22,6 +22,7 @@ type AuthContextValue = {
   register: (payload: { email: string; password: string; full_name: string }) => Promise<RegisterResponse>;
   updateProfile: (payload: { full_name: string }) => Promise<User>;
   linkGoogleAccount: (payload: { id_token: string }) => Promise<User>;
+  unlinkGoogleAccount: () => Promise<User>;
   refreshUser: () => Promise<User | null>;
   logout: () => Promise<void>;
 };
@@ -169,6 +170,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return user;
   }, [persistAuth]);
 
+  const unlinkGoogleAccount = useCallback(async () => {
+    const stored = readStoredAuth();
+    if (!stored) throw new Error("Session tidak ditemukan");
+    const user = await authApi.unlinkGoogleAccount();
+    persistAuth({ ...stored, user });
+    return user;
+  }, [persistAuth]);
+
   const refreshUser = useCallback(async () => {
     const stored = readStoredAuth();
     if (!stored) return null;
@@ -197,9 +206,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     register: handleRegister,
     updateProfile,
     linkGoogleAccount,
+    unlinkGoogleAccount,
     refreshUser,
     logout: handleLogout,
-  }), [auth, handleGoogleLogin, handleLogin, handleLogout, handleRegister, isLoading, linkGoogleAccount, refreshUser, updateProfile]);
+  }), [auth, handleGoogleLogin, handleLogin, handleLogout, handleRegister, isLoading, linkGoogleAccount, refreshUser, unlinkGoogleAccount, updateProfile]);
 
   return (
     <AuthContext.Provider value={value}>
