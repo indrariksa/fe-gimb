@@ -17,7 +17,8 @@ export function LoginPage() {
   const { login, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState("");
+  const initialEmail = new URLSearchParams(location.search).get("email") ?? (location.state as { email?: string } | null)?.email ?? "";
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");

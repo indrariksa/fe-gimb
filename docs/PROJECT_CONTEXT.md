@@ -168,7 +168,7 @@ Alur:
 
 1. Login memanggil API auth; register email/password membuat akun lalu redirect ke `/registration-success` sambil membawa cooldown resend dari response backend. Backend membuat token lalu mengirim email verifikasi di background via Resend API atau SMTP agar halaman tidak menunggu provider email. Jika register sebelumnya timeout setelah user tersimpan tetapi email belum terkirim, retry register dengan email/password yang sama dapat mengembalikan response sukses dan mengirim ulang email verifikasi.
 2. Halaman `/registration-success` menampilkan email tujuan, resend email verification, dan countdown cooldown dari `resend_cooldown_seconds`; jika resend kena `429`, countdown memakai `retry_after_seconds` dari error detail.
-3. Halaman `/verify-email` membaca token dari query string, deduplicate request per token, retry sekali untuk `404` sesaat, lalu memanggil API verify email. Jika verifikasi gagal dan user resend, countdown memakai `resend_cooldown_seconds` dari response backend atau `retry_after_seconds` dari error `429`.
+3. Halaman `/verify-email` membaca token dari query string, deduplicate request per token, retry sekali untuk `404` sesaat, lalu memanggil API verify email. CTA kembali ke login membawa email dari query agar field email login otomatis terisi. Jika verifikasi gagal dan user resend, countdown memakai `resend_cooldown_seconds` dari response backend atau `retry_after_seconds` dari error `429`.
 4. Tombol Google muncul jika `VITE_GOOGLE_CLIENT_ID` diisi.
 5. Response auth login/Google diubah ke local shape `{ user, accessToken, refreshToken }`.
 6. Data disimpan di `localStorage` key `gimb:auth`.

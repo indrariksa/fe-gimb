@@ -129,7 +129,7 @@ export function VerifyEmailPage() {
             </button>
           </div>
         )}
-        <Button className="btn--shiny-dashboard" type="button" onClick={() => navigate("/login")}>
+        <Button className="btn--shiny-dashboard" type="button" onClick={() => navigate(`/login${email ? `?email=${encodeURIComponent(email)}` : ""}`, { state: { email } })}>
           Ke halaman login <Icon name="arrow" size={18} />
         </Button>
       </section>
