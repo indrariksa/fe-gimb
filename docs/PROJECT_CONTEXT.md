@@ -391,7 +391,7 @@ Script test: Belum teridentifikasi.
 - Admin update business limit.
 - Admin user list dan update status.
 - Admin audit log list dengan pagination, filter level dan search server-side, expand detail, reload, fullscreen.
-- Admin bell notification dengan unread count, dropdown recent notifications, mark read/read all, dan WebSocket reconnect sederhana.
+- Admin bell notification dengan unread count, dropdown recent notifications, waktu notifikasi relatif/tanggal Jakarta di kanan judul, mark read/read all, dan WebSocket reconnect sederhana.
 - Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
 - Dark/light mode dan theme colors, termasuk toggle publik di landing/login/register.

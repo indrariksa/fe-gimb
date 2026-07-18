@@ -11,6 +11,7 @@ import * as businessApi from "../../services/api/businesses";
 import * as adminApi from "../../services/api/admin";
 import * as notificationApi from "../../services/api/notifications";
 import type { AdminNotification, NotificationEvent } from "../../services/api/types";
+import { formatNotificationTime } from "../../utils/dateTime";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
 
@@ -371,7 +372,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
                           className={!notification.read_at ? "is-unread" : ""}
                           onClick={() => openNotification(notification)}
                         >
-                          <strong>{notification.title}</strong>
+                          <span className="notification-item__title">
+                            <strong>{notification.title}</strong>
+                            <time dateTime={notification.created_at}>{formatNotificationTime(notification.created_at)}</time>
+                          </span>
                           <span>{notification.message}</span>
                         </button>
                       ))
@@ -414,7 +418,10 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
       {toastNotification && (
         <button className="notification-toast" onClick={() => openNotification(toastNotification)} role="status">
           <span><Icon name="bell" size={18} /></span>
-          <strong>{toastNotification.title}</strong>
+          <strong>
+            {toastNotification.title}
+            <time dateTime={toastNotification.created_at}>{formatNotificationTime(toastNotification.created_at)}</time>
+          </strong>
           <small>{toastNotification.message}</small>
         </button>
       )}

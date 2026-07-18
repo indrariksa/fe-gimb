@@ -54,7 +54,8 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - load recent notifications;
   - unread count;
   - mark one/read all;
-  - WebSocket realtime dengan reconnect sederhana.
+  - WebSocket realtime dengan reconnect sederhana;
+  - dropdown dan toast menampilkan waktu notifikasi di kanan judul dengan format relatif lalu tanggal/jam Asia/Jakarta untuk data lama.
 - Admin inventory detail/input readout page.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.

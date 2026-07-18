@@ -843,13 +843,50 @@ a { color: inherit; text-decoration: none; }
 .notification-filter button:hover { color: var(--ink); }
 .notification-filter button.is-active { background: color-mix(in srgb, var(--color-primary) 10%, var(--surface)); color: color-mix(in srgb, var(--color-primary) 88%, var(--ink)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, transparent), 0 4px 12px color-mix(in srgb, var(--color-primary) 8%, transparent); transform: translateY(-.5px); }
 .notification-menu__panel > p { margin: 0; padding: 18px 16px; color: var(--muted); }
-.notification-menu__panel > button { display: grid; gap: 4px; width: 100%; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
-.notification-menu__panel > button:hover, .notification-menu__panel > button.is-unread { background: var(--surface-soft); }
+.notification-menu__panel > button { position: relative; display: grid; gap: 4px; width: 100%; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.notification-menu__panel > button:hover { background: var(--surface-soft); }
+.notification-menu__panel > button.is-unread {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 42%),
+    var(--surface-soft);
+}
+.notification-menu__panel > button.is-unread::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+.notification-menu__panel > button.is-unread .notification-item__title {
+  padding-left: 12px;
+}
 .notification-menu__panel > button strong { font-size: 14px; }
 .notification-menu__panel > button span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.notification-menu__panel .notification-item__title {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  color: var(--ink);
+}
+.notification-item__title strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.notification-item__title time,
+.notification-toast time {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+}
 .notification-toast { position: fixed; right: 24px; bottom: 24px; z-index: 80; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; width: min(360px, calc(100vw - 32px)); padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); text-align: left; box-shadow: var(--shadow); cursor: pointer; animation: notification-toast-in .2s ease both; }
 .notification-toast > span { grid-row: span 2; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--surface-soft); color: var(--color-primary); }
-.notification-toast strong { align-self: end; font-size: 14px; }
+.notification-toast strong { align-self: end; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; }
 .notification-toast small { color: var(--muted); line-height: 1.45; }
 @keyframes notification-panel-in {
   from { opacity: 0; transform: translateY(-6px) scale(.98); }

@@ -43,3 +43,15 @@ export function formatJakartaTime(value: DateValue, fallback = "-") {
     hour12: true,
   }).format(date);
 }
+
+export function formatNotificationTime(value: DateValue, fallback = "-") {
+  const date = toValidDate(value);
+  if (!date) return fallback;
+
+  const diffSeconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+  if (diffSeconds < 60) return "Baru saja";
+  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)} menit lalu`;
+  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)} jam lalu`;
+
+  return formatJakartaDateTime(date, fallback);
+}
