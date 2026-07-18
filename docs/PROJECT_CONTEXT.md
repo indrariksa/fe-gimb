@@ -301,6 +301,7 @@ Tema:
 - `ThemeContext` membaca local theme atau OS preference dark mode;
 - `applyTheme` mengubah `document.documentElement.dataset.theme`;
 - CSS dark mode memakai `:root[data-theme="dark"]`;
+- halaman publik landing/login/register memakai `PublicThemeToggle` untuk mengganti mode yang sama dengan dashboard;
 - warna user-settable: primary, accent, success, warning;
 - `readableTextColor` menghitung warna teks kontras untuk beberapa warna.
 
@@ -384,7 +385,7 @@ Script test: Belum teridentifikasi.
 - Admin bell notification dengan unread count, dropdown recent notifications, mark read/read all, dan WebSocket reconnect sederhana.
 - Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
-- Dark/light mode dan theme colors.
+- Dark/light mode dan theme colors, termasuk toggle publik di landing/login/register.
 
 ## Pola Kode yang Harus Dipertahankan
 

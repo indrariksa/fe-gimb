@@ -85,7 +85,7 @@ export function GoogleLoginButton({ onSuccess, onError }: GoogleLoginButtonProps
           size: "large",
           text: "continue_with",
           shape: "rectangular",
-          width: 320,
+          width: 390,
         });
       })
       .catch((err) => onError(err instanceof Error ? err.message : "Gagal memuat Google Login"))
@@ -98,24 +98,23 @@ export function GoogleLoginButton({ onSuccess, onError }: GoogleLoginButtonProps
     };
   }, [googleLogin, onError, onSuccess]);
 
-  if (!isGoogleLoginConfigured) {
-    return (
-      <div className="google-login">
-        <button
-          type="button"
-          className="google-login__fallback"
-          onClick={() => onError("VITE_GOOGLE_CLIENT_ID belum diisi. Isi Client ID Google di .env frontend dan restart Vite.")}
-        >
-          <span aria-hidden="true">G</span>
-          Lanjutkan dengan Google
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="google-login">
-      <div ref={buttonRef} className="google-login__button" />
+      <button
+        type="button"
+        className="google-login__fallback"
+        tabIndex={isGoogleLoginConfigured ? -1 : 0}
+        aria-hidden={isGoogleLoginConfigured ? "true" : undefined}
+        onClick={() => {
+          if (!isGoogleLoginConfigured) {
+            onError("VITE_GOOGLE_CLIENT_ID belum diisi. Isi Client ID Google di .env frontend dan restart Vite.");
+          }
+        }}
+      >
+        <span aria-hidden="true">G</span>
+        Lanjutkan dengan Google
+      </button>
+      {isGoogleLoginConfigured && <div ref={buttonRef} className="google-login__button" />}
       {isLoading && <span>Memuat Google Login...</span>}
     </div>
   );

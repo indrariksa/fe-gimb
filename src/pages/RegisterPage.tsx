@@ -5,6 +5,7 @@ import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { Brand } from "../components/molecules/Brand";
 import { GoogleLoginButton } from "../components/molecules/GoogleLoginButton";
+import { PublicThemeToggle } from "../components/molecules/PublicThemeToggle";
 import { useAuth } from "../context/AuthContext";
 import type { User } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
@@ -41,6 +42,7 @@ export function RegisterPage() {
 
   return (
     <main className="auth-page">
+      <PublicThemeToggle className="public-theme-toggle--floating" />
       <section className="auth-card">
         <Brand name={theme.appName} compact />
         <div>

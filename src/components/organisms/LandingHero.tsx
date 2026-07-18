@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
 import { Brand } from "../molecules/Brand";
+import { PublicThemeToggle } from "../molecules/PublicThemeToggle";
 import { useThemeSettings } from "../../theme/ThemeContext";
 
 export function LandingHero() {
@@ -18,7 +19,10 @@ export function LandingHero() {
           <a href="#fitur">Fitur</a>
           <button onClick={() => navigate("/dashboard")}>Dashboard</button>
         </nav>
-        <Button variant="dark" onClick={() => navigate("/dashboard")}>Login</Button>
+        <div className="landing__nav-actions">
+          <PublicThemeToggle />
+          <Button variant="dark" onClick={() => navigate("/dashboard")}>Login</Button>
+        </div>
       </header>
 
       <div className="landing__content" id="beranda">

@@ -39,7 +39,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend.
 - Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
 - Settings page untuk setup/ubah password mandiri dan warna tema lokal.
-- Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, dan document title.
+- Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, document title, dan toggle tema di landing/login/register.
 - Admin dashboard:
   - summary metrics;
   - efek holographic ringan pada card summary;

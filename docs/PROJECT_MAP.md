@@ -44,6 +44,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/theme/theme.ts` | Default theme, CSS variable apply, readable text color. | Saat mengubah token warna/default theme/dark mode logic. |
 | `src/styles/global.css` | Semua style, responsive, dark mode, layout, component classes. | Saat mengubah tampilan global, breakpoint, accessibility focus state, atau design system. |
 | `src/components/molecules/ThemeCustomizer.tsx` | UI pengaturan warna/theme. | Saat mengubah form setting tema. |
+| `src/components/molecules/PublicThemeToggle.tsx` | Toggle light/dark untuk halaman publik landing/login/register. | Saat mengubah kontrol tema di halaman sebelum login. |
 
 ## Layout dan Komponen
 

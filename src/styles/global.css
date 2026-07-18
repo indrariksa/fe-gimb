@@ -399,6 +399,11 @@ a { color: inherit; text-decoration: none; }
 }
 .landing__nav nav { display: flex; align-items: center; gap: clamp(18px, 4vw, 54px); color: var(--muted); font-weight: 750; }
 .landing__nav nav button { border: 0; background: transparent; color: inherit; font-weight: 750; }
+.landing__nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .landing__content {
   min-height: calc(100vh - 88px);
   padding: clamp(54px, 10vw, 150px) clamp(20px, 5vw, 96px) 64px;
@@ -785,6 +790,28 @@ a { color: inherit; text-decoration: none; }
   color: var(--color-primary);
 }
 .mode-toggle.is-dark .mode-toggle__option:last-of-type { color: var(--on-accent); }
+.public-theme-toggle {
+  border-color: color-mix(in srgb, var(--line) 74%, #fff);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 82%, #fff), color-mix(in srgb, var(--surface-muted) 86%, transparent));
+  box-shadow: 0 16px 34px color-mix(in srgb, #000 12%, transparent);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.public-theme-toggle:hover,
+.public-theme-toggle:focus-visible {
+  border-color: color-mix(in srgb, var(--color-primary) 48%, var(--line));
+  box-shadow: 0 20px 42px color-mix(in srgb, var(--color-primary) 16%, transparent);
+  outline: none;
+  transform: translateY(-1px);
+}
+.public-theme-toggle--floating {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 20;
+}
 .user-chip small { display: block; color: var(--muted); }
 .avatar { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: var(--on-primary); background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); font-weight: 900; }
 .account-menu { position: relative; }
@@ -1898,21 +1925,33 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .google-login {
+  position: relative;
   display: grid;
   width: 100%;
   justify-items: stretch;
   gap: 8px;
-  min-height: 44px;
+  min-height: 50px;
 }
 
 .google-login__button {
-  display: grid;
-  justify-content: center;
-  min-height: 44px;
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  min-height: 50px;
+  overflow: hidden;
+  opacity: .01;
+}
+
+.google-login__button > div,
+.google-login__button iframe {
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 50px !important;
 }
 
 .google-login__fallback {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1930,6 +1969,10 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-weight: 900;
   cursor: pointer;
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+:root:not([data-theme="dark"]) .google-login__fallback {
+  color: #111827;
 }
 
 .google-login__fallback::before {
@@ -1955,7 +1998,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-weight: 950;
 }
 
-.google-login__fallback:hover,
+.google-login:hover .google-login__fallback,
 .google-login__fallback:focus-visible {
   border-color: color-mix(in srgb, var(--color-primary) 62%, var(--line));
   box-shadow: 0 20px 40px color-mix(in srgb, var(--color-primary) 18%, transparent);
@@ -1963,13 +2006,15 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   transform: translateY(-2px);
 }
 
-.google-login__fallback:hover::before,
+.google-login:hover .google-login__fallback::before,
 .google-login__fallback:focus-visible::before {
   opacity: 1;
   transform: translateX(45%);
 }
 
-.google-login span {
+.google-login > span {
+  position: relative;
+  z-index: 5;
   color: var(--muted);
   font-size: .84rem;
   font-weight: 800;
@@ -5128,6 +5173,7 @@ dt,
 
 @media (max-width: 860px) {
   .landing__nav nav { display: none; }
+  .landing__nav-actions { margin-left: auto; }
   .landing__content { padding-top: 42px; }
   .landing h1 { font-size: clamp(2.55rem, 13vw, 4rem); }
   .landing__stats, .landing__actions, .dashboard__intro { flex-direction: column; align-items: stretch; }
@@ -5200,6 +5246,10 @@ dt,
   .mobile-menu { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 8px; background: #eef2ff; color: var(--color-primary); }
   .mode-toggle { width: 78px; min-height: 38px; border-radius: 999px; }
   .mode-toggle__option { height: 30px; }
+  .public-theme-toggle--floating {
+    top: 16px;
+    right: 16px;
+  }
   .user-chip > span:not(.avatar) { display: none; }
   .dashboard-grid { grid-template-columns: 1fr; }
   .health-card, .trend-card, .score-grid, .radar-card { grid-column: auto; }
@@ -5333,6 +5383,14 @@ dt,
 @media (max-width: 560px) {
   .landing__nav { height: 74px; padding-inline: 16px; }
   .landing__nav .btn { min-height: 42px; padding-inline: 16px; }
+  .landing__nav-actions { gap: 8px; }
+  .public-theme-toggle--floating {
+    top: 12px;
+    right: 12px;
+  }
+  .auth-page {
+    padding-top: 74px;
+  }
   .hero-visual { min-height: 390px; }
   .hero-visual__panel { padding: 20px; min-height: 330px; border-radius: 18px; }
   .hero-score { padding: 18px; }
