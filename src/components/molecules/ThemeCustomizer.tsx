@@ -53,6 +53,22 @@ export function ThemeCustomizer({ scope = "full" }: ThemeCustomizerProps) {
           <input type="color" value={theme.successColor} onChange={(event) => updateTheme({ successColor: event.target.value })} />
         </label>
       </div>
+      {isColorsOnly && (
+        <div className="theme-preview" aria-label="Preview tema">
+          <div className="theme-preview__bar">
+            <span />
+            <strong>Preview tema</strong>
+            <i />
+          </div>
+          <div className="theme-preview__body">
+            <div>
+              <span>Panel dashboard</span>
+              <strong>Skor 92.7</strong>
+            </div>
+            <button type="button">Aksi utama</button>
+          </div>
+        </div>
+      )}
       <Button className="btn--dashboard-hover" variant="secondary" onClick={() => setIsResetConfirmOpen(true)}>Reset Tema</Button>
       {isResetConfirmOpen && (
         <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="theme-reset-title">

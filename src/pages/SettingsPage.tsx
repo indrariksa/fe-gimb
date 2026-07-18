@@ -31,16 +31,26 @@ function passwordScore(password: string) {
 }
 
 export function SettingsPage() {
-  const { isAdmin, user, refreshUser } = useAuth();
+  const { isAdmin, user, refreshUser, updateProfile } = useAuth();
   const [form, setForm] = useState<PasswordForm>(emptyPasswordForm);
+  const [profileName, setProfileName] = useState(user?.full_name ?? "");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProfileSubmitting, setIsProfileSubmitting] = useState(false);
+  const [isProfileConfirmOpen, setIsProfileConfirmOpen] = useState(false);
   const [isPasswordConfirmOpen, setIsPasswordConfirmOpen] = useState(false);
   const score = useMemo(() => passwordScore(form.newPassword), [form.newPassword]);
   const scoreLabel = score >= 4 ? "Kuat" : score >= 3 ? "Cukup" : form.newPassword ? "Perlu diperkuat" : "Belum diisi";
   const notice = error ? { type: "error", message: error } : success ? { type: "success", message: success } : null;
   const hasPassword = user?.has_password ?? true;
+  const hasGoogle = user?.has_google ?? false;
+  const roleLabel = isAdmin ? "Admin" : "User";
+  const loginMethodLabel = hasPassword && hasGoogle ? "Email & Password + Google" : hasGoogle ? "Google" : "Email & Password";
+
+  useEffect(() => {
+    setProfileName(user?.full_name ?? "");
+  }, [user?.full_name]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -55,6 +65,36 @@ export function SettingsPage() {
     setError("");
     setSuccess("");
     setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const submitProfile = (event: FormEvent) => {
+    event.preventDefault();
+    const fullName = profileName.trim();
+    setError("");
+    setSuccess("");
+    if (fullName.length < 2) {
+      setError("Nama minimal 2 karakter.");
+      return;
+    }
+    if (fullName === user?.full_name) {
+      setSuccess("Nama profil sudah sesuai.");
+      return;
+    }
+    setIsProfileConfirmOpen(true);
+  };
+
+  const saveProfile = async () => {
+    setIsProfileSubmitting(true);
+    try {
+      await updateProfile({ full_name: profileName.trim() });
+      setIsProfileConfirmOpen(false);
+      setSuccess("Nama profil berhasil diperbarui.");
+    } catch (err) {
+      setIsProfileConfirmOpen(false);
+      setError(getFriendlyApiError(err, "Gagal mengubah nama profil."));
+    } finally {
+      setIsProfileSubmitting(false);
+    }
   };
 
   const submitPassword = (event: FormEvent) => {
@@ -124,73 +164,120 @@ export function SettingsPage() {
         </div>
 
         <div className="settings-grid">
-          <form className="security-panel" onSubmit={submitPassword}>
-            <div className="security-panel__intro">
-              <span className="security-panel__badge">
-                <Icon name="settings" size={26} />
-              </span>
-              <div>
-                <span>{user?.email ?? "Akun aktif"}</span>
-                <h3>{hasPassword ? "Ubah password" : "Buat password login"}</h3>
-                <p>
-                  {hasPassword
-                    ? "Gunakan password unik agar akses dashboard tetap aman."
-                    : "Akun Google Anda belum punya password manual. Buat sekali agar bisa login fleksibel."}
-                </p>
+          <div className="settings-account-grid">
+            <form className="security-panel security-panel--profile" onSubmit={submitProfile}>
+              <div className="security-panel__intro">
+                <span className="security-panel__badge">
+                  <Icon name="settings" size={26} />
+                </span>
+                <div>
+                  <span>{user?.email ?? "Akun aktif"}</span>
+                  <h3>Profil akun</h3>
+                  <p>Ubah nama yang tampil di dashboard, menu akun, dan halaman admin.</p>
+                </div>
               </div>
-            </div>
-
-            <div className="password-fields">
-              {hasPassword && (
+              <div className="password-fields">
                 <label>
-                  <span>Password sekarang</span>
+                  <span>Nama lengkap</span>
                   <input
-                    type="password"
-                    autoComplete="current-password"
-                    value={form.currentPassword}
-                    onChange={(event) => updateField("currentPassword", event.target.value)}
-                    placeholder="Masukkan password aktif"
+                    type="text"
+                    value={profileName}
+                    onChange={(event) => {
+                      setError("");
+                      setSuccess("");
+                      setProfileName(event.target.value);
+                    }}
+                    placeholder="Masukkan nama lengkap"
+                    minLength={2}
+                    maxLength={120}
                   />
                 </label>
-              )}
-              <label>
-                <span>Password baru</span>
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  minLength={8}
-                  value={form.newPassword}
-                  onChange={(event) => updateField("newPassword", event.target.value)}
-                  placeholder="Minimal 8 karakter"
-                />
-              </label>
-              <label>
-                <span>Konfirmasi password baru</span>
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  minLength={8}
-                  value={form.confirmPassword}
-                  onChange={(event) => updateField("confirmPassword", event.target.value)}
-                  placeholder="Ulangi password baru"
-                />
-              </label>
-            </div>
-
-            <div className="password-strength" aria-label={`Kekuatan password ${scoreLabel}`}>
-              <div>
-                <span>Kekuatan password</span>
-                <strong>{scoreLabel}</strong>
+                <label>
+                  <span>Email</span>
+                  <input type="email" value={user?.email ?? ""} disabled />
+                </label>
+                <label>
+                  <span>Role</span>
+                  <input type="text" value={roleLabel} disabled />
+                </label>
+                <label>
+                  <span>Metode login</span>
+                  <input type="text" value={loginMethodLabel} disabled />
+                </label>
               </div>
-              <div className="password-strength__bar">
-                <i style={{ width: form.newPassword ? `${score * 20}%` : "0%" }} />
-              </div>
-            </div>
+              <Button className="btn--shiny-dashboard" type="submit" disabled={isProfileSubmitting}>
+                Simpan Profil
+              </Button>
+            </form>
 
-            <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Menyimpan..." : hasPassword ? "Simpan password" : "Buat password"}
-            </Button>
-          </form>
+            <form className="security-panel" onSubmit={submitPassword}>
+              <div className="security-panel__intro">
+                <span className="security-panel__badge">
+                  <Icon name="settings" size={26} />
+                </span>
+                <div>
+                  <span>{user?.email ?? "Akun aktif"}</span>
+                  <h3>{hasPassword ? "Ubah password" : "Buat password login"}</h3>
+                  <p>
+                    {hasPassword
+                      ? "Gunakan password unik agar akses dashboard tetap aman."
+                      : "Akun Google Anda belum punya password manual. Buat sekali agar bisa login fleksibel."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="password-fields">
+                {hasPassword && (
+                  <label>
+                    <span>Password sekarang</span>
+                    <input
+                      type="password"
+                      autoComplete="current-password"
+                      value={form.currentPassword}
+                      onChange={(event) => updateField("currentPassword", event.target.value)}
+                      placeholder="Masukkan password aktif"
+                    />
+                  </label>
+                )}
+                <label>
+                  <span>Password baru</span>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    value={form.newPassword}
+                    onChange={(event) => updateField("newPassword", event.target.value)}
+                    placeholder="Minimal 8 karakter"
+                  />
+                </label>
+                <label>
+                  <span>Konfirmasi password baru</span>
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    value={form.confirmPassword}
+                    onChange={(event) => updateField("confirmPassword", event.target.value)}
+                    placeholder="Ulangi password baru"
+                  />
+                </label>
+              </div>
+
+              <div className="password-strength" aria-label={`Kekuatan password ${scoreLabel}`}>
+                <div>
+                  <span>Kekuatan password</span>
+                  <strong>{scoreLabel}</strong>
+                </div>
+                <div className="password-strength__bar">
+                  <i style={{ width: form.newPassword ? `${score * 20}%` : "0%" }} />
+                </div>
+              </div>
+
+              <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Menyimpan..." : hasPassword ? "Simpan password" : "Buat password"}
+              </Button>
+            </form>
+          </div>
 
           <ThemeCustomizer scope="colors" />
         </div>
@@ -199,6 +286,22 @@ export function SettingsPage() {
           <div className={`settings-toast settings-toast--${notice.type}`} role="alert">
             <Icon name={notice.type === "success" ? "check" : "alert"} size={20} />
             <span>{notice.message}</span>
+          </div>
+        )}
+
+        {isProfileConfirmOpen && (
+          <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="profile-confirm-title">
+            <div className="confirm-dialog__card">
+              <span className="confirm-dialog__icon">
+                <Icon name="settings" size={34} />
+              </span>
+              <h2 id="profile-confirm-title">Simpan nama baru?</h2>
+              <p>Nama ini akan tampil di dashboard, menu akun, dan beberapa halaman admin.</p>
+              <div className="confirm-dialog__actions">
+                <Button variant="secondary" onClick={() => setIsProfileConfirmOpen(false)} disabled={isProfileSubmitting}>Batal</Button>
+                <Button onClick={saveProfile} disabled={isProfileSubmitting}>{isProfileSubmitting ? "Menyimpan..." : "Ya, Simpan"}</Button>
+              </div>
+            </div>
           </div>
         )}
 

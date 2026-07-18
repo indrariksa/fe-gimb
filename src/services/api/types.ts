@@ -15,7 +15,9 @@ export type User = {
   role: UserRole;
   status: UserStatus;
   has_password: boolean;
+  has_google: boolean;
   email_verified: boolean;
+  google_linked_at?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +43,10 @@ export type ChangePasswordPayload = {
   current_password: string;
   new_password: string;
   confirm_password: string;
+};
+
+export type UpdateProfilePayload = {
+  full_name: string;
 };
 
 export type RegisterResponse = EmailVerificationPolicy & {

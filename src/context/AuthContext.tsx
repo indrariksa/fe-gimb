@@ -20,6 +20,7 @@ type AuthContextValue = {
   login: (payload: { email: string; password: string }) => Promise<User>;
   googleLogin: (payload: { id_token: string }) => Promise<User>;
   register: (payload: { email: string; password: string; full_name: string }) => Promise<RegisterResponse>;
+  updateProfile: (payload: { full_name: string }) => Promise<User>;
   refreshUser: () => Promise<User | null>;
   logout: () => Promise<void>;
 };
@@ -151,6 +152,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return authApi.register(payload);
   }, []);
 
+  const updateProfile = useCallback(async (payload: { full_name: string }) => {
+    const stored = readStoredAuth();
+    if (!stored) throw new Error("Session tidak ditemukan");
+    const user = await authApi.updateProfile(payload);
+    persistAuth({ ...stored, user });
+    return user;
+  }, [persistAuth]);
+
   const refreshUser = useCallback(async () => {
     const stored = readStoredAuth();
     if (!stored) return null;
@@ -177,9 +186,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     login: handleLogin,
     googleLogin: handleGoogleLogin,
     register: handleRegister,
+    updateProfile,
     refreshUser,
     logout: handleLogout,
-  }), [auth, handleGoogleLogin, handleLogin, handleLogout, handleRegister, isLoading, refreshUser]);
+  }), [auth, handleGoogleLogin, handleLogin, handleLogout, handleRegister, isLoading, refreshUser, updateProfile]);
 
   return (
     <AuthContext.Provider value={value}>
