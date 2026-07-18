@@ -8,21 +8,8 @@ import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
+import { formatJakartaDate, formatJakartaDateTime, formatJakartaTime } from "../utils/dateTime";
 import { formatScore } from "../utils/number";
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
-}
-
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
 
 function formatAction(action: string) {
   return action
@@ -98,15 +85,6 @@ function auditEntity(log: AuditLog) {
   const email = metadataString(log, "email");
   if (log.entity_type === "user" && email) return email;
   return formatAction(log.entity_type || "system");
-}
-
-function formatAuditTime(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  }).format(new Date(value));
 }
 
 function auditTags(log: AuditLog) {
@@ -624,7 +602,7 @@ export function AdminPage() {
                               <span>{business?.industry || "Tanpa industri"}</span>
                             </td>
                             <td><b className="status-pill">{submission.analysis.status}</b></td>
-                            <td>{formatDate(submission.created_at)}</td>
+                            <td>{formatJakartaDate(submission.created_at, "short")}</td>
                             <td><strong className="admin-table__score">{formatScore(submission.analysis.overall_score)}</strong></td>
                             <td>
                               <div className="admin-row-actions">
@@ -818,7 +796,7 @@ export function AdminPage() {
                           <Icon name="chevron" size={18} />
                         </button>
                         <b className={`audit-level audit-level--${level}`}>{auditLevelLabel(level)}</b>
-                        <time>{formatAuditTime(log.created_at)}</time>
+                        <time>{formatJakartaTime(log.created_at)}</time>
                         <strong>{auditService(log)}</strong>
                         <p>{auditMessage(log)}</p>
                         <span className={`audit-status audit-status--${level}`}>{auditStatusText(log, level)}</span>
@@ -866,7 +844,7 @@ export function AdminPage() {
                               </div>
                               <div>
                                 <span>Timestamp</span>
-                                <code>{formatDateTime(log.created_at)} · {formatAuditTime(log.created_at)}</code>
+                                <code>{formatJakartaDateTime(log.created_at)} · {formatJakartaTime(log.created_at)}</code>
                               </div>
                               <div>
                                 <span>User Agent</span>

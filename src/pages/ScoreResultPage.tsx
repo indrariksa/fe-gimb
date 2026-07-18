@@ -9,12 +9,8 @@ import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useAuth } from "../context/AuthContext";
+import { formatJakartaDate } from "../utils/dateTime";
 import { clampPercent, formatScore } from "../utils/number";
-
-function formatDate(value?: string) {
-  if (!value) return "-";
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(value));
-}
 
 function getScoreInsights(submission: InventorySubmission) {
   const scores = submission.analysis.sub_scores;
@@ -101,7 +97,7 @@ export function ScoreResultPage() {
               <div className="score-result-copy">
                 <span>Diagnosis selesai</span>
                 <h2>Skor kesehatan bisnis {business?.name ?? submission.business_name} sudah siap.</h2>
-                <p>Berikut ringkasan performa bisnis berdasarkan inventarisasi terakhir pada {formatDate(submission.created_at)}.</p>
+                <p>Berikut ringkasan performa bisnis berdasarkan inventarisasi terakhir pada {formatJakartaDate(submission.created_at)}.</p>
               </div>
 
               <div className="score-result-ring-wrap">

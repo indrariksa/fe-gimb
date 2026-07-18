@@ -9,6 +9,7 @@ import * as adminApi from "../services/api/admin";
 import * as businessApi from "../services/api/businesses";
 import { useAuth } from "../context/AuthContext";
 import type { Business, InventorySubmission, User } from "../services/api/types";
+import { formatJakartaDate } from "../utils/dateTime";
 import { formatScore } from "../utils/number";
 
 const inventoryValueKeyByFieldId: Record<string, keyof InventorySubmission> = {
@@ -25,10 +26,6 @@ const inventoryValueKeyByFieldId: Record<string, keyof InventorySubmission> = {
   assetValue: "asset_value",
   capitalInvestment: "capital_investment",
 };
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(value));
-}
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value || 0);
@@ -162,7 +159,7 @@ export function AdminInventoryDetailPage() {
                 <span>Data inventarisasi user</span>
                 <h2>{business?.name || submission.business_name || "Detail Bisnis"}</h2>
                 <p>
-                  {business?.industry || "Tanpa industri"} · diinput {formatDate(submission.created_at)}
+                  {business?.industry || "Tanpa industri"} · diinput {formatJakartaDate(submission.created_at)}
                   {submitter ? ` oleh ${submitter.full_name}` : ` oleh user ${shortValue(submission.user_id)}`}
                 </p>
               </div>

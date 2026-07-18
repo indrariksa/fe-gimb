@@ -9,6 +9,7 @@ import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useAuth } from "../context/AuthContext";
+import { formatJakartaDate } from "../utils/dateTime";
 import { clampPercent, formatScore } from "../utils/number";
 import { downloadPdfReport, downloadWorkbook, formatRupiah, reportFilename } from "../utils/exportReport";
 
@@ -260,7 +261,7 @@ export function SubScoresPage() {
         rows: [
           ["Detailed Analysis Report"],
           ["Bisnis", businessName],
-          ["Tanggal Diagnosis", new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(submission.created_at))],
+          ["Tanggal Diagnosis", formatJakartaDate(submission.created_at)],
           ["Skor Keseluruhan", formatScore(submission.analysis.overall_score)],
           ["Status", submission.analysis.status],
         ],
@@ -311,7 +312,7 @@ export function SubScoresPage() {
     downloadPdfReport({
       filename: reportFilename("sub-scores-analysis", businessName, "pdf"),
       title: "Detailed Analysis Report",
-      subtitle: `${businessName} - Diagnosis ${new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(submission.created_at))}`,
+      subtitle: `${businessName} - Diagnosis ${formatJakartaDate(submission.created_at)}`,
       summary: [
         ["Bisnis", businessName],
         ["Skor Keseluruhan", formatScore(submission.analysis.overall_score)],

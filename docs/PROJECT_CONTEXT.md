@@ -52,7 +52,8 @@ Konfigurasi:
 | `src/theme` | Theme context, default theme, CSS variable applier. |
 | `src/services/api` | HTTP client, service per domain, dan type kontrak API. |
 | `src/data` | Data statis dashboard fallback dan field inventarisasi. |
-| `src/utils` | Helper validasi form dan angka. |
+| `src/utils` | Helper validasi form, angka, dan format tanggal/jam. |
+| `src/utils/dateTime.ts` | Helper format tanggal/jam terpusat dengan timezone `Asia/Jakarta`. |
 | `src/utils/exportReport.ts` | Helper export report PDF berbasis data dan workbook XLSX dengan format Rupiah. |
 | `src/styles/global.css` | Semua styling global, layout, responsive, dark mode. |
 | `public/gimb-icon.svg` | Ikon SVG ringan untuk favicon browser dan brand mark aplikasi. |
@@ -296,6 +297,7 @@ Styling:
 
 - satu CSS global besar di `src/styles/global.css`;
 - CSS custom properties untuk warna, surface, font, shadow, dark mode;
+- helper tanggal/jam terpusat memakai locale Indonesia dan timezone eksplisit `Asia/Jakarta` untuk tampilan manusia;
 - `HolographicCard` memakai event mouse ringan dan CSS variable untuk efek tilt/glow pada card ringkasan admin dan user, dengan fallback `prefers-reduced-motion`;
 - SVG `public/gimb-icon.svg` dipakai sebagai favicon browser dan brand mark di komponen `Brand`;
 - font diimport dari Google Fonts di CSS;

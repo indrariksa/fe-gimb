@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import * as businessApi from "../services/api/businesses";
 import { getFriendlyApiError } from "../services/api/client";
 import type { Business } from "../services/api/types";
+import { formatJakartaDate } from "../utils/dateTime";
 import { cleanText, firstValidationError, validateMaxLength, validateRequiredText } from "../utils/formValidation";
 
 const industryOptions = [
@@ -56,10 +57,6 @@ const industryOptions = [
   "Keuangan / Koperasi",
   "Lainnya",
 ];
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
-}
 
 export function BusinessesPage() {
   const navigate = useNavigate();
@@ -219,7 +216,7 @@ export function BusinessesPage() {
                 <article className={`business-card panel ${hasDiagnosis ? "is-complete" : ""}`} key={business.public_id}>
                   <span className="business-card__mark">{business.name.slice(0, 1).toUpperCase()}</span>
                   <div>
-                    <span>{business.industry || "Bisnis"} · dibuat {formatDate(business.created_at)}</span>
+                    <span>{business.industry || "Bisnis"} · dibuat {formatJakartaDate(business.created_at, "short")}</span>
                     <h3>{business.name}</h3>
                     <p>{business.description || "Belum ada deskripsi toko."}</p>
                   </div>

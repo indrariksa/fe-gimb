@@ -14,6 +14,7 @@ import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useThemeSettings } from "../theme/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { formatJakartaDate } from "../utils/dateTime";
 import { clampPercent, formatScore } from "../utils/number";
 import { downloadPdfReport, downloadWorkbook, formatRupiah, reportFilename } from "../utils/exportReport";
 
@@ -29,11 +30,6 @@ function statusLabel(score: number) {
   if (score >= 40) return "Cukup Sehat";
   if (score >= 20) return "Buruk";
   return "Sangat Buruk";
-}
-
-function formatDate(value?: string) {
-  if (!value) return "Belum ada diagnosis";
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(value));
 }
 
 export function DashboardPage() {
@@ -110,7 +106,7 @@ export function DashboardPage() {
         rows: [
           ["Executive Summary Dashboard"],
           ["Bisnis", businessName],
-          ["Tanggal Diagnosis", formatDate(submission.created_at)],
+          ["Tanggal Diagnosis", formatJakartaDate(submission.created_at)],
           ["Skor Keseluruhan", overallScoreText],
           ["Status", overallStatus],
         ],
@@ -157,7 +153,7 @@ export function DashboardPage() {
     downloadPdfReport({
       filename: reportFilename("dashboard-summary", businessName, "pdf"),
       title: "Executive Summary Dashboard",
-      subtitle: `${businessName} - Diagnosis ${formatDate(submission.created_at)}`,
+      subtitle: `${businessName} - Diagnosis ${formatJakartaDate(submission.created_at)}`,
       summary: [
         ["Bisnis", businessName],
         ["Skor Keseluruhan", overallScoreText],
@@ -198,7 +194,7 @@ export function DashboardPage() {
         <div className="dashboard__intro">
           <div>
             <h2>Selamat Siang, {theme.ownerName}</h2>
-            <p>{business?.name ?? theme.businessName} - Diagnosa terakhir: {formatDate(submission?.created_at)}</p>
+            <p>{business?.name ?? theme.businessName} - Diagnosa terakhir: {formatJakartaDate(submission?.created_at, "long", "Belum ada diagnosis")}</p>
           </div>
           <div className="dashboard__actions">
             <Button className="btn--shiny-dashboard" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Sub Skor</Button>

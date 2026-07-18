@@ -58,6 +58,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Admin inventory detail/input readout page.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.
+- Helper tanggal/jam terpusat `src/utils/dateTime.ts` memformat tampilan manusia dengan timezone eksplisit `Asia/Jakarta`.
 - Responsive styling di `global.css`.
 - Beberapa atribut ARIA untuk dialog, menu, pagination, icons, timeout alert.
 - Vercel SPA rewrite.
