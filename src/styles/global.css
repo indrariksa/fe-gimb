@@ -2706,7 +2706,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .admin-layout {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(260px, .72fr) minmax(0, 1.28fr);
   gap: 24px;
 }
 
@@ -2793,6 +2793,10 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   background: var(--surface-muted);
 }
 
+.data-table article.data-table__user-row {
+  grid-template-columns: minmax(0, 1fr) auto auto auto minmax(132px, auto);
+}
+
 .data-table__action-row {
   grid-template-columns: minmax(0, 1fr) minmax(150px, auto) auto;
 }
@@ -2802,6 +2806,49 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   color: var(--ink);
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.email-verify-pill,
+.admin-row-placeholder {
+  justify-self: end;
+}
+
+.email-verify-pill {
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.email-verify-pill.is-verified {
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 13%, var(--surface));
+}
+
+.email-verify-pill.is-pending {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--surface));
+}
+
+.admin-row-action--verify {
+  min-height: 40px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--line));
+  border-radius: 8px;
+  padding: 0 13px;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 9%, var(--surface));
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-row-action--verify:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
+.admin-row-placeholder {
+  color: var(--muted);
 }
 
 .admin-row-actions {

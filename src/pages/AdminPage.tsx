@@ -290,6 +290,8 @@ export function AdminPage() {
   const [isAuditLoading, setIsAuditLoading] = useState(true);
   const [isSavingLimit, setIsSavingLimit] = useState(false);
   const [isLimitConfirmOpen, setIsLimitConfirmOpen] = useState(false);
+  const [emailVerifyTarget, setEmailVerifyTarget] = useState<User | null>(null);
+  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -491,6 +493,23 @@ export function AdminPage() {
     setUsers((current) => current.map((user) => user.id === updated.id ? updated : user));
   };
 
+  const verifyEmailManually = async () => {
+    if (!emailVerifyTarget) return;
+    setIsVerifyingEmail(true);
+    setUserError("");
+    try {
+      const updated = await adminApi.verifyUserEmailManually(emailVerifyTarget.id);
+      setUsers((current) => current.map((user) => user.id === updated.id ? updated : user));
+      setAuditSoftReloadKey((current) => current + 1);
+      setEmailVerifyTarget(null);
+    } catch (err) {
+      setUserError(err instanceof Error ? err.message : "Gagal memverifikasi email user");
+      setEmailVerifyTarget(null);
+    } finally {
+      setIsVerifyingEmail(false);
+    }
+  };
+
   const saveBusinessLimit = (event: FormEvent) => {
     event.preventDefault();
     setSettingMessage("");
@@ -675,12 +694,22 @@ export function AdminPage() {
                   {!userError && isUserLoading && <LoadingState inline>Memuat user...</LoadingState>}
                   {!userError && !isUserLoading && users.length === 0 && <article>Belum ada user.</article>}
                   {!userError && !isUserLoading && users.map((user) => (
-                    <article key={user.id}>
+                    <article className="data-table__user-row" key={user.id}>
                       <div>
                         <strong>{user.full_name}</strong>
                         <span>{user.email}</span>
                       </div>
+                      <b className={`email-verify-pill ${user.email_verified ? "is-verified" : "is-pending"}`}>
+                        {user.email_verified ? "Email verified" : "Belum verified"}
+                      </b>
                       <b className={`status-pill status-pill--${user.role}`}>{user.role}</b>
+                      {!user.email_verified ? (
+                        <button className="admin-row-action--verify" type="button" onClick={() => setEmailVerifyTarget(user)}>
+                          Verifikasi
+                        </button>
+                      ) : (
+                        <span className="admin-row-placeholder">-</span>
+                      )}
                       <select value={user.status} onChange={(event) => updateStatus(user.id, event.target.value as UserStatus)}>
                         <option value="active">active</option>
                         <option value="inactive">inactive</option>
@@ -898,6 +927,26 @@ export function AdminPage() {
               </Button>
               <Button className="btn--shiny-dashboard" disabled={isSavingLimit} onClick={confirmBusinessLimitSave}>
                 {isSavingLimit ? "Menyimpan..." : "Ya, Simpan"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {emailVerifyTarget && (
+        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="email-verify-confirm-title">
+          <div className="confirm-dialog__card">
+            <span className="confirm-dialog__icon"><Icon name="check" size={34} /></span>
+            <h2 id="email-verify-confirm-title">Verifikasi manual email?</h2>
+            <p>
+              Akun <strong>{emailVerifyTarget.email}</strong> akan dianggap terverifikasi tanpa klik link email.
+            </p>
+            <div className="confirm-dialog__actions">
+              <Button className="btn--dashboard-hover" variant="secondary" disabled={isVerifyingEmail} onClick={() => setEmailVerifyTarget(null)}>
+                Tidak
+              </Button>
+              <Button className="btn--shiny-dashboard" disabled={isVerifyingEmail} onClick={verifyEmailManually}>
+                {isVerifyingEmail ? "Memverifikasi..." : "Ya, Verifikasi"}
               </Button>
             </div>
           </div>

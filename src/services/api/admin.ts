@@ -37,6 +37,12 @@ export function updateUserStatus(id: string, status: UserStatus) {
   });
 }
 
+export function verifyUserEmailManually(id: string) {
+  return apiRequest<User>(`/admin/users/${id}/email/verify`, {
+    method: "PATCH",
+  });
+}
+
 export function adminBusinesses(params = { limit: 20, offset: 0 }) {
   return apiRequest<ListResponse<Business>>(`/admin/businesses?limit=${params.limit}&offset=${params.offset}`);
 }

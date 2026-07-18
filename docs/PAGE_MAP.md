@@ -41,7 +41,7 @@ Route ini memakai `RequireAuth adminOnly`. User non-admin diarahkan ke `/busines
 
 | Route | Halaman | Komponen Utama | Auth | Role | API yang Digunakan | Fungsi |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/admin` | `AdminPage` | `DashboardShell`, admin metrics, diagnosis table, users list, audit logs, pagination, confirmation dialog | Yes | `admin` | `GET /admin/dashboard/summary`, `GET /admin/settings/business-limit`, `PATCH /admin/settings/business-limit`, `GET /admin/users`, `PATCH /admin/users/:id/status`, `GET /admin/businesses`, `GET /admin/diagnosis-watchlist`, `GET /admin/audit-logs` | Dashboard admin untuk monitoring operasional, limit toko, user status, diagnosis watchlist, audit logs, dan tombol coba lagi saat load data gagal. |
+| `/admin` | `AdminPage` | `DashboardShell`, admin metrics, diagnosis table, users list, audit logs, pagination, confirmation dialog | Yes | `admin` | `GET /admin/dashboard/summary`, `GET /admin/settings/business-limit`, `PATCH /admin/settings/business-limit`, `GET /admin/users`, `PATCH /admin/users/:id/status`, `PATCH /admin/users/:id/email/verify`, `GET /admin/businesses`, `GET /admin/diagnosis-watchlist`, `GET /admin/audit-logs` | Dashboard admin untuk monitoring operasional, limit toko, user status, verifikasi manual email user, diagnosis watchlist, audit logs, dan tombol coba lagi saat load data gagal. |
 | `/admin/businesses/:businessId/inventory-input` | `AdminInventoryDetailPage` | `DashboardShell`, inventory readout, summary cards | Yes | `admin` | `GET /admin/businesses/:id`, `GET /admin/businesses/:id/inventory-submissions/latest`, `GET /admin/users?limit=100&offset=0` | Detail input inventarisasi user untuk business tertentu dari monitoring admin. |
 
 ## Fallback

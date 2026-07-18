@@ -47,7 +47,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - efek holographic ringan pada card summary;
   - diagnosis watchlist dengan pagination;
   - update business limit;
-  - user list dengan pagination, update status, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
+  - user list dengan pagination, update status, badge email verified, verifikasi manual email dengan konfirmasi, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
   - audit log list dengan pagination, search/filter server-side, detail expand, reload seamless, fullscreen, dan kolom row rata kiri;
   - tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin bell notification:
