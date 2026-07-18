@@ -1,17 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
 import { TextField } from "../atoms/TextField";
 import { useThemeSettings } from "../../theme/ThemeContext";
+import type { ThemeSettings } from "../../types";
 
 type ThemeCustomizerProps = {
   scope?: "full" | "colors";
 };
 
+type ColorKey = "primaryColor" | "accentColor" | "successColor";
+
+const colorFields: Array<{ key: ColorKey; label: string }> = [
+  { key: "primaryColor", label: "Warna utama" },
+  { key: "accentColor", label: "Warna aksen" },
+  { key: "successColor", label: "Warna status positif" },
+];
+
+function normalizeHex(value: string) {
+  const clean = value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(clean)) return clean.toUpperCase();
+  if (/^[0-9a-fA-F]{6}$/.test(clean)) return `#${clean.toUpperCase()}`;
+  return "";
+}
+
 export function ThemeCustomizer({ scope = "full" }: ThemeCustomizerProps) {
   const { theme, updateTheme, resetTheme } = useThemeSettings();
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [hexDrafts, setHexDrafts] = useState<Record<ColorKey, string>>({
+    primaryColor: theme.primaryColor.toUpperCase(),
+    accentColor: theme.accentColor.toUpperCase(),
+    successColor: theme.successColor.toUpperCase(),
+  });
   const isColorsOnly = scope === "colors";
+
+  useEffect(() => {
+    setHexDrafts({
+      primaryColor: theme.primaryColor.toUpperCase(),
+      accentColor: theme.accentColor.toUpperCase(),
+      successColor: theme.successColor.toUpperCase(),
+    });
+  }, [theme.primaryColor, theme.accentColor, theme.successColor]);
+
+  const updateColor = (key: ColorKey, value: string) => {
+    const normalized = normalizeHex(value);
+    setHexDrafts((current) => ({ ...current, [key]: value }));
+    if (normalized) updateTheme({ [key]: normalized } as Pick<ThemeSettings, ColorKey>);
+  };
 
   return (
     <section className={`theme-panel ${isColorsOnly ? "theme-panel--colors-only" : ""}`} aria-label="Kustomisasi tema">
@@ -40,18 +75,32 @@ export function ThemeCustomizer({ scope = "full" }: ThemeCustomizerProps) {
             </div>
           </div>
         )}
-        <label className="field">
-          <span className="field__label">Warna utama</span>
-          <input type="color" value={theme.primaryColor} onChange={(event) => updateTheme({ primaryColor: event.target.value })} />
-        </label>
-        <label className="field">
-          <span className="field__label">Warna aksen</span>
-          <input type="color" value={theme.accentColor} onChange={(event) => updateTheme({ accentColor: event.target.value })} />
-        </label>
-        <label className="field">
-          <span className="field__label">Warna status positif</span>
-          <input type="color" value={theme.successColor} onChange={(event) => updateTheme({ successColor: event.target.value })} />
-        </label>
+        {colorFields.map((field) => (
+          <label className="field theme-color-field" key={field.key}>
+            <span className="field__label">{field.label}</span>
+            <div className="theme-color-row">
+              <input
+                aria-label={`${field.label} picker`}
+                type="color"
+                value={theme[field.key]}
+                onChange={(event) => updateColor(field.key, event.target.value)}
+              />
+              <input
+                aria-label={`${field.label} kode hex`}
+                className="theme-hex-input"
+                inputMode="text"
+                maxLength={7}
+                spellCheck={false}
+                value={hexDrafts[field.key]}
+                onBlur={() => {
+                  const normalized = normalizeHex(hexDrafts[field.key]);
+                  setHexDrafts((current) => ({ ...current, [field.key]: normalized || theme[field.key].toUpperCase() }));
+                }}
+                onChange={(event) => updateColor(field.key, event.target.value)}
+              />
+            </div>
+          </label>
+        ))}
       </div>
       {isColorsOnly && (
         <div className="theme-preview" aria-label="Preview tema">
