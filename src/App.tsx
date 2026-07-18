@@ -10,10 +10,12 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { InventoryPage } from "./pages/InventoryPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
+import { RegistrationSuccessPage } from "./pages/RegistrationSuccessPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ScoreResultPage } from "./pages/ScoreResultPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SubScoresPage } from "./pages/SubScoresPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 
 export function App() {
   return (
@@ -24,6 +26,8 @@ export function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/registration-success" element={<RegistrationSuccessPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
 
             <Route element={<RequireAuth />}>
               <Route path="/businesses/:businessId/dashboard" element={<DashboardPage />} />

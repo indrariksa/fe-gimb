@@ -1840,6 +1840,37 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-weight: 500;
 }
 
+.auth-password-field {
+  position: relative;
+}
+
+.auth-password-field input {
+  padding-right: 104px;
+}
+
+.auth-password-field button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 10px;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.auth-password-field button:hover,
+.auth-password-field button:focus-visible {
+  color: var(--color-accent);
+  outline: none;
+}
+
 .business-form textarea {
   min-height: 110px;
   padding-block: 12px;
@@ -1906,6 +1937,135 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-weight: 800;
 }
 
+.form-success {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 38%, transparent);
+  border-radius: 8px;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  font-weight: 800;
+}
+
+.auth-inline-action {
+  justify-self: start;
+  border: 0;
+  padding: 0;
+  color: var(--color-primary);
+  background: transparent;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.auth-inline-action:hover,
+.auth-inline-action:focus-visible {
+  color: var(--color-accent);
+  outline: none;
+}
+
+.auth-inline-action:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.auth-resend-button {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 48%, var(--line));
+  border-radius: 8px;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.auth-resend-button:hover,
+.auth-resend-button:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.auth-resend-button:disabled {
+  cursor: not-allowed;
+  opacity: .68;
+  transform: none;
+}
+
+.auth-card--centered {
+  display: grid;
+  gap: 22px;
+}
+
+.verify-email-state {
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+
+.verify-email-state h1 {
+  margin: 8px 0 0;
+}
+
+.verify-email-state__icon {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  box-shadow: 0 16px 30px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.registration-email {
+  justify-self: center;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.verify-resend {
+  display: grid;
+  gap: 14px;
+}
+
+.verify-resend label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.verify-resend input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 14px;
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.verify-email-state--success .verify-email-state__icon {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+
+.verify-email-state--error .verify-email-state__icon {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
 .auth-divider {
   display: flex;
   align-items: center;
@@ -1937,16 +2097,18 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   position: absolute;
   inset: 0;
   z-index: 4;
-  min-height: 50px;
+  height: 50px;
   overflow: hidden;
   opacity: .01;
+  cursor: pointer;
 }
 
-.google-login__button > div,
+.google-login__button div,
 .google-login__button iframe {
   width: 100% !important;
   min-width: 100% !important;
   height: 50px !important;
+  cursor: pointer !important;
 }
 
 .google-login__fallback {

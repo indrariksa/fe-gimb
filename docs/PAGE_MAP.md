@@ -5,8 +5,10 @@
 | Route | Halaman | Komponen Utama | Auth | Role | API yang Digunakan | Fungsi |
 | --- | --- | --- | --- | --- | --- | --- |
 | `/` | `LandingPage` | `LandingHero`, `Brand`, `Button`, `Icon` | No | Public | Tidak ada | Landing page marketing/preview dashboard. |
-| `/login` | `LoginPage` | `Brand`, `Button`, `Icon`, `AuthContext.login` | No | Public | `POST /auth/login` | Login user/admin, simpan session, redirect berdasarkan role atau route asal. |
-| `/register` | `RegisterPage` | `Brand`, `Button`, `Icon`, `AuthContext.register` | No | Public | `POST /auth/register` | Registrasi user baru, simpan session, redirect berdasarkan role. |
+| `/login` | `LoginPage` | `Brand`, `Button`, `Icon`, `AuthContext.login` | No | Public | `POST /auth/login`, `POST /auth/email/verification/resend` | Login user/admin, simpan session, redirect berdasarkan role atau route asal; tampilkan resend jika email belum verified. |
+| `/register` | `RegisterPage` | `Brand`, `Button`, `Icon`, `AuthContext.register` | No | Public | `POST /auth/register` | Registrasi user baru dan tampilkan instruksi cek email verifikasi tanpa menyimpan session. |
+| `/registration-success` | `RegistrationSuccessPage` | `Brand`, `Button`, `Icon` | No | Public | `POST /auth/email/verification/resend` | Pemberitahuan registrasi berhasil, menampilkan email tujuan, tombol resend email verifikasi, dan countdown cooldown dari response backend. |
+| `/verify-email` | `VerifyEmailPage` | `Brand`, `Button`, `Icon` | No | Public | `POST /auth/email/verify`, `POST /auth/email/verification/resend` | Memverifikasi email dari token query string dengan deduplicate per token dan retry sekali untuk `404` sesaat, memberi CTA ke login, dan menyediakan resend link baru dengan countdown cooldown dari response backend saat verifikasi gagal. |
 
 ## Protected Umum
 

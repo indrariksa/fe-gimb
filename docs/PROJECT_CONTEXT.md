@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, verifikasi email registrasi, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
 
 ## Tujuan Aplikasi
 
@@ -100,6 +100,8 @@ Public route:
 - `/`
 - `/login`
 - `/register`
+- `/registration-success`
+- `/verify-email`
 
 Protected route umum:
 
@@ -164,17 +166,21 @@ Autentikasi frontend berada di `src/context/AuthContext.tsx` dan `src/services/a
 
 Alur:
 
-1. Login/register memanggil API auth; tombol Google muncul jika `VITE_GOOGLE_CLIENT_ID` diisi.
-2. Response auth diubah ke local shape `{ user, accessToken, refreshToken }`.
-3. Data disimpan di `localStorage` key `gimb:auth`.
-4. Saat bootstrap, frontend memakai access token tersimpan jika token masih valid.
-5. Jika access token kosong, rusak, expired, atau akan expired dalam 60 detik, frontend memanggil `/auth/refresh`.
-6. API client dikonfigurasi dengan provider access token, refresh-on-401 sekali, dan handler unauthorized/timeout.
-7. Jika response protected mendapat `401`, API client mencoba refresh token dan retry request asli sekali.
-8. Jika refresh gagal selain timeout, session lokal dihapus dan user perlu login ulang.
-9. Google login memakai Google Identity Services untuk mendapatkan `id_token`, lalu memanggil `/auth/google`; session yang disimpan tetap sama dengan login biasa.
-10. User response memiliki `has_password`; akun Google baru bisa membuat password manual melalui Settings agar login email/password ikut aktif.
-11. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
+1. Login memanggil API auth; register email/password membuat akun lalu redirect ke `/registration-success` sambil membawa cooldown resend dari response backend.
+2. Halaman `/registration-success` menampilkan email tujuan, resend email verification, dan countdown cooldown dari `resend_cooldown_seconds`; jika resend kena `429`, countdown memakai `retry_after_seconds` dari error detail.
+3. Halaman `/verify-email` membaca token dari query string, deduplicate request per token, retry sekali untuk `404` sesaat, lalu memanggil API verify email. Jika verifikasi gagal dan user resend, countdown memakai `resend_cooldown_seconds` dari response backend atau `retry_after_seconds` dari error `429`.
+4. Tombol Google muncul jika `VITE_GOOGLE_CLIENT_ID` diisi.
+5. Response auth login/Google diubah ke local shape `{ user, accessToken, refreshToken }`.
+6. Data disimpan di `localStorage` key `gimb:auth`.
+7. Saat bootstrap, frontend memakai access token tersimpan jika token masih valid.
+8. Jika access token kosong, rusak, expired, atau akan expired dalam 60 detik, frontend memanggil `/auth/refresh`.
+9. API client dikonfigurasi dengan provider access token, refresh-on-401 sekali, dan handler unauthorized/timeout.
+10. Jika response protected mendapat `401`, API client mencoba refresh token dan retry request asli sekali.
+11. Jika refresh gagal selain timeout, session lokal dihapus dan user perlu login ulang.
+12. Google login memakai Google Identity Services untuk mendapatkan `id_token`, lalu memanggil `/auth/google`; session yang disimpan tetap sama dengan login biasa.
+13. User response memiliki `has_password` dan `email_verified`; akun Google baru bisa membuat password manual melalui Settings agar login email/password ikut aktif.
+14. Jika login email/password ditolak karena email belum verified, LoginPage menampilkan action resend email verification.
+15. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
 
 Ubah/setup password mandiri berada di `SettingsPage`. Jika `has_password=true`, form memakai `PATCH /me/password` dan meminta password sekarang, password baru, dan konfirmasi password. Jika `has_password=false`, form memakai `POST /me/password/setup` dan hanya meminta password baru serta konfirmasi; setelah berhasil frontend refresh profile `/me`.
 
@@ -361,7 +367,7 @@ Script test: Belum teridentifikasi.
 ## Fitur Terimplementasi
 
 - Landing page.
-- Login/register email-password dan Google dengan redirect role.
+- Login email-password dan Google dengan redirect role; register email-password meminta verifikasi email sebelum login.
 - Session persistence, lazy refresh token saat bootstrap, dan refresh-on-401 sekali.
 - Route guard user/admin.
 - User business list/create dengan business limit.

@@ -30,7 +30,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | --- | --- | --- |
 | `src/context/AuthContext.tsx` | Session state, localStorage `gimb:auth`, bootstrap refresh, logout, API client config. | Saat mengubah login lifecycle, token storage, refresh behavior, timeout/unauthorized handling. |
 | `src/services/api/client.ts` | Base URL, fetch wrapper, auth header, timeout, retry timeout GET/HEAD, API errors. | Saat mengubah API transport, envelope handling, base URL, timeout/retry, atau friendly errors. |
-| `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/refresh/logout/me/setup password/ubah password integration. |
+| `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/email verification/refresh/logout/me/setup password/ubah password integration. |
 | `src/services/api/businesses.ts` | User business/inventory endpoints. | Saat mengubah fitur toko/inventory user. |
 | `src/services/api/admin.ts` | Admin endpoints. | Saat mengubah dashboard admin, audit, users, business limit, diagnosis watchlist. |
 | `src/services/api/notifications.ts` | Admin notification REST endpoints dan WebSocket URL helper. | Saat mengubah notifikasi bell admin, unread count, mark read, atau realtime connection. |
@@ -68,7 +68,9 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | --- | --- | --- |
 | `src/pages/LandingPage.tsx` | Landing sections bawah hero. | Saat mengubah copy/section landing. |
 | `src/pages/LoginPage.tsx` | Login form dan redirect after login. | Saat mengubah login UX/validasi. |
-| `src/pages/RegisterPage.tsx` | Register form dan redirect after register. | Saat mengubah register UX/validasi. |
+| `src/pages/RegisterPage.tsx` | Register form dan instruksi verifikasi email. | Saat mengubah register UX/validasi. |
+| `src/pages/RegistrationSuccessPage.tsx` | Halaman pemberitahuan setelah register, resend verification, dan countdown. | Saat mengubah alur setelah register email/password. |
+| `src/pages/VerifyEmailPage.tsx` | Halaman public untuk submit token verifikasi email dari query string. | Saat mengubah alur verifikasi email. |
 | `src/pages/BusinessesPage.tsx` | List/create business, business limit, completed inventory check, industry combobox. | Saat mengubah toko/user workspace. |
 | `src/pages/InventoryPage.tsx` | Inventory form, local draft, numeric formatting, validation, submit. | Saat mengubah field/payload inventory. |
 | `src/pages/AnalysisPage.tsx` | Progress animation dan CTA score. | Saat mengubah flow setelah submit. |

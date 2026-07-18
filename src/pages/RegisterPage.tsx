@@ -16,6 +16,7 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ full_name: "", email: "", password: "" });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigateAfterAuth = useCallback((user: User) => {
@@ -31,8 +32,11 @@ export function RegisterPage() {
     setError("");
     setIsSubmitting(true);
     try {
-      const user = await register(form);
-      navigateAfterAuth(user);
+      const response = await register(form);
+      navigate(`/registration-success?email=${encodeURIComponent(form.email)}`, {
+        replace: true,
+        state: { email: form.email, resendCooldownSeconds: response.resend_cooldown_seconds },
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registrasi gagal");
     } finally {
@@ -47,20 +51,22 @@ export function RegisterPage() {
         <Brand name={theme.appName} compact />
         <div>
           <h1>Buat akun baru</h1>
-          <p>Akun baru otomatis memiliki role user. Role admin diatur manual dari Supabase.</p>
         </div>
-        <form onSubmit={submit} className="auth-form">
+        <form onSubmit={submit} className="auth-form" autoComplete="off">
           <label>
             <span>Nama lengkap</span>
-            <input placeholder="Masukkan Nama Lengkap" value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} required />
+            <input placeholder="Masukkan Nama Lengkap" value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} autoComplete="off" required />
           </label>
           <label>
             <span>Email</span>
-            <input type="email" placeholder="Masukkan Email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} required />
+            <input type="email" placeholder="Masukkan Email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} autoComplete="off" required />
           </label>
           <label>
             <span>Password</span>
-            <input type="password" placeholder="Masukkan Password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} required minLength={8} />
+            <div className="auth-password-field">
+              <input type={showPassword ? "text" : "password"} placeholder="Masukkan Password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} autoComplete="new-password" required minLength={8} />
+              <button type="button" onClick={() => setShowPassword((current) => !current)}>{showPassword ? "Sembunyikan" : "Lihat"}</button>
+            </div>
           </label>
           {error && <p className="form-error">{error}</p>}
           <Button className="btn--shiny-dashboard" type="submit" disabled={isSubmitting}>{isSubmitting ? "Memproses..." : "Daftar"} <Icon name="arrow" size={18} /></Button>

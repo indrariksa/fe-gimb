@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { PropsWithChildren } from "react";
 import { ApiTimeoutError, configureApiClient, timeoutMessage } from "../services/api/client";
 import * as authApi from "../services/api/auth";
-import type { AuthResponse, User } from "../services/api/types";
+import type { AuthResponse, RegisterResponse, User } from "../services/api/types";
 
 type StoredAuth = {
   user: User;
@@ -19,7 +19,7 @@ type AuthContextValue = {
   isLoading: boolean;
   login: (payload: { email: string; password: string }) => Promise<User>;
   googleLogin: (payload: { id_token: string }) => Promise<User>;
-  register: (payload: { email: string; password: string; full_name: string }) => Promise<User>;
+  register: (payload: { email: string; password: string; full_name: string }) => Promise<RegisterResponse>;
   refreshUser: () => Promise<User | null>;
   logout: () => Promise<void>;
 };
@@ -148,11 +148,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [persistAuth]);
 
   const handleRegister = useCallback(async (payload: { email: string; password: string; full_name: string }) => {
-    const response = await authApi.register(payload);
-    const nextAuth = authFromResponse(response);
-    persistAuth(nextAuth);
-    return nextAuth.user;
-  }, [persistAuth]);
+    return authApi.register(payload);
+  }, []);
 
   const refreshUser = useCallback(async () => {
     const stored = readStoredAuth();

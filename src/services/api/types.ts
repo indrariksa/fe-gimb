@@ -15,6 +15,7 @@ export type User = {
   role: UserRole;
   status: UserStatus;
   has_password: boolean;
+  email_verified: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -27,10 +28,23 @@ export type AuthResponse = {
   refresh_token_expires_at: string;
 };
 
+export type EmailVerificationPolicy = {
+  verification_ttl_seconds: number;
+  resend_cooldown_seconds: number;
+};
+
+export type EmailVerificationCooldownError = {
+  retry_after_seconds?: number;
+};
+
 export type ChangePasswordPayload = {
   current_password: string;
   new_password: string;
   confirm_password: string;
+};
+
+export type RegisterResponse = EmailVerificationPolicy & {
+  user: User;
 };
 
 export type SetupPasswordPayload = {

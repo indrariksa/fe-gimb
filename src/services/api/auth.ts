@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { AuthResponse, ChangePasswordPayload, SetupPasswordPayload, User } from "./types";
+import type { AuthResponse, ChangePasswordPayload, EmailVerificationPolicy, RegisterResponse, SetupPasswordPayload, User } from "./types";
 
 let pendingRefresh: Promise<AuthResponse> | null = null;
 
@@ -12,7 +12,23 @@ export function login(payload: { email: string; password: string }) {
 }
 
 export function register(payload: { email: string; password: string; full_name: string }) {
-  return apiRequest<AuthResponse>("/auth/register", {
+  return apiRequest<RegisterResponse>("/auth/register", {
+    method: "POST",
+    auth: false,
+    body: JSON.stringify(payload),
+  });
+}
+
+export function verifyEmail(payload: { token: string }) {
+  return apiRequest<null>("/auth/email/verify", {
+    method: "POST",
+    auth: false,
+    body: JSON.stringify(payload),
+  });
+}
+
+export function resendEmailVerification(payload: { email: string }) {
+  return apiRequest<EmailVerificationPolicy>("/auth/email/verification/resend", {
     method: "POST",
     auth: false,
     body: JSON.stringify(payload),

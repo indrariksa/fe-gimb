@@ -8,7 +8,9 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 
 - React/Vite SPA dengan BrowserRouter.
 - Landing page untuk Smart Business Dashboard.
-- Login dan register email-password.
+- Login email-password dan register email-password dengan verifikasi email.
+- Halaman verifikasi email `/verify-email` dengan deduplicate request per token, retry sekali untuk `404` sesaat, countdown resend dari response backend, dan `retry_after_seconds` saat `429`.
+- Halaman sukses registrasi `/registration-success` dengan resend email verification, countdown dari response backend, dan `retry_after_seconds` saat `429`.
 - Login/register Google via Google Identity Services jika `VITE_GOOGLE_CLIENT_ID` diisi.
 - Setup password akun Google-only dan ubah password mandiri dari halaman settings.
 - Session auth di `localStorage` key `gimb:auth`.
@@ -65,6 +67,8 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/`
 - `/login`
 - `/register`
+- `/registration-success`
+- `/verify-email`
 - `/businesses`
 - `/businesses/:businessId/dashboard`
 - `/businesses/:businessId/score`
