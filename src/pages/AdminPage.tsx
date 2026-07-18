@@ -6,6 +6,7 @@ import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
+import { useAuth } from "../context/AuthContext";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, PaginationMeta, User, UserStatus } from "../services/api/types";
 import { formatJakartaDate, formatJakartaDateTime, formatJakartaTime } from "../utils/dateTime";
@@ -253,6 +254,7 @@ function PaginationControls({ page, pageSize, meta, isLoading, onPageChange, onP
 
 export function AdminPage() {
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -693,30 +695,38 @@ export function AdminPage() {
                   )}
                   {!userError && isUserLoading && <LoadingState inline>Memuat user...</LoadingState>}
                   {!userError && !isUserLoading && users.length === 0 && <article>Belum ada user.</article>}
-                  {!userError && !isUserLoading && users.map((user) => (
-                    <article className="data-table__user-row" key={user.id}>
-                      <div>
-                        <strong>{user.full_name}</strong>
-                        <span>{user.email}</span>
-                      </div>
-                      <b className={`email-verify-pill ${user.email_verified ? "is-verified" : "is-pending"}`}>
-                        {user.email_verified ? "Email verified" : "Belum verified"}
-                      </b>
-                      <b className={`status-pill status-pill--${user.role}`}>{user.role}</b>
-                      {!user.email_verified ? (
-                        <button className="admin-row-action--verify" type="button" onClick={() => setEmailVerifyTarget(user)}>
-                          Verifikasi
-                        </button>
-                      ) : (
-                        <span className="admin-row-placeholder">-</span>
-                      )}
-                      <select value={user.status} onChange={(event) => updateStatus(user.id, event.target.value as UserStatus)}>
-                        <option value="active">active</option>
-                        <option value="inactive">inactive</option>
-                        <option value="suspended">suspended</option>
-                      </select>
-                    </article>
-                  ))}
+                  {!userError && !isUserLoading && users.map((user) => {
+                    const isCurrentUser = user.id === currentUser?.id;
+                    return (
+                      <article className="data-table__user-row" key={user.id}>
+                        <div>
+                          <strong>{user.full_name}</strong>
+                          <span>{user.email}</span>
+                        </div>
+                        <b className={`email-verify-pill ${user.email_verified ? "is-verified" : "is-pending"}`}>
+                          {user.email_verified ? "Email verified" : "Belum verified"}
+                        </b>
+                        <b className={`status-pill status-pill--${user.role}`}>{user.role}</b>
+                        {!user.email_verified ? (
+                          <button className="admin-row-action--verify" type="button" onClick={() => setEmailVerifyTarget(user)}>
+                            Verifikasi
+                          </button>
+                        ) : (
+                          <span className="admin-row-placeholder">-</span>
+                        )}
+                        <select
+                          value={user.status}
+                          disabled={isCurrentUser}
+                          title={isCurrentUser ? "Admin tidak bisa mengubah status akunnya sendiri" : undefined}
+                          onChange={(event) => updateStatus(user.id, event.target.value as UserStatus)}
+                        >
+                          <option value="active">active</option>
+                          <option value="inactive">inactive</option>
+                          <option value="suspended">suspended</option>
+                        </select>
+                      </article>
+                    );
+                  })}
                 </div>
                 <PaginationControls
                   page={userPage}

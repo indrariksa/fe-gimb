@@ -2016,6 +2016,13 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   font-weight: 500;
 }
 
+.admin-section select:disabled {
+  cursor: not-allowed;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--surface-muted) 76%, var(--surface));
+  opacity: .72;
+}
+
 .auth-password-field {
   position: relative;
 }
