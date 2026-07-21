@@ -1,5 +1,5 @@
 type IconProps = {
-  name: "chart" | "dashboard" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check" | "search" | "filter" | "refresh" | "maximize";
+  name: "chart" | "dashboard" | "home" | "alert" | "grid" | "bulb" | "settings" | "logout" | "download" | "file" | "bell" | "menu" | "close" | "arrow" | "palette" | "sun" | "moon" | "chevron" | "check" | "search" | "filter" | "refresh" | "maximize" | "eye";
   size?: number;
 };
 
@@ -27,6 +27,7 @@ const paths: Record<IconProps["name"], string[]> = {
   filter: ["M3 5h18l-7 8v5l-4 2v-7L3 5Z"],
   refresh: ["M21 12a9 9 0 0 1-15.5 6.2", "M3 12A9 9 0 0 1 18.5 5.8", "M18 3v4h-4", "M6 21v-4h4"],
   maximize: ["M8 3H3v5", "M3 3l6 6", "M16 3h5v5", "M21 3l-6 6", "M8 21H3v-5", "M3 21l6-6", "M16 21h5v-5", "M21 21l-6-6"],
+  eye: ["M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z", "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"],
 };
 
 export function Icon({ name, size = 22 }: IconProps) {

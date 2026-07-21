@@ -15,10 +15,22 @@ type PasswordForm = {
   confirmPassword: string;
 };
 
+type VisiblePasswordFields = {
+  currentPassword: boolean;
+  newPassword: boolean;
+  confirmPassword: boolean;
+};
+
 const emptyPasswordForm: PasswordForm = {
   currentPassword: "",
   newPassword: "",
   confirmPassword: "",
+};
+
+const hiddenPasswordFields: VisiblePasswordFields = {
+  currentPassword: false,
+  newPassword: false,
+  confirmPassword: false,
 };
 
 function passwordScore(password: string) {
@@ -43,6 +55,7 @@ export function SettingsPage() {
   const [isPasswordConfirmOpen, setIsPasswordConfirmOpen] = useState(false);
   const [isGoogleUnlinkConfirmOpen, setIsGoogleUnlinkConfirmOpen] = useState(false);
   const [isGoogleUnlinkSubmitting, setIsGoogleUnlinkSubmitting] = useState(false);
+  const [visiblePasswordFields, setVisiblePasswordFields] = useState<VisiblePasswordFields>(hiddenPasswordFields);
   const score = useMemo(() => passwordScore(form.newPassword), [form.newPassword]);
   const scoreLabel = score >= 4 ? "Kuat" : score >= 3 ? "Cukup" : form.newPassword ? "Perlu diperkuat" : "Belum diisi";
   const notice = error ? { type: "error", message: error } : success ? { type: "success", message: success } : null;
@@ -72,6 +85,10 @@ export function SettingsPage() {
     setError("");
     setSuccess("");
     setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const togglePasswordVisibility = (field: keyof VisiblePasswordFields) => {
+    setVisiblePasswordFields((current) => ({ ...current, [field]: !current[field] }));
   };
 
   const submitProfile = (event: FormEvent) => {
@@ -177,6 +194,7 @@ export function SettingsPage() {
         await refreshUser();
       }
       setForm(emptyPasswordForm);
+      setVisiblePasswordFields(hiddenPasswordFields);
       setIsPasswordConfirmOpen(false);
       setSuccess(hasPassword ? "Password berhasil diubah. Sesi Anda tetap aktif." : "Password berhasil dibuat. Sekarang Anda bisa login dengan Google atau email/password.");
     } catch (err) {
@@ -286,36 +304,63 @@ export function SettingsPage() {
                 {hasPassword && (
                   <label>
                     <span>Password sekarang</span>
-                    <input
-                      type="password"
-                      autoComplete="current-password"
-                      value={form.currentPassword}
-                      onChange={(event) => updateField("currentPassword", event.target.value)}
-                      placeholder="Masukkan password aktif"
-                    />
+                    <div className="settings-password-field">
+                      <input
+                        type={visiblePasswordFields.currentPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        value={form.currentPassword}
+                        onChange={(event) => updateField("currentPassword", event.target.value)}
+                        placeholder="Masukkan password aktif"
+                      />
+                      <button
+                        type="button"
+                        aria-label={visiblePasswordFields.currentPassword ? "Sembunyikan password sekarang" : "Tampilkan password sekarang"}
+                        onClick={() => togglePasswordVisibility("currentPassword")}
+                      >
+                        <Icon name="eye" size={20} />
+                      </button>
+                    </div>
                   </label>
                 )}
                 <label>
                   <span>Password baru</span>
-                  <input
-                    type="password"
-                    autoComplete="new-password"
-                    minLength={8}
-                    value={form.newPassword}
-                    onChange={(event) => updateField("newPassword", event.target.value)}
-                    placeholder="Minimal 8 karakter"
-                  />
+                  <div className="settings-password-field">
+                    <input
+                      type={visiblePasswordFields.newPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      minLength={8}
+                      value={form.newPassword}
+                      onChange={(event) => updateField("newPassword", event.target.value)}
+                      placeholder="Minimal 8 karakter"
+                    />
+                    <button
+                      type="button"
+                      aria-label={visiblePasswordFields.newPassword ? "Sembunyikan password baru" : "Tampilkan password baru"}
+                      onClick={() => togglePasswordVisibility("newPassword")}
+                    >
+                      <Icon name="eye" size={20} />
+                    </button>
+                  </div>
                 </label>
                 <label>
                   <span>Konfirmasi password baru</span>
-                  <input
-                    type="password"
-                    autoComplete="new-password"
-                    minLength={8}
-                    value={form.confirmPassword}
-                    onChange={(event) => updateField("confirmPassword", event.target.value)}
-                    placeholder="Ulangi password baru"
-                  />
+                  <div className="settings-password-field">
+                    <input
+                      type={visiblePasswordFields.confirmPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      minLength={8}
+                      value={form.confirmPassword}
+                      onChange={(event) => updateField("confirmPassword", event.target.value)}
+                      placeholder="Ulangi password baru"
+                    />
+                    <button
+                      type="button"
+                      aria-label={visiblePasswordFields.confirmPassword ? "Sembunyikan konfirmasi password" : "Tampilkan konfirmasi password"}
+                      onClick={() => togglePasswordVisibility("confirmPassword")}
+                    >
+                      <Icon name="eye" size={20} />
+                    </button>
+                  </div>
                 </label>
               </div>
 
