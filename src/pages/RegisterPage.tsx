@@ -65,7 +65,13 @@ export function RegisterPage() {
             <span>Password</span>
             <div className="auth-password-field">
               <input type={showPassword ? "text" : "password"} placeholder="Masukkan Password" value={form.password} onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))} autoComplete="new-password" required minLength={8} />
-              <button type="button" onClick={() => setShowPassword((current) => !current)}>{showPassword ? "Sembunyikan" : "Lihat"}</button>
+              <button
+                type="button"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                onClick={() => setShowPassword((current) => !current)}
+              >
+                <Icon name="eye" size={20} />
+              </button>
             </div>
           </label>
           {error && <p className="form-error">{error}</p>}

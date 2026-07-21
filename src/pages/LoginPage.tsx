@@ -86,7 +86,13 @@ export function LoginPage() {
             <span>Password</span>
             <div className="auth-password-field">
               <input type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="off" required minLength={8} />
-              <button type="button" onClick={() => setShowPassword((current) => !current)}>{showPassword ? "Sembunyikan" : "Lihat"}</button>
+              <button
+                type="button"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                onClick={() => setShowPassword((current) => !current)}
+              >
+                <Icon name="eye" size={20} />
+              </button>
             </div>
           </label>
           {success && <p className="form-success">{success}</p>}

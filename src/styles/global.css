@@ -2054,22 +2054,23 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .auth-password-field input {
-  padding-right: 104px;
+  padding-right: 52px;
 }
 
 .auth-password-field button {
   position: absolute;
   top: 50%;
   right: 10px;
-  min-height: 32px;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
   border: 0;
   border-radius: 8px;
-  padding: 0 10px;
+  padding: 0;
+  display: grid;
+  place-items: center;
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-  font: inherit;
-  font-size: .82rem;
-  font-weight: 900;
   cursor: pointer;
   transform: translateY(-50%);
 }
