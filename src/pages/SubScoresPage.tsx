@@ -382,6 +382,17 @@ export function SubScoresPage() {
               ))}
             </div>
 
+            <section className="panel score-legend">
+              <h3>Interpretasi & Skala Skor</h3>
+              <div>
+                <article className="critical"><strong>Skor 0 - 19 - Sangat Buruk</strong><p>Kondisi bisnis sangat kritis dan membutuhkan tindakan pemulihan segera.</p></article>
+                <article className="danger"><strong>Skor 20 - 39 - Buruk</strong><p>Kondisi bisnis berisiko tinggi dan perlu tindakan cepat.</p></article>
+                <article className="warning"><strong>Skor 40 - 59 - Cukup Sehat</strong><p>Bisnis masih berjalan, tetapi ada area penting yang harus diperbaiki.</p></article>
+                <article className="success"><strong>Skor 60 - 79 - Sehat</strong><p>Bisnis relatif stabil dengan beberapa peluang optimasi.</p></article>
+                <article className="excellent"><strong>Skor 80 - 100 - Sangat Sehat</strong><p>Bisnis berada dalam kondisi kuat dan siap dikembangkan.</p></article>
+              </div>
+            </section>
+
             <div className="subscore-visual-grid">
               <section className="panel subscore-radar">
                 <h3>Radar Performa Bisnis</h3>
@@ -553,16 +564,6 @@ export function SubScoresPage() {
               </section>
             )}
 
-            <section className="panel score-legend">
-              <h3>Interpretasi & Skala Skor</h3>
-              <div>
-                <article className="critical"><strong>Skor 0 - 19 - Sangat Buruk</strong><p>Kondisi bisnis sangat kritis dan membutuhkan tindakan pemulihan segera.</p></article>
-                <article className="danger"><strong>Skor 20 - 39 - Buruk</strong><p>Kondisi bisnis berisiko tinggi dan perlu tindakan cepat.</p></article>
-                <article className="warning"><strong>Skor 40 - 59 - Cukup Sehat</strong><p>Bisnis masih berjalan, tetapi ada area penting yang harus diperbaiki.</p></article>
-                <article className="success"><strong>Skor 60 - 79 - Sehat</strong><p>Bisnis relatif stabil dengan beberapa peluang optimasi.</p></article>
-                <article className="excellent"><strong>Skor 80 - 100 - Sangat Sehat</strong><p>Bisnis berada dalam kondisi kuat dan siap dikembangkan.</p></article>
-              </div>
-            </section>
           </>
         )}
       </section>
