@@ -5099,20 +5099,22 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .score-legend {
   margin-top: 24px;
+  padding: 20px;
 }
 
 .score-legend > div {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .score-legend article {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 20px;
-  border-radius: 16px;
+  min-height: 118px;
+  padding: 16px;
+  border-radius: 12px;
   transition: transform .2s ease, box-shadow .22s ease, filter .22s ease;
 }
 
@@ -5128,8 +5130,17 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .score-legend article.warning { background: color-mix(in srgb, var(--color-warning) 12%, var(--surface)); }
 .score-legend article.success { background: color-mix(in srgb, var(--color-success) 10%, var(--surface)); }
 .score-legend article.excellent { background: color-mix(in srgb, var(--color-primary) 8%, var(--surface)); }
-.score-legend strong { color: var(--ink); }
-.score-legend p { margin: 10px 0 0; color: var(--muted); line-height: 1.6; }
+.score-legend strong {
+  color: var(--ink);
+  font-size: .78rem;
+  line-height: 1.35;
+}
+.score-legend p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.5;
+}
 
 @keyframes scoreReveal {
   from { opacity: 0; transform: scale(.86) rotate(-12deg); }
