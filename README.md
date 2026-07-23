@@ -180,3 +180,5 @@ Validasi final tetap ada di backend saat `POST /api/v1/businesses`, jadi limit t
 - Jangan memakai UUID internal database di route frontend.
 - Jika backend mengembalikan `401`, frontend akan menghapus sesi lokal dan user perlu login ulang.
 - Pengaturan tema saat ini masih lokal agar mudah dipindahkan ke backend nanti.
+
+##
