@@ -91,7 +91,7 @@ function validateInventoryPayload(payload: InventoryPayload) {
     payload.new_customers < 0 || payload.repeat_customers < 0 || payload.active_customers < 0
       ? "Jumlah pelanggan tidak boleh bernilai negatif."
       : "",
-    validateMaxLength(payload.description, "Deskripsi masalah", 1000),
+    validateMaxLength(payload.description, "Deskripsi masalah", 5000),
   ]);
 }
 
@@ -213,12 +213,12 @@ export function InventoryPage() {
             <label className="field field--wide">
               <span className="field__label">Deskripsi masalah bisnis lainnya</span>
               <textarea
-                maxLength={1000}
+                maxLength={5000}
                 placeholder="Ceritakan kendala atau tantangan spesifik yang sedang dihadapi bisnis Anda..."
                 value={values.description ?? ""}
                 onChange={(event) => setValues((current) => ({ ...current, description: event.target.value }))}
               />
-              <small>Maksimal 1000 karakter. Informasi ini membantu mentor memberikan rekomendasi yang lebih tajam.</small>
+              <small>Maksimal 5000 karakter. Informasi ini membantu mentor memberikan rekomendasi yang lebih tajam.</small>
             </label>
             <footer>
               <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>Batal</Button>
