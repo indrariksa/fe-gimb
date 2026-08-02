@@ -54,6 +54,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/organisms/LandingHero.tsx` | Hero landing dan CTA. | Saat mengubah landing page atas. |
 | `src/components/organisms/RadarProfile.tsx` | Business snapshot dari inventory metrics. | Saat mengubah snapshot dashboard. |
 | `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |
+| `src/components/organisms/AIReportChart.tsx` | Render chart generik (bar/line/radar/pie/gauge) dari data `AIReportChartData` laporan AI. | Saat mengubah tipe chart atau tampilan visual laporan AI. |
 | `src/components/atoms/Button.tsx` | Button base dengan variant. | Saat menambah variant/button behavior. |
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |
 | `src/components/atoms/LoadingState.tsx` | Loading state reusable dengan spinner theme-aware. | Saat mengubah tampilan loading halaman/table. |
@@ -79,7 +80,8 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, insight inventory operasional, dan legend. | Saat mengubah visualisasi sub-score atau data inventarisasi. |
 | `src/pages/SettingsPage.tsx` | Pengaturan profil, tautkan/lepas tautan Google, setup/ubah password mandiri, dan tema lokal. | Saat mengubah settings atau keamanan akun. |
 | `src/pages/AdminPage.tsx` | Admin summary, diagnosis, limit, users, audit logs. | Saat mengubah fitur admin utama. |
-| `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role. | Saat mengubah review/detail inventory. |
+| `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role; punya tombol admin ke Laporan AI. | Saat mengubah review/detail inventory. |
+| `src/pages/AIReportPage.tsx` | Laporan bisnis AI: polling status, narasi per sub-skor, alternative solutions, chart, export PDF/XLSX, dan regenerate saat gagal. | Saat mengubah tampilan/alur laporan AI. |
 
 ## Data, Types, Utilities
 

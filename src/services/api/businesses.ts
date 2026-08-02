@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { Business, BusinessLimitSetting, InventoryPayload, InventorySubmission, ListResponse } from "./types";
+import type { AIReport, Business, BusinessLimitSetting, InventoryPayload, InventorySubmission, ListResponse } from "./types";
 
 export function getBusinessLimit() {
   return apiRequest<BusinessLimitSetting>("/settings/business-limit");
@@ -35,4 +35,14 @@ export function listBusinessInventories(publicId: string, params = { limit: 20, 
 
 export function latestBusinessInventory(publicId: string) {
   return apiRequest<InventorySubmission>(`/businesses/${publicId}/inventory-submissions/latest`);
+}
+
+export function getBusinessAIReport(publicId: string) {
+  return apiRequest<AIReport>(`/businesses/${publicId}/ai-report`);
+}
+
+export function regenerateBusinessAIReport(publicId: string) {
+  return apiRequest<AIReport>(`/businesses/${publicId}/ai-report/regenerate`, {
+    method: "POST",
+  });
 }

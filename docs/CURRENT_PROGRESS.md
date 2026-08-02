@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 19 Juli 2026
+Terakhir diperbarui: 2 Agustus 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -57,6 +57,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - WebSocket realtime dengan reconnect sederhana;
   - dropdown dan toast menampilkan waktu notifikasi di kanan judul dengan format relatif lalu tanggal/jam Asia/Jakarta untuk data lama.
 - Admin inventory detail/input readout page.
+- Laporan bisnis AI `/businesses/:businessId/ai-report` (dan versi admin `/admin/businesses/:businessId/ai-report`): polling status processing/ready/failed, narasi per sub-skor dengan score drivers dan alternative solutions, chart bar/line/radar/pie/gauge (`AIReportChart`), export PDF/XLSX reuse `downloadPdfReport`/`downloadWorkbook`, dan tombol generate ulang saat status gagal.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.
 - Helper tanggal/jam terpusat `src/utils/dateTime.ts` memformat tampilan manusia dengan timezone eksplisit `Asia/Jakarta`.
@@ -78,9 +79,11 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/businesses/:businessId/inventory-input`
 - `/businesses/:businessId/inventory/new`
 - `/businesses/:businessId/analysis`
+- `/businesses/:businessId/ai-report`
 - `/settings`
 - `/admin`
 - `/admin/businesses/:businessId/inventory-input`
+- `/admin/businesses/:businessId/ai-report`
 
 Redirect/fallback:
 
@@ -104,6 +107,7 @@ Catatan penting yang ditemukan:
 - Tidak ada field `scoring_version` di type `BusinessHealthAnalysis` frontend.
 - `AdminPage.updateStatus` tidak memiliki try/catch lokal saat update user status.
 - `AdminInventoryDetailPage` pada mode admin mencari submitter dari `adminUsers({ limit: 100, offset: 0 })`, sehingga user di luar 100 pertama bisa tidak ditemukan.
+- Halaman laporan AI belum diverifikasi manual end-to-end di browser (empat state: not-eligible/processing/ready/failed) karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi; baru diverifikasi lewat type-check dan build.
 
 ## Test atau Build yang Tersedia
 
@@ -127,10 +131,10 @@ Pemeriksaan yang dijalankan:
 
 ```bash
 node ./node_modules/typescript/bin/tsc --noEmit
-cmd /c npm run build
+npm run build
 ```
 
-Hasil: kedua perintah exit code `0`.
+Hasil: kedua perintah exit code `0`. Smoke test manual di browser (proses/ready/failed/not-eligible untuk laporan AI) belum dijalankan karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi.
 
 ## Risiko atau Bagian yang Perlu Dikonfirmasi
 

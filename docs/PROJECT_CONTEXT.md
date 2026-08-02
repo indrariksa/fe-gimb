@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, verifikasi email registrasi, update nama profil, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, verifikasi email registrasi, update nama profil, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, laporan bisnis naratif berbasis Claude API untuk toko dengan omzet di atas threshold, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
 
 ## Tujuan Aplikasi
 
@@ -112,6 +112,7 @@ Protected route umum:
 - `/businesses/:businessId/inventory-input`
 - `/businesses/:businessId/inventory/new`
 - `/businesses/:businessId/analysis`
+- `/businesses/:businessId/ai-report`
 - `/settings`
 - `/dashboard` redirect ke `/businesses`
 - `/inventory` redirect ke `/businesses`
@@ -125,6 +126,7 @@ Admin-only route:
 
 - `/admin`
 - `/admin/businesses/:businessId/inventory-input`
+- `/admin/businesses/:businessId/ai-report`
 
 Fallback:
 
@@ -149,6 +151,7 @@ Navigasi user:
 - Hasil Skor;
 - Sub Skor;
 - Hasil Input;
+- Laporan AI;
 - Input Masalah.
 
 Navigasi admin:
@@ -395,6 +398,7 @@ Script test: Belum teridentifikasi.
 - Admin user list menampilkan status verifikasi email dan menyediakan verifikasi manual dengan confirmation dialog untuk user yang belum verified.
 - Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
+- Laporan bisnis AI: halaman `/businesses/:businessId/ai-report` (dan versi admin) dengan polling status `processing`/`ready`/`failed`, narasi per sub-skor beserta `score_drivers` dan `alternative_solutions`, chart bar/line/radar/pie/gauge, export PDF/XLSX, dan tombol generate ulang saat gagal; menu sidebar user "Laporan AI" mengikuti pola enable/disable nav lain berdasarkan hasil inventory.
 - Dark/light mode dan theme colors, termasuk toggle publik di landing/login/register.
 
 ## Pola Kode yang Harus Dipertahankan

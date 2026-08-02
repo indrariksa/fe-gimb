@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventorySubmission, ListResponse, User, UserStatus } from "./types";
+import type { AdminSummary, AIReport, AuditLog, Business, BusinessLimitSetting, InventorySubmission, ListResponse, User, UserStatus } from "./types";
 
 export function adminSummary() {
   return apiRequest<AdminSummary>("/admin/dashboard/summary");
@@ -61,4 +61,14 @@ export function adminLatestBusinessInventory(publicId: string) {
 
 export function adminInventorySubmissions(params = { limit: 20, offset: 0 }) {
   return apiRequest<ListResponse<InventorySubmission>>(`/admin/inventory-submissions?limit=${params.limit}&offset=${params.offset}`);
+}
+
+export function adminBusinessAIReport(publicId: string) {
+  return apiRequest<AIReport>(`/admin/businesses/${publicId}/ai-report`);
+}
+
+export function adminRegenerateBusinessAIReport(publicId: string) {
+  return apiRequest<AIReport>(`/admin/businesses/${publicId}/ai-report/regenerate`, {
+    method: "POST",
+  });
 }

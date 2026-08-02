@@ -223,3 +223,69 @@ export type NotificationEvent = {
   type: "notification.created";
   notification: AdminNotification;
 };
+
+export type AIReportStatus = "processing" | "ready" | "failed";
+
+export type AIReportScoreDriver = {
+  factor: string;
+  effect: string;
+};
+
+export type AIReportAlternativeSolution = {
+  title: string;
+  description: string;
+  trade_off: string;
+};
+
+export type AIReportSubScoreAnalysis = {
+  dimension: string;
+  title: string;
+  score: number;
+  narrative: string;
+  score_drivers: AIReportScoreDriver[];
+  alternative_solutions: AIReportAlternativeSolution[];
+};
+
+export type AIReportRiskAssessment = {
+  narrative: string;
+  level: string;
+};
+
+export type AIReportChartSeries = {
+  name: string;
+  values: number[];
+};
+
+export type AIReportChartData = {
+  id: string;
+  type: "bar" | "line" | "radar" | "pie" | "gauge";
+  title: string;
+  labels: string[];
+  series: AIReportChartSeries[];
+};
+
+export type AIReportContent = {
+  meta: {
+    generated_at: string;
+    model: string;
+    scoring_version: string;
+    disclaimer: string;
+  };
+  executive_summary: string;
+  business_profile: { narrative: string };
+  sub_score_analysis: AIReportSubScoreAnalysis[];
+  risk_assessment: AIReportRiskAssessment;
+  recommendations: string[];
+  conclusion: string;
+  charts: AIReportChartData[];
+};
+
+export type AIReport = {
+  submission_id: string;
+  status: AIReportStatus;
+  model: string;
+  report: AIReportContent | null;
+  error_message?: string;
+  created_at: string;
+  updated_at: string;
+};

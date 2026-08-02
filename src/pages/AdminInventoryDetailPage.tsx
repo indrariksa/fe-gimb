@@ -162,6 +162,11 @@ export function AdminInventoryDetailPage() {
                   {business?.industry || "Tanpa industri"} · diinput {formatJakartaDate(submission.created_at)}
                   {submitter ? ` oleh ${submitter.full_name}` : ` oleh user ${shortValue(submission.user_id)}`}
                 </p>
+                {isAdmin && (
+                  <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/admin/businesses/${businessId}/ai-report`)}>
+                    Laporan AI <Icon name="bulb" size={18} />
+                  </Button>
+                )}
               </div>
               <div className="admin-inventory-hero__score">
                 <span>Skor Kesehatan</span>

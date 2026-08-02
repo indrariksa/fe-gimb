@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { RequireAuth } from "./components/guards/RequireAuth";
 import { AnalysisPage } from "./pages/AnalysisPage";
 import { AdminInventoryDetailPage } from "./pages/AdminInventoryDetailPage";
+import { AIReportPage } from "./pages/AIReportPage";
 import { AdminPage } from "./pages/AdminPage";
 import { BusinessesPage } from "./pages/BusinessesPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -36,6 +37,7 @@ export function App() {
               <Route path="/businesses/:businessId/inventory-input" element={<AdminInventoryDetailPage />} />
               <Route path="/businesses/:businessId/inventory/new" element={<InventoryPage />} />
               <Route path="/businesses/:businessId/analysis" element={<AnalysisPage />} />
+              <Route path="/businesses/:businessId/ai-report" element={<AIReportPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/dashboard" element={<Navigate to="/businesses" replace />} />
               <Route path="/inventory" element={<Navigate to="/businesses" replace />} />
@@ -49,6 +51,7 @@ export function App() {
             <Route element={<RequireAuth adminOnly />}>
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/admin/businesses/:businessId/inventory-input" element={<AdminInventoryDetailPage />} />
+              <Route path="/admin/businesses/:businessId/ai-report" element={<AIReportPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

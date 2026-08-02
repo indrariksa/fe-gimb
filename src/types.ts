@@ -1,4 +1,4 @@
-export type View = "landing" | "businesses" | "score" | "dashboard" | "subscores" | "inventoryInput" | "inventory" | "settings" | "admin";
+export type View = "landing" | "businesses" | "score" | "dashboard" | "subscores" | "inventoryInput" | "inventory" | "aiReport" | "settings" | "admin";
 
 export type ThemeSettings = {
   appName: string;

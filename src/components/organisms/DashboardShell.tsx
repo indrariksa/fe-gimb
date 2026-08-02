@@ -21,6 +21,7 @@ function routeByView(view: View, businessId?: string) {
   const subScores = businessId ? `/businesses/${businessId}/sub-scores` : "/businesses";
   const inventoryInput = businessId ? `/businesses/${businessId}/inventory-input` : "/businesses";
   const inventory = businessId ? `/businesses/${businessId}/inventory/new` : "/businesses";
+  const aiReport = businessId ? `/businesses/${businessId}/ai-report` : "/businesses";
 
   return {
     landing: "/",
@@ -30,6 +31,7 @@ function routeByView(view: View, businessId?: string) {
     subscores: subScores,
     inventoryInput,
     inventory,
+    aiReport,
     settings: "/settings",
     admin: "/admin",
   }[view];
@@ -200,6 +202,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     { view: "inventoryInput", label: "Hasil Input", icon: "file", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
+    { view: "aiReport", label: "Laporan AI", icon: "bulb", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     {
       view: "inventory",
       label: "Input Masalah",

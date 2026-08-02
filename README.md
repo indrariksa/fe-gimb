@@ -53,6 +53,7 @@ npm run build
 - `/businesses/:businessId/sub-scores` halaman 6 sub skor bisnis
 - `/businesses/:businessId/inventory/new` form input inventarisasi toko
 - `/businesses/:businessId/analysis` animasi proses analisis setelah submit
+- `/businesses/:businessId/ai-report` laporan bisnis naratif berbasis Claude API (tersedia otomatis untuk omzet di atas threshold backend)
 - `/settings` pengaturan tema dan identitas aplikasi
 - `/admin` dashboard admin, hanya untuk role `admin`
 

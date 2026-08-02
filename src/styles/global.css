@@ -6091,3 +6091,62 @@ dt,
   .analysis-step__icon { left: 18px; width: 34px; height: 34px; }
   .analysis-step strong { font-size: 1rem; }
 }
+
+.ai-report { display: flex; flex-direction: column; gap: 20px; padding: clamp(24px, 4vw, 56px); }
+.ai-report__actions { display: flex; gap: 12px; justify-content: flex-end; }
+.ai-report__callout { padding: 16px 18px; margin: 4px 0 16px; border-radius: 14px; background: color-mix(in srgb, var(--color-primary) 8%, var(--surface)); }
+.ai-report__callout p { margin: 0; color: var(--ink); line-height: 1.7; }
+.ai-report__disclaimer { color: var(--text-tertiary); font-size: var(--text-caption); margin-top: 12px; }
+/* Each card sizes to its own content instead of stretching to match the tallest sibling in the row. */
+.ai-report__sub-scores { align-items: start; }
+
+.ai-report__drivers { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ai-report__drivers li { padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--subscore-color, var(--color-primary)) 6%, var(--surface-soft)); }
+
+/* Collapsed by default via native <details> so a dimension with many alternative solutions (e.g. a low-scoring one) doesn't blow out the card height. */
+.ai-report__solutions { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.ai-report__solutions summary {
+  margin: 0;
+  padding: 2px 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: var(--text-caption);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-tertiary);
+}
+.ai-report__solutions summary::-webkit-details-marker { display: none; }
+.ai-report__solutions summary::before { content: "▸"; display: inline-block; width: 12px; transition: transform .15s ease; }
+.ai-report__solutions[open] summary::before { transform: rotate(90deg); }
+.ai-report__solutions summary:hover { color: var(--subscore-color, var(--color-primary)); }
+.ai-report__solution { margin-top: 8px; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--subscore-color, var(--color-primary)) 6%, var(--surface-soft)); }
+
+/* Driver factors and solution titles/descriptions share one type scale so they read as the same kind of content. */
+.ai-report__drivers li strong,
+.ai-report__solution strong {
+  display: block;
+  font-size: var(--text-body-sm);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.ai-report__drivers li em,
+.ai-report__solution p,
+.ai-report__solution small {
+  display: block;
+  margin: 6px 0 0;
+  min-height: 0;
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.ai-report__risk-level { display: inline-block; margin-left: 8px; padding: 3px 10px; border-radius: 999px; font-size: var(--text-caption); font-weight: 700; vertical-align: middle; }
+.ai-report__risk-level--rendah { background: color-mix(in srgb, var(--color-success) 16%, var(--surface)); color: var(--color-success); }
+.ai-report__risk-level--sedang { background: color-mix(in srgb, var(--color-warning) 16%, var(--surface)); color: var(--color-warning); }
+.ai-report__risk-level--tinggi { background: color-mix(in srgb, var(--color-danger) 16%, var(--surface)); color: var(--color-danger); }
+.ai-report ul.ai-report__recommendations { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: rec; }
+.ai-report__recommendations li { counter-increment: rec; padding: 10px 14px 10px 40px; position: relative; border-radius: 10px; background: var(--surface-soft); line-height: 1.6; }
+.ai-report__recommendations li::before { content: counter(rec); position: absolute; left: 12px; top: 10px; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
