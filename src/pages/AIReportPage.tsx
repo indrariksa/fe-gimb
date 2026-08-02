@@ -5,7 +5,7 @@ import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { DashboardShell } from "../components/organisms/DashboardShell";
-import { AIReportChart } from "../components/organisms/AIReportChart";
+import { AIReportChart, statusLabel } from "../components/organisms/AIReportChart";
 import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
 import type { AIReport } from "../services/api/types";
@@ -25,14 +25,6 @@ const dimensionMeta: Record<string, { color: string; icon: string }> = {
   operational: { color: "#d97706", icon: "▣" },
   hr: { color: "#ec4899", icon: "♙" },
 };
-
-function statusLabel(score: number) {
-  if (score >= 80) return "Sangat Sehat";
-  if (score >= 60) return "Sehat";
-  if (score >= 40) return "Cukup Sehat";
-  if (score >= 20) return "Buruk";
-  return "Sangat Buruk";
-}
 
 function riskLevelClass(level: string) {
   return level.toLowerCase();
@@ -193,7 +185,7 @@ export function AIReportPage() {
         )}
 
         {!isLoading && !error && !notEligible && report?.status === "processing" && (
-          <LoadingState>Laporan AI sedang diproses, biasanya beberapa saat...</LoadingState>
+          <LoadingState>Laporan AI sedang diproses, biasanya butuh beberapa saat...</LoadingState>
         )}
 
         {!isLoading && !error && !notEligible && report?.status === "failed" && (

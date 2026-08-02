@@ -4852,7 +4852,11 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .insight-bar-row {
   display: grid;
-  grid-template-columns: minmax(112px, .9fr) minmax(0, 1.4fr) auto;
+  /* Both label and value columns are fixed width (not fr/auto) so the track between them lands at
+     the exact same start AND end x on every row, in every card. The value column is right-aligned
+     (below) so a short number like "210" or "2x" sits flush against the card edge instead of
+     leaving a visible dead gap after it. */
+  grid-template-columns: 160px minmax(0, 1fr) 128px;
   align-items: center;
   gap: 12px;
 }
@@ -4885,6 +4889,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .insight-bar-row b {
   color: var(--ink);
   white-space: nowrap;
+  text-align: right;
 }
 
 .insight-bar-row:hover i {
@@ -6093,6 +6098,8 @@ dt,
 }
 
 .ai-report { display: flex; flex-direction: column; gap: 20px; padding: clamp(24px, 4vw, 56px); }
+/* The overall-score gauge is always last in the fixed 10-chart set; give it its own full-width row as a capstone. */
+.ai-report__charts > article:last-child { grid-column: 1 / -1; }
 .ai-report__actions { display: flex; gap: 12px; justify-content: flex-end; }
 .ai-report__callout { padding: 16px 18px; margin: 4px 0 16px; border-radius: 14px; background: color-mix(in srgb, var(--color-primary) 8%, var(--surface)); }
 .ai-report__callout p { margin: 0; color: var(--ink); line-height: 1.7; }

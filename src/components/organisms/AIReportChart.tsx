@@ -15,6 +15,14 @@ function formatPercent(value: number) {
   return `${formatValue(value)}%`;
 }
 
+export function statusLabel(score: number) {
+  if (score >= 80) return "Sangat Sehat";
+  if (score >= 60) return "Sehat";
+  if (score >= 40) return "Cukup Sehat";
+  if (score >= 20) return "Buruk";
+  return "Sangat Buruk";
+}
+
 function radarPoint(index: number, count: number, radius: number, center: number) {
   const angle = -Math.PI / 2 + (index * Math.PI * 2) / count;
   return { x: center + Math.cos(angle) * radius, y: center + Math.sin(angle) * radius };
@@ -27,6 +35,10 @@ function RadarCard({ chart }: AIReportChartProps) {
   const maxRadius = 82;
   const count = chart.labels.length || 1;
   const values = chart.series[0]?.values ?? [];
+  // Scale against this chart's own max instead of assuming a 0-100 score, so a radar built from
+  // raw ratios (rather than dimension scores) still fills the chart instead of collapsing to a dot.
+  const maxValue = Math.max(1, ...values.map((value) => Math.abs(value)));
+  const radiusFor = (value: number) => (Math.max(0, value) / maxValue) * maxRadius;
 
   const pointsFor = (index: number, radius: number) => radarPoint(index, count, radius, center);
 
@@ -43,10 +55,10 @@ function RadarCard({ chart }: AIReportChartProps) {
         })}
         <polygon
           className="subscore-radar__area"
-          points={values.map((value, index) => { const p = pointsFor(index, (Math.max(0, Math.min(100, value)) / 100) * maxRadius); return `${p.x},${p.y}`; }).join(" ")}
+          points={values.map((value, index) => { const p = pointsFor(index, radiusFor(value)); return `${p.x},${p.y}`; }).join(" ")}
         />
         {chart.labels.map((label, index) => {
-          const point = pointsFor(index, (Math.max(0, Math.min(100, values[index] ?? 0)) / 100) * maxRadius);
+          const point = pointsFor(index, radiusFor(values[index] ?? 0));
           const textPoint = pointsFor(index, maxRadius + 20);
           const tooltipX = point.x >= center ? point.x + 16 : point.x - 24;
           const tooltipY = point.y - 30;
@@ -103,6 +115,13 @@ function PieCard({ chart }: AIReportChartProps) {
   );
 }
 
+function formatWithUnit(value: number, unit?: string) {
+  const formatted = formatValue(value);
+  if (unit === "Rp") return `Rp ${formatted}`;
+  if (unit) return `${formatted}${unit}`;
+  return formatted;
+}
+
 // Mirrors the "Ringkasan Arus Uang" bar-row card on the Sub Skor page.
 function BarCard({ chart }: AIReportChartProps) {
   const values = chart.series[0]?.values ?? [];
@@ -117,7 +136,7 @@ function BarCard({ chart }: AIReportChartProps) {
             <div>
               <i style={{ "--bar-width": `${(Math.abs(values[index] ?? 0) / max) * 100}%`, "--bar-color": palette[index % palette.length] } as CSSProperties} />
             </div>
-            <b>{chart.series.map((series) => formatValue(series.values[index] ?? 0)).join(" / ")}</b>
+            <b>{chart.series.map((series) => formatWithUnit(series.values[index] ?? 0, chart.unit)).join(" / ")}</b>
           </div>
         ))}
       </div>
@@ -126,15 +145,15 @@ function BarCard({ chart }: AIReportChartProps) {
 }
 
 // Mirrors the ring-bordered stat tiles in the "Efisiensi Transaksi" card on the Sub Skor page.
+// Same circular progress ring as the "Skor Kesehatan Keseluruhan" hero card on the Dashboard page.
 function GaugeCard({ chart }: AIReportChartProps) {
   const value = Math.max(0, Math.min(100, chart.series[0]?.values[0] ?? 0));
   return (
-    <article className="panel inventory-insight-card">
-      <h4>{chart.title}</h4>
-      <div className="insight-gauge" style={{ "--gauge-value": `${value}%` } as CSSProperties}>
-        <span>{chart.series[0]?.name ?? "Skor"}</span>
+    <article className="panel health-card">
+      <p>{chart.title}</p>
+      <div className="health-ring" style={{ "--health-progress": `${value}%` } as CSSProperties}>
         <strong>{formatValue(value)}</strong>
-        <small>dari 100</small>
+        <span>{statusLabel(value)}</span>
       </div>
     </article>
   );

@@ -260,6 +260,7 @@ export type AIReportChartData = {
   id: string;
   type: "bar" | "line" | "radar" | "pie" | "gauge";
   title: string;
+  unit?: string;
   labels: string[];
   series: AIReportChartSeries[];
 };
