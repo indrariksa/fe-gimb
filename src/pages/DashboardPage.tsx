@@ -34,7 +34,7 @@ function statusLabel(score: number) {
 
 export function DashboardPage() {
   const { theme } = useThemeSettings();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const { businessId = "" } = useParams();
   const [business, setBusiness] = useState<Business | null>(null);
@@ -193,7 +193,7 @@ export function DashboardPage() {
       <section className="dashboard">
         <div className="dashboard__intro">
           <div>
-            <h2>Selamat Siang, {theme.ownerName}</h2>
+            <h2>Selamat Siang, {user?.full_name ?? theme.ownerName}</h2>
             <p>{business?.name ?? theme.businessName} - Diagnosa terakhir: {formatJakartaDate(submission?.created_at, "long", "Belum ada diagnosis")}</p>
           </div>
           <div className="dashboard__actions">
