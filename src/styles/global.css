@@ -5506,11 +5506,13 @@ dt,
   border-color: var(--border-strong);
 }
 
-:root[data-theme="dark"] .subscores-page .subscore-card::after,
-:root[data-theme="dark"] .subscores-page .inventory-insight-card::after,
-:root[data-theme="dark"] .subscores-page .subscore-radar::after,
-:root[data-theme="dark"] .subscores-page .subscore-bars::after,
-:root[data-theme="dark"] .subscores-page .score-legend article::after {
+/* The white diagonal hover "shine" reads as glare and washes out text contrast on dark
+   backgrounds, so it's dropped for every page in dark mode, not just Sub Skor. */
+:root[data-theme="dark"] .subscore-card::after,
+:root[data-theme="dark"] .inventory-insight-card::after,
+:root[data-theme="dark"] .subscore-radar::after,
+:root[data-theme="dark"] .subscore-bars::after,
+:root[data-theme="dark"] .score-legend article::after {
   display: none;
 }
 

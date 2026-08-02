@@ -114,7 +114,7 @@ export function AIReportPage() {
             ...item.alternative_solutions.map((solution) => [`Solusi: ${solution.title}`, `${solution.description} (${solution.trade_off})`]),
           ],
         })),
-        { title: "Kekuatan Utama", headers: ["Narasi"], rows: [[content.key_strengths.narrative]] },
+        { title: "Kekuatan Utama", headers: ["Narasi"], rows: [[content.key_strengths?.narrative ?? "-"]] },
         { title: "Penilaian Risiko", headers: ["Narasi", "Level"], rows: [[content.risk_assessment.narrative, content.risk_assessment.level]] },
         { title: "Rekomendasi", headers: ["No", "Rekomendasi"], rows: content.recommendations.map((item, index) => [index + 1, item]) },
         { title: "Kesimpulan", headers: ["Narasi"], rows: [[content.conclusion]] },
@@ -130,7 +130,7 @@ export function AIReportPage() {
         rows: [
           ["Laporan Bisnis AI"],
           ["Ringkasan Eksekutif", content.executive_summary],
-          ["Kekuatan Utama", content.key_strengths.narrative],
+          ["Kekuatan Utama", content.key_strengths?.narrative ?? "-"],
           ["Tingkat Risiko", content.risk_assessment.level],
           ["Kesimpulan", content.conclusion],
         ],
@@ -271,11 +271,13 @@ export function AIReportPage() {
                 </article>
               ))}
             </div>
-            <article className="panel admin-inventory-note">
-              <span><Icon name="check" /></span>
-              <h3>Kekuatan Utama</h3>
-              <p>{content.key_strengths.narrative}</p>
-            </article>
+            {content.key_strengths?.narrative && (
+              <article className="panel admin-inventory-note">
+                <span><Icon name="check" /></span>
+                <h3>Kekuatan Utama</h3>
+                <p>{content.key_strengths.narrative}</p>
+              </article>
+            )}
             <article className="panel admin-inventory-note">
               <span><Icon name="alert" /></span>
               <h3>
