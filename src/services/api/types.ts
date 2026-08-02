@@ -275,6 +275,7 @@ export type AIReportContent = {
   executive_summary: string;
   business_profile: { narrative: string };
   sub_score_analysis: AIReportSubScoreAnalysis[];
+  key_strengths: { narrative: string };
   risk_assessment: AIReportRiskAssessment;
   recommendations: string[];
   conclusion: string;
