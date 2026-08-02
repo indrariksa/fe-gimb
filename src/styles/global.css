@@ -2923,6 +2923,11 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   --admin-action-on: var(--on-accent);
 }
 
+.admin-row-actions .admin-row-action--ai-report {
+  --admin-action-color: var(--color-warning);
+  --admin-action-on: var(--on-warning);
+}
+
 .admin-row-actions button:hover:not(:disabled) {
   color: var(--admin-action-on);
   background: var(--admin-action-color);

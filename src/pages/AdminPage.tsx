@@ -12,6 +12,10 @@ import type { AdminSummary, AuditLog, Business, BusinessLimitSetting, InventoryS
 import { formatJakartaDate, formatJakartaDateTime, formatJakartaTime } from "../utils/dateTime";
 import { formatScore } from "../utils/number";
 
+// Mirrors AI_REPORT_REVENUE_THRESHOLD on the backend (default Rp 50 juta) — below this,
+// AI report generation is never triggered, so the button would only ever 404.
+const aiReportRevenueThreshold = 50_000_000;
+
 function formatAction(action: string) {
   return action
     .split(".")
@@ -536,6 +540,7 @@ export function AdminPage() {
   const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
   const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
   const goToBusinessInventoryInput = (publicId: string) => navigate(`/admin/businesses/${publicId}/inventory-input`);
+  const goToBusinessAIReport = (publicId: string) => navigate(`/admin/businesses/${publicId}/ai-report`);
   const hasAuditFilter = auditLevelFilter !== "all" || auditSearch.trim() !== "";
   const toggleAuditFullscreen = () => {
     const panel = document.getElementById("audit-logs");
@@ -632,6 +637,9 @@ export function AdminPage() {
                                     <button className="admin-row-action--dashboard" onClick={() => goToBusinessDashboard(business.public_id)}>Dashboard <Icon name="arrow" size={16} /></button>
                                     <button className="admin-row-action--score" onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
                                     <button className="admin-row-action--input" onClick={() => goToBusinessInventoryInput(business.public_id)}>Lihat Input <Icon name="arrow" size={16} /></button>
+                                    {submission.six_month_revenue > aiReportRevenueThreshold && (
+                                      <button className="admin-row-action--ai-report" onClick={() => goToBusinessAIReport(business.public_id)}>Laporan AI <Icon name="arrow" size={16} /></button>
+                                    )}
                                   </>
                                 ) : (
                                   <span>-</span>
