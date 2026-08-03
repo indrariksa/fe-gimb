@@ -14,6 +14,7 @@ import type { AdminNotification, NotificationEvent } from "../../services/api/ty
 import { formatNotificationTime } from "../../utils/dateTime";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
+const showUpgradePlanButton = false; // toggle to true to bring back the sidebar "Upgrade Plan" button
 
 function routeByView(view: View, businessId?: string) {
   const businessDashboard = businessId ? `/businesses/${businessId}/dashboard` : "/businesses";
@@ -321,7 +322,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           ))}
         </nav>
         <div className="sidebar__bottom">
-          {!isAdmin && <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>}
+          {showUpgradePlanButton && !isAdmin && <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>}
           <button className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => navigateToView("settings")}><Icon name="settings" /> <span>Pengaturan</span></button>
           <button data-label="Keluar" onClick={() => setIsLogoutConfirmOpen(true)}><Icon name="logout" /> <span>Keluar</span></button>
         </div>
