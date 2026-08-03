@@ -218,11 +218,17 @@ export function InventoryPage() {
               </p>
               <textarea
                 maxLength={5000}
-                placeholder="Contoh: Sudah berapa lama bisnis ini berdiri? Apa kendala utama yang dirasakan? Sejak kapan mulai terasa? Apa yang sudah dicoba untuk mengatasinya? Bagian mana dari bisnis (produksi, penjualan, SDM, keuangan, dll) yang paling terdampak? Adakah faktor eksternal (persaingan, musim, kebijakan, dll) yang berpengaruh?"
+                placeholder="Tuliskan cerita Anda di sini..."
                 value={values.description ?? ""}
                 onChange={(event) => setValues((current) => ({ ...current, description: event.target.value }))}
               />
               <small>Maksimal 5000 karakter. Cerita yang detail membantu mentor memberikan rekomendasi yang lebih tajam dan tepat sasaran.</small>
+              <small className="field__example">
+                Contoh: Sudah berapa lama bisnis ini berdiri? Apa kendala utama yang dirasakan? Sejak kapan mulai terasa? Apa yang sudah dicoba
+                untuk mengatasinya, dan kenapa belum berhasil? Bagian mana dari bisnis (produksi, penjualan, SDM, keuangan, dll) yang paling
+                terdampak? Adakah faktor eksternal (persaingan, musim/cuaca, kebijakan pemerintah, harga bahan baku, dll) yang berpengaruh?
+                Bagaimana kondisi arus kas dan stok saat ini? Apakah ada target atau harapan spesifik yang ingin dicapai dari analisis ini?
+              </small>
             </label>
             <footer>
               <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>Batal</Button>

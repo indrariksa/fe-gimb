@@ -5537,6 +5537,10 @@ dt,
   border-color: var(--border-strong);
 }
 
+:root[data-theme="dark"] .field__control input {
+  background: transparent;
+}
+
 /* The white diagonal hover "shine" reads as glare and washes out text contrast on dark
    backgrounds, so it's dropped for every page in dark mode, not just Sub Skor. */
 :root[data-theme="dark"] .subscore-card::after,
