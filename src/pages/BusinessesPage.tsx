@@ -14,47 +14,60 @@ import { formatJakartaDate } from "../utils/dateTime";
 import { cleanText, firstValidationError, validateMaxLength, validateRequiredText } from "../utils/formValidation";
 
 const industryOptions = [
-  "Retail",
-  "Grosir",
-  "Toko Kelontong",
-  "Minimarket",
-  "Kuliner / F&B",
-  "Kafe",
-  "Restoran",
-  "Catering",
-  "Bakery",
-  "Fashion",
-  "Konveksi",
-  "Kecantikan",
-  "Barbershop / Salon",
-  "Kesehatan",
   "Apotek",
-  "Pendidikan",
-  "Kursus / Pelatihan",
-  "Jasa Profesional",
-  "Jasa Reparasi",
-  "Jasa Kebersihan",
-  "Laundry",
-  "Travel / Pariwisata",
-  "Transportasi / Logistik",
-  "Properti",
-  "Konstruksi",
-  "Manufaktur / Produksi",
-  "Percetakan",
-  "Pertanian",
-  "Peternakan",
-  "Perikanan",
+  "Asuransi & Pegadaian",
+  "Bakery",
+  "Barbershop / Salon",
+  "Bengkel",
+  "Catering",
   "Digital / Online",
   "E-commerce",
-  "Teknologi / Software",
-  "Kreatif / Desain",
-  "Media / Konten",
-  "Event Organizer",
-  "Otomotif",
   "Elektronik",
+  "Event Organizer",
+  "Fashion",
+  "Florist / Bunga",
+  "Fotografi / Videografi",
   "Furniture",
+  "Grosir",
+  "Jasa Kebersihan",
+  "Jasa Profesional",
+  "Jasa Reparasi",
+  "Kafe",
+  "Kecantikan",
   "Kerajinan",
+  "Kesehatan",
   "Keuangan / Koperasi",
+  "Konstruksi",
+  "Konter Pulsa & Aksesoris HP",
+  "Konveksi",
+  "Kreatif / Desain",
+  "Kuliner / F&B",
+  "Kursus / Pelatihan",
+  "Laundry",
+  "Manufaktur / Produksi",
+  "Media / Konten",
+  "Minimarket",
+  "Optik",
+  "Otomotif",
+  "Pendidikan",
+  "Percetakan",
+  "Perhotelan / Penginapan",
+  "Perikanan",
+  "Pertanian",
+  "Peternakan",
+  "Petshop / Klinik Hewan",
+  "Properti",
+  "Rental / Persewaan",
+  "Restoran",
+  "Retail",
+  "Teknologi / Software",
+  "Toko Bangunan / Material",
+  "Toko Buku & Alat Tulis",
+  "Toko Herbal / Jamu",
+  "Toko Kelontong",
+  "Toko Perhiasan / Emas",
+  "Transportasi / Logistik",
+  "Travel / Pariwisata",
   "Lainnya",
 ];
 
@@ -67,6 +80,7 @@ export function BusinessesPage() {
   const [form, setForm] = useState({ name: "", industry: "", description: "" });
   const [industrySearch, setIndustrySearch] = useState("");
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
+  const [isCustomIndustry, setIsCustomIndustry] = useState(false);
   const [error, setError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -272,22 +286,24 @@ export function BusinessesPage() {
               <input
                 required
                 disabled={hasReachedLimit}
-                placeholder="Cari atau pilih industri"
+                placeholder={isCustomIndustry ? "Tulis nama industri Anda" : "Cari atau pilih industri"}
                 value={isIndustryOpen ? industrySearch : form.industry}
                 onFocus={() => {
                   setIndustrySearch(form.industry);
                   setIsIndustryOpen(true);
+                  setIsCustomIndustry(false);
                 }}
                 onBlur={() => {
                   window.setTimeout(() => {
                     setIndustrySearch("");
                     setIsIndustryOpen(false);
+                    setIsCustomIndustry(false);
                   }, 120);
                 }}
                 onChange={(event) => {
                   setIndustrySearch(event.target.value);
                   setForm((current) => ({ ...current, industry: event.target.value }));
-                  setIsIndustryOpen(true);
+                  if (!isCustomIndustry) setIsIndustryOpen(true);
                 }}
               />
               {isIndustryOpen && !hasReachedLimit && (
@@ -312,9 +328,17 @@ export function BusinessesPage() {
                       key={industry}
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={() => {
+                        if (industry === "Lainnya") {
+                          setForm((current) => ({ ...current, industry: "" }));
+                          setIndustrySearch("");
+                          setIsIndustryOpen(false);
+                          setIsCustomIndustry(true);
+                          return;
+                        }
                         setForm((current) => ({ ...current, industry }));
                         setIndustrySearch("");
                         setIsIndustryOpen(false);
+                        setIsCustomIndustry(false);
                       }}
                     >
                       {industry}
