@@ -1615,7 +1615,7 @@ a { color: inherit; text-decoration: none; }
 .field input[type="color"] { width: 100%; height: 52px; padding: 5px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
 .theme-color-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 132px;
+  grid-template-columns: 52px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
 }
@@ -5654,6 +5654,7 @@ dt,
   .landing__stats, .landing__actions, .dashboard__intro { flex-direction: column; align-items: stretch; }
   .feature-grid, .theme-panel__grid, .score-grid, .form-aside, .insight-grid, .settings-grid, .settings-account-grid { grid-template-columns: 1fr; }
   .theme-panel { grid-template-columns: 1fr; }
+  .theme-panel--colors-only .theme-panel__grid { grid-template-columns: 1fr; }
   .app-shell,
   .app-shell.is-collapsed { grid-template-columns: 1fr; }
   .sidebar {
