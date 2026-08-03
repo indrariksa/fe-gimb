@@ -103,10 +103,16 @@ export async function downloadPdfReport(options: PdfReportOptions) {
   const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 40;
+  const contentWidth = pageWidth - margin * 2;
   let y = 42;
 
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  const subtitleLines = options.subtitle ? doc.splitTextToSize(options.subtitle, contentWidth) : [];
+  const headerHeight = 70 + subtitleLines.length * 13;
+
   doc.setFillColor(15, 23, 42);
-  doc.rect(0, 0, pageWidth, 112, "F");
+  doc.rect(0, 0, pageWidth, headerHeight, "F");
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
@@ -115,9 +121,9 @@ export async function downloadPdfReport(options: PdfReportOptions) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(203, 213, 225);
-  if (options.subtitle) doc.text(options.subtitle, margin, y);
+  if (subtitleLines.length) doc.text(subtitleLines, margin, y, { align: "justify", maxWidth: contentWidth });
 
-  y = 140;
+  y = headerHeight + 28;
   autoTable(doc, {
     startY: y,
     theme: "plain",
@@ -125,7 +131,7 @@ export async function downloadPdfReport(options: PdfReportOptions) {
     styles: { fontSize: 10, cellPadding: 6, textColor: [15, 23, 42] },
     columnStyles: {
       0: { fontStyle: "bold", textColor: [71, 85, 105], cellWidth: 150 },
-      1: { fontStyle: "bold" },
+      1: { fontStyle: "bold", halign: "justify" },
     },
     margin: { left: margin, right: margin },
   });
@@ -149,7 +155,7 @@ export async function downloadPdfReport(options: PdfReportOptions) {
       doc.setTextColor(71, 85, 105);
       doc.text(item.label.toUpperCase(), margin, y + 9);
       doc.setTextColor(r, g, b);
-      doc.text(`${formatNumberId(item.score)}${item.status ? ` - ${item.status}` : ""}`, pageWidth - margin - 120, y + 9);
+      doc.text(`${formatNumberId(item.score)}${item.status ? ` - ${item.status}` : ""}`, pageWidth - margin, y + 9, { align: "right" });
       doc.setFillColor(226, 232, 240);
       doc.roundedRect(margin, y + 18, width, 8, 4, 4, "F");
       doc.setFillColor(r, g, b);

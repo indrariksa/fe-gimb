@@ -37,6 +37,7 @@ export function AIReportPage() {
   const [notEligible, setNotEligible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exportError, setExportError] = useState("");
   const [isRegenerating, setIsRegenerating] = useState(false);
   const pollTimer = useRef(0);
 
@@ -90,72 +91,82 @@ export function AIReportPage() {
 
   const content = report?.report;
 
-  const exportPdf = () => {
+  const exportPdf = async () => {
     if (!content) return;
-    downloadPdfReport({
-      filename: reportFilename("ai-business-report", businessId, "pdf"),
-      title: "Laporan Bisnis AI",
-      subtitle: content.meta.disclaimer,
-      summary: [
-        ["Ringkasan Eksekutif", content.executive_summary],
-        ["Tingkat Risiko", content.risk_assessment.level],
-        ["Versi Scoring", content.meta.scoring_version],
-        ["Dibuat", formatJakartaDateTime(content.meta.generated_at)],
-      ],
-      scores: content.sub_score_analysis.map((item) => ({ label: item.title, score: item.score })),
-      sections: [
-        { title: "Profil Bisnis", headers: ["Narasi"], rows: [[content.business_profile.narrative]] },
-        ...content.sub_score_analysis.map((item) => ({
-          title: `Analisis ${item.title}`,
-          headers: ["Bagian", "Isi"],
-          rows: [
-            ["Narasi", item.narrative],
-            ...item.score_drivers.map((driver) => [`Faktor (${driver.effect})`, driver.factor]),
-            ...item.alternative_solutions.map((solution) => [`Solusi: ${solution.title}`, `${solution.description} (${solution.trade_off})`]),
-          ],
-        })),
-        { title: "Kekuatan Utama", headers: ["Narasi"], rows: [[content.key_strengths?.narrative ?? "-"]] },
-        { title: "Penilaian Risiko", headers: ["Narasi", "Level"], rows: [[content.risk_assessment.narrative, content.risk_assessment.level]] },
-        { title: "Rekomendasi", headers: ["No", "Rekomendasi"], rows: content.recommendations.map((item, index) => [index + 1, item]) },
-        { title: "Kesimpulan", headers: ["Narasi"], rows: [[content.conclusion]] },
-      ],
-    });
+    setExportError("");
+    try {
+      await downloadPdfReport({
+        filename: reportFilename("ai-business-report", businessId, "pdf"),
+        title: "Laporan Bisnis AI",
+        subtitle: content.meta.disclaimer,
+        summary: [
+          ["Ringkasan Eksekutif", content.executive_summary],
+          ["Tingkat Risiko", content.risk_assessment.level],
+          ["Versi Scoring", content.meta.scoring_version],
+          ["Dibuat", formatJakartaDateTime(content.meta.generated_at)],
+        ],
+        scores: content.sub_score_analysis.map((item) => ({ label: item.title, score: item.score })),
+        sections: [
+          { title: "Profil Bisnis", headers: ["Narasi"], rows: [[content.business_profile.narrative]] },
+          ...content.sub_score_analysis.map((item) => ({
+            title: `Analisis ${item.title}`,
+            headers: ["Bagian", "Isi"],
+            rows: [
+              ["Narasi", item.narrative],
+              ...item.score_drivers.map((driver) => [`Faktor (${driver.effect})`, driver.factor]),
+              ...item.alternative_solutions.map((solution) => [`Solusi: ${solution.title}`, `${solution.description} (${solution.trade_off})`]),
+            ],
+          })),
+          { title: "Kekuatan Utama", headers: ["Narasi"], rows: [[content.key_strengths?.narrative ?? "-"]] },
+          { title: "Penilaian Risiko", headers: ["Narasi", "Level"], rows: [[content.risk_assessment.narrative, content.risk_assessment.level]] },
+          { title: "Rekomendasi", headers: ["No", "Rekomendasi"], rows: content.recommendations.map((item, index) => [index + 1, item]) },
+          { title: "Kesimpulan", headers: ["Narasi"], rows: [[content.conclusion]] },
+        ],
+      });
+    } catch (err) {
+      setExportError(getFriendlyApiError(err, "Gagal membuat PDF"));
+    }
   };
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     if (!content) return;
-    downloadWorkbook(reportFilename("ai-business-report", businessId, "xlsx"), [
-      {
-        name: "Ringkasan",
-        rows: [
-          ["Laporan Bisnis AI"],
-          ["Ringkasan Eksekutif", content.executive_summary],
-          ["Kekuatan Utama", content.key_strengths?.narrative ?? "-"],
-          ["Tingkat Risiko", content.risk_assessment.level],
-          ["Kesimpulan", content.conclusion],
-        ],
-      },
-      {
-        name: "Sub Skor",
-        rows: [
-          ["Dimensi", "Skor", "Narasi"],
-          ...content.sub_score_analysis.map((item) => [item.title, item.score, item.narrative]),
-        ],
-      },
-      {
-        name: "Solusi Alternatif",
-        rows: [
-          ["Dimensi", "Solusi", "Deskripsi", "Trade-off"],
-          ...content.sub_score_analysis.flatMap((item) =>
-            item.alternative_solutions.map((solution) => [item.title, solution.title, solution.description, solution.trade_off]),
-          ),
-        ],
-      },
-      {
-        name: "Rekomendasi",
-        rows: [["No", "Rekomendasi"], ...content.recommendations.map((item, index) => [index + 1, item])],
-      },
-    ]);
+    setExportError("");
+    try {
+      await downloadWorkbook(reportFilename("ai-business-report", businessId, "xlsx"), [
+        {
+          name: "Ringkasan",
+          rows: [
+            ["Laporan Bisnis AI"],
+            ["Ringkasan Eksekutif", content.executive_summary],
+            ["Kekuatan Utama", content.key_strengths?.narrative ?? "-"],
+            ["Tingkat Risiko", content.risk_assessment.level],
+            ["Kesimpulan", content.conclusion],
+          ],
+        },
+        {
+          name: "Sub Skor",
+          rows: [
+            ["Dimensi", "Skor", "Narasi"],
+            ...content.sub_score_analysis.map((item) => [item.title, item.score, item.narrative]),
+          ],
+        },
+        {
+          name: "Solusi Alternatif",
+          rows: [
+            ["Dimensi", "Solusi", "Deskripsi", "Trade-off"],
+            ...content.sub_score_analysis.flatMap((item) =>
+              item.alternative_solutions.map((solution) => [item.title, solution.title, solution.description, solution.trade_off]),
+            ),
+          ],
+        },
+        {
+          name: "Rekomendasi",
+          rows: [["No", "Rekomendasi"], ...content.recommendations.map((item, index) => [index + 1, item])],
+        },
+      ]);
+    } catch (err) {
+      setExportError(getFriendlyApiError(err, "Gagal membuat Excel"));
+    }
   };
 
   return (
@@ -210,6 +221,7 @@ export function AIReportPage() {
                 <Icon name="file" size={18} /> PDF
               </Button>
             </div>
+            {exportError && <p className="form-error">{exportError}</p>}
             <article className="panel admin-inventory-note ai-report__summary">
               <span><Icon name="bulb" /></span>
               <h3>Ringkasan Eksekutif</h3>

@@ -6139,7 +6139,7 @@ dt,
 .ai-report__charts > article:last-child { grid-column: 1 / -1; }
 .ai-report__actions { display: flex; gap: 12px; justify-content: flex-end; }
 .ai-report__callout { padding: 16px 18px; margin: 4px 0 16px; border-radius: 14px; background: color-mix(in srgb, var(--color-primary) 8%, var(--surface)); }
-.ai-report__callout p { margin: 0; color: var(--ink); line-height: 1.7; }
+.ai-report__callout p { margin: 0; color: var(--ink); line-height: 1.7; text-align: justify; }
 .ai-report__disclaimer { color: var(--text-tertiary); font-size: var(--text-caption); margin-top: 12px; }
 /* Each card sizes to its own content instead of stretching to match the tallest sibling in the row. */
 .ai-report__sub-scores { align-items: start; }
