@@ -211,14 +211,18 @@ export function InventoryPage() {
             </div>
             {error && <p className="form-error">{error}</p>}
             <label className="field field--wide">
-              <span className="field__label">Deskripsi masalah bisnis lainnya</span>
+              <span className="field__label">Ceritakan masalah bisnis Anda lebih detail</span>
+              <p className="field__hint">
+                Semakin detail cerita Anda, semakin akurat hasil analisis dan rekomendasi yang diberikan sistem. Angka di atas hanya sebagian
+                dari cerita, jadi jangan ragu berbagi konteks lengkapnya di sini.
+              </p>
               <textarea
                 maxLength={5000}
-                placeholder="Ceritakan kendala atau tantangan spesifik yang sedang dihadapi bisnis Anda..."
+                placeholder="Contoh: Sudah berapa lama bisnis ini berdiri? Apa kendala utama yang dirasakan? Sejak kapan mulai terasa? Apa yang sudah dicoba untuk mengatasinya? Bagian mana dari bisnis (produksi, penjualan, SDM, keuangan, dll) yang paling terdampak? Adakah faktor eksternal (persaingan, musim, kebijakan, dll) yang berpengaruh?"
                 value={values.description ?? ""}
                 onChange={(event) => setValues((current) => ({ ...current, description: event.target.value }))}
               />
-              <small>Maksimal 5000 karakter. Informasi ini membantu mentor memberikan rekomendasi yang lebih tajam.</small>
+              <small>Maksimal 5000 karakter. Cerita yang detail membantu mentor memberikan rekomendasi yang lebih tajam dan tepat sasaran.</small>
             </label>
             <footer>
               <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>Batal</Button>

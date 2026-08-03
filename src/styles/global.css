@@ -1582,6 +1582,7 @@ a { color: inherit; text-decoration: none; }
 }
 .field { display: grid; gap: 9px; }
 .field__label { font-weight: 900; color: var(--ink); }
+.field__hint { margin: -3px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 .field__control { min-height: 56px; display: flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
 .field__control:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 14%, transparent); }
 .field__control input { min-width: 0; flex: 1; height: 54px; border: 0; outline: 0; padding: 0 12px; color: var(--ink); background: transparent; }
