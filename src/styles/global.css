@@ -1101,15 +1101,15 @@ a { color: inherit; text-decoration: none; }
   width: 100%;
 }
 .profile-google-link .btn--google-unlink {
-  color: #fecdd3;
-  border-color: color-mix(in srgb, #fb7185 48%, var(--line));
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 48%, var(--line));
   background:
-    linear-gradient(135deg, color-mix(in srgb, #fb7185 14%, var(--surface-muted)), color-mix(in srgb, var(--surface-muted) 88%, transparent));
+    linear-gradient(135deg, color-mix(in srgb, var(--danger) 14%, var(--surface-muted)), color-mix(in srgb, var(--surface-muted) 88%, transparent));
 }
 .profile-google-link .btn--google-unlink:hover:not(:disabled) {
-  color: #fff1f2;
-  border-color: color-mix(in srgb, #fb7185 72%, var(--line));
-  box-shadow: 0 14px 34px color-mix(in srgb, #fb7185 20%, transparent);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 72%, var(--line));
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--danger) 20%, transparent);
 }
 .profile-google-link p {
   margin: 0;
