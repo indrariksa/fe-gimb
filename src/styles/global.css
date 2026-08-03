@@ -101,10 +101,12 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: clip;
   font-family: var(--font-body);
   font-size: var(--text-body);
   font-weight: 400;
@@ -1573,14 +1575,15 @@ a { color: inherit; text-decoration: none; }
 
 .form-hero { max-width: 860px; margin-bottom: 28px; }
 .inventory-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: start; }
+.inventory-layout > * { min-width: 0; }
 .inventory-form header { height: 88px; padding: 0 28px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--line); }
 .inventory-form header h3 { margin: 0; font-size: 1.45rem; }
-.inventory-form__grid { padding: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 28px; }
+.inventory-form__grid { padding: 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; }
 .inventory-form .field {
   content-visibility: auto;
   contain-intrinsic-size: 132px;
 }
-.field { display: grid; gap: 9px; }
+.field { display: grid; gap: 9px; min-width: 0; }
 .field__label { font-weight: 900; color: var(--ink); }
 .field__hint { margin: -3px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 .field__control { min-height: 56px; display: flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
@@ -5615,7 +5618,7 @@ dt,
   .score-grid { grid-column: span 1; grid-template-columns: 1fr; }
   .trend-card, .radar-card { grid-column: span 2; }
   .insight-grid { grid-template-columns: 1fr; }
-  .inventory-layout { grid-template-columns: 1fr; }
+  .inventory-layout { grid-template-columns: minmax(0, 1fr); }
   .form-aside { position: static; grid-template-columns: 1fr 1fr; }
   .business-layout,
   .admin-layout { grid-template-columns: 1fr; }
@@ -5847,7 +5850,7 @@ dt,
     border-radius: 16px;
   }
   .admin-grid { grid-template-columns: 1fr; }
-  .inventory-form__grid { grid-template-columns: 1fr; padding: 20px; }
+  .inventory-form__grid { grid-template-columns: minmax(0, 1fr); padding: 20px; }
   .field--wide { margin: 0 20px 20px; }
   .inventory-form footer { padding: 0 20px 20px; flex-direction: column-reverse; }
 }
