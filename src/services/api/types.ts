@@ -185,6 +185,10 @@ export type AdminSummary = {
   suspended_users: number;
 };
 
+export type AdminAnalyticsResponse = {
+  charts: AIReportChartData[];
+};
+
 export type AuditLog = {
   id: string;
   actor_id: string | null;
