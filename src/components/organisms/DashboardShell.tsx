@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PropsWithChildren } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { View } from "../../types";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
@@ -34,7 +34,11 @@ function routeByView(view: View, businessId?: string) {
     inventory,
     aiReport,
     settings: "/settings",
-    admin: "/admin",
+    adminSummary: "/admin",
+    adminDiagnosis: "/admin/diagnosis",
+    adminLimit: "/admin/limit",
+    adminUsers: "/admin/users",
+    adminAuditLog: "/admin/audit-log",
   }[view];
 }
 
@@ -48,7 +52,6 @@ type NavigationItem = {
   label: string;
   icon: Parameters<typeof Icon>[0]["name"];
   disabledReason?: string;
-  sectionId?: string;
 };
 
 type NotificationFilter = "all" | "unread";
@@ -59,7 +62,6 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const { businessId } = useParams();
   const { user, isAdmin, accessToken, logout } = useAuth();
   const navigateRoute = useNavigate();
-  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(sidebarCollapsedStorageKey) === "true");
   const [hasInventoryResult, setHasInventoryResult] = useState(false);
@@ -213,38 +215,21 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   ];
 
   const adminNavigation: NavigationItem[] = [
-    { view: "admin", label: "Ringkasan", icon: "chart", sectionId: "overview" },
-    { view: "admin", label: "Diagnosis", icon: "alert", sectionId: "diagnoses" },
-    { view: "admin", label: "Limit", icon: "settings", sectionId: "limits" },
-    { view: "admin", label: "User", icon: "home", sectionId: "users" },
-    { view: "admin", label: "Audit Log", icon: "file", sectionId: "audit-logs" },
+    { view: "adminSummary", label: "Ringkasan", icon: "chart" },
+    { view: "adminDiagnosis", label: "Diagnosis", icon: "alert" },
+    { view: "adminLimit", label: "Limit", icon: "settings" },
+    { view: "adminUsers", label: "User", icon: "home" },
+    { view: "adminAuditLog", label: "Audit Log", icon: "file" },
   ];
 
   const navigation = isAdmin ? adminNavigation : userNavigation;
-
-  const navigate = (item: NavigationItem) => {
-    setIsMenuOpen(false);
-    if (item.sectionId) {
-      navigateRoute(`/admin#${item.sectionId}`);
-      window.requestAnimationFrame(() => {
-        document.getElementById(item.sectionId ?? "")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-      return;
-    }
-    navigateRoute(routeByView(item.view, businessId));
-  };
 
   const navigateToView = (view: View) => {
     setIsMenuOpen(false);
     navigateRoute(routeByView(view, businessId));
   };
 
-  const isNavigationActive = (item: NavigationItem) => {
-    if (!item.sectionId) return activeView === item.view;
-    if (activeView !== "admin") return false;
-    if (!location.hash) return item.sectionId === "overview";
-    return location.hash === `#${item.sectionId}`;
-  };
+  const isNavigationActive = (item: NavigationItem) => activeView === item.view;
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -314,7 +299,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
               data-label={item.disabledReason ? `${item.label} - ${item.disabledReason}` : item.label}
               data-tooltip={item.disabledReason}
               disabled={Boolean(item.disabledReason)}
-              onClick={() => navigate(item)}
+              onClick={() => navigateToView(item.view)}
             >
               <Icon name={item.icon} />
               <span>{item.label}</span>
