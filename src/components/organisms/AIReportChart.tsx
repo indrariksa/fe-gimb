@@ -1,19 +1,13 @@
-import type { CSSProperties } from "react";
+import { useMemo } from "react";
+import { Bar, Doughnut, Line, Radar } from "react-chartjs-2";
 import type { AIReportChartData } from "../../services/api/types";
+import { useThemeSettings } from "../../theme/ThemeContext";
+import { chartPalette, formatChartValue, formatChartValueWithUnit, getChartTheme } from "./chartTheme";
+import { colorsFor, buildLegendLabels, percentTooltipLabel, plainTooltipLabel, buildCenterTextPlugin } from "./chartHelpers";
 
 type AIReportChartProps = {
   chart: AIReportChartData;
 };
-
-const palette = ["#3b82f6", "#ef4444", "#10b981", "#8b5cf6", "#d97706", "#ec4899"];
-
-function formatValue(value: number) {
-  return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value || 0);
-}
-
-function formatPercent(value: number) {
-  return `${formatValue(value)}%`;
-}
 
 export function statusLabel(score: number) {
   if (score >= 80) return "Sangat Sehat";
@@ -23,173 +17,205 @@ export function statusLabel(score: number) {
   return "Sangat Buruk";
 }
 
-function radarPoint(index: number, count: number, radius: number, center: number) {
-  const angle = -Math.PI / 2 + (index * Math.PI * 2) / count;
-  return { x: center + Math.cos(angle) * radius, y: center + Math.sin(angle) * radius };
-}
+const barRowHeight = 46;
 
-// Mirrors the radar chart on the Sub Skor page: same geometry, grid rings and hover tooltips.
 function RadarCard({ chart }: AIReportChartProps) {
-  const size = 230;
-  const center = size / 2;
-  const maxRadius = 82;
-  const count = chart.labels.length || 1;
+  const { theme } = useThemeSettings();
+  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
-  // Scale against this chart's own max instead of assuming a 0-100 score, so a radar built from
-  // raw ratios (rather than dimension scores) still fills the chart instead of collapsing to a dot.
-  const maxValue = Math.max(1, ...values.map((value) => Math.abs(value)));
-  const radiusFor = (value: number) => (Math.max(0, value) / maxValue) * maxRadius;
-
-  const pointsFor = (index: number, radius: number) => radarPoint(index, count, radius, center);
 
   return (
     <article className="panel subscore-radar">
       <h3>{chart.title}</h3>
-      <svg viewBox={`0 0 ${size} ${size}`} role="img" aria-label={chart.title}>
-        {[maxRadius, maxRadius * 0.66, maxRadius * 0.33].map((radius) => (
-          <polygon key={radius} points={chart.labels.map((_, index) => { const p = pointsFor(index, radius); return `${p.x},${p.y}`; }).join(" ")} />
-        ))}
-        {chart.labels.map((label, index) => {
-          const p = pointsFor(index, maxRadius);
-          return <line key={label} x1={center} y1={center} x2={p.x} y2={p.y} />;
-        })}
-        <polygon
-          className="subscore-radar__area"
-          points={values.map((value, index) => { const p = pointsFor(index, radiusFor(value)); return `${p.x},${p.y}`; }).join(" ")}
+      <div className="ai-chart-canvas ai-chart-canvas--radar">
+        <Radar
+          data={{
+            labels: chart.labels,
+            datasets: [
+              {
+                label: chart.series[0]?.name ?? chart.title,
+                data: values,
+                borderColor: chartPalette[0],
+                backgroundColor: `${chartPalette[0]}33`,
+                pointBackgroundColor: chartPalette[0],
+              },
+            ],
+          }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: plainTooltipLabel() } } },
+            scales: {
+              r: {
+                beginAtZero: true,
+                angleLines: { color: chartTheme.gridColor },
+                grid: { color: chartTheme.gridColor },
+                pointLabels: { color: chartTheme.ink, font: { size: 14 } },
+                ticks: { display: false, backdropColor: "transparent" },
+              },
+            },
+          }}
         />
-        {chart.labels.map((label, index) => {
-          const point = pointsFor(index, radiusFor(values[index] ?? 0));
-          const textPoint = pointsFor(index, maxRadius + 20);
-          const tooltipX = point.x >= center ? point.x + 16 : point.x - 24;
-          const tooltipY = point.y - 30;
-          return (
-            <g className="subscore-radar__point" key={label}>
-              <circle cx={point.x} cy={point.y} r="5" />
-              <circle className="subscore-radar__hit" cx={point.x} cy={point.y} r="15" />
-              <title>{label}: {formatValue(values[index] ?? 0)}</title>
-              <text x={textPoint.x} y={textPoint.y}>{label}</text>
-              <foreignObject x={tooltipX} y={tooltipY} width="48" height="28">
-                <div className="subscore-tooltip">{formatValue(values[index] ?? 0)}</div>
-              </foreignObject>
-            </g>
-          );
-        })}
-      </svg>
-    </article>
-  );
-}
-
-// Mirrors the "Alokasi Biaya" donut card on the Sub Skor page.
-function PieCard({ chart }: AIReportChartProps) {
-  const values = chart.series[0]?.values ?? [];
-  const total = values.reduce((sum, value) => sum + Math.max(0, value), 0) || 1;
-  let cursor = 0;
-  const gradient = chart.labels
-    .map((_, index) => {
-      const start = cursor;
-      const end = cursor + (Math.max(0, values[index] ?? 0) / total) * 100;
-      cursor = end;
-      return `${palette[index % palette.length]} ${start}% ${end}%`;
-    })
-    .join(", ");
-  const topIndex = values.reduce((best, value, index) => (value > (values[best] ?? 0) ? index : best), 0);
-
-  return (
-    <article className="panel inventory-insight-card inventory-insight-card--cost">
-      <div>
-        <h4>{chart.title}</h4>
-      </div>
-      <div className="cost-donut" style={{ "--cost-gradient": gradient || "var(--color-primary) 0% 100%" } as CSSProperties}>
-        <strong>{formatPercent(((values[topIndex] ?? 0) / total) * 100)}</strong>
-        <span>{chart.labels[topIndex]}</span>
-      </div>
-      <div className="chart-legend">
-        {chart.labels.map((label, index) => (
-          <button key={label} type="button" style={{ "--legend-color": palette[index % palette.length] } as CSSProperties}>
-            <span><i /> {label}</span>
-            <b>{formatValue(values[index] ?? 0)}<em>{formatPercent(((values[index] ?? 0) / total) * 100)}</em></b>
-          </button>
-        ))}
       </div>
     </article>
   );
 }
 
-function formatWithUnit(value: number, unit?: string) {
-  const formatted = formatValue(value);
-  if (unit === "Rp") return `Rp ${formatted}`;
-  if (unit) return `${formatted}${unit}`;
-  return formatted;
-}
-
-// Mirrors the "Ringkasan Arus Uang" bar-row card on the Sub Skor page.
-function BarCard({ chart }: AIReportChartProps) {
+function DonutCard({ chart }: AIReportChartProps) {
+  const { theme } = useThemeSettings();
+  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
-  const max = Math.max(1, ...values.map((value) => Math.abs(value)));
+  const colors = colorsFor(chart.labels.length);
+
   return (
     <article className="panel inventory-insight-card">
       <h4>{chart.title}</h4>
-      <div className="insight-bars">
-        {chart.labels.map((label, index) => (
-          <div className="insight-bar-row" key={label}>
-            <span>{label}</span>
-            <div>
-              <i style={{ "--bar-width": `${(Math.abs(values[index] ?? 0) / max) * 100}%`, "--bar-color": palette[index % palette.length] } as CSSProperties} />
-            </div>
-            <b>{chart.series.map((series) => formatWithUnit(series.values[index] ?? 0, chart.unit)).join(" / ")}</b>
-          </div>
-        ))}
+      <div className="ai-chart-canvas ai-chart-canvas--donut">
+        <Doughnut
+          data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "68%",
+            plugins: {
+              legend: {
+                position: "bottom" as const,
+                labels: { color: chartTheme.muted, generateLabels: buildLegendLabels(chart.labels, values), boxWidth: 12, padding: 12 },
+              },
+              tooltip: {
+                backgroundColor: chartTheme.surface,
+                titleColor: chartTheme.ink,
+                bodyColor: chartTheme.ink,
+                borderColor: chartTheme.gridColor,
+                borderWidth: 1,
+                callbacks: { label: percentTooltipLabel(values) },
+              },
+            },
+          }}
+        />
       </div>
     </article>
   );
 }
 
-// Mirrors the ring-bordered stat tiles in the "Efisiensi Transaksi" card on the Sub Skor page.
-// Same circular progress ring as the "Skor Kesehatan Keseluruhan" hero card on the Dashboard page.
+function BarCard({ chart }: AIReportChartProps) {
+  const { theme } = useThemeSettings();
+  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const values = chart.series[0]?.values ?? [];
+  const colors = colorsFor(chart.labels.length);
+
+  return (
+    <article className="panel inventory-insight-card">
+      <h4>{chart.title}</h4>
+      <div className="ai-chart-canvas" style={{ height: Math.max(barRowHeight * chart.labels.length, 120) }}>
+        <Bar
+          data={{
+            labels: chart.labels,
+            datasets: [{ label: chart.series[0]?.name ?? chart.title, data: values, backgroundColor: colors, borderRadius: 6 }],
+          }}
+          options={{
+            indexAxis: "y" as const,
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: chartTheme.surface,
+                titleColor: chartTheme.ink,
+                bodyColor: chartTheme.ink,
+                borderColor: chartTheme.gridColor,
+                borderWidth: 1,
+                callbacks: { label: plainTooltipLabel(chart.unit) },
+              },
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: { color: chartTheme.muted, callback: (value: number | string) => formatChartValueWithUnit(Number(value), chart.unit) },
+                grid: { color: chartTheme.gridColor },
+              },
+              y: { ticks: { color: chartTheme.muted }, grid: { display: false } },
+            },
+          }}
+        />
+      </div>
+    </article>
+  );
+}
+
 function GaugeCard({ chart }: AIReportChartProps) {
+  const { theme } = useThemeSettings();
+  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
   const value = Math.max(0, Math.min(100, chart.series[0]?.values[0] ?? 0));
+  const centerPlugin = buildCenterTextPlugin(formatChartValue(value), statusLabel(value), chartTheme);
+
   return (
     <article className="panel health-card">
       <p>{chart.title}</p>
-      <div className="health-ring" style={{ "--health-progress": `${value}%` } as CSSProperties}>
-        <strong>{formatValue(value)}</strong>
-        <span>{statusLabel(value)}</span>
+      <div className="ai-chart-canvas ai-chart-canvas--gauge">
+        <Doughnut
+          data={{
+            labels: [chart.series[0]?.name ?? "Skor", "Sisa"],
+            datasets: [{ data: [value, 100 - value], backgroundColor: [chartPalette[0], chartTheme.gridColor], borderWidth: 0 }],
+          }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "78%",
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          }}
+          plugins={[centerPlugin]}
+        />
       </div>
     </article>
   );
 }
 
 function LineCard({ chart }: AIReportChartProps) {
-  const max = Math.max(1, ...chart.series.flatMap((series) => series.values));
-  const width = 260;
-  const height = 120;
+  const { theme } = useThemeSettings();
+  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+
   return (
     <article className="panel inventory-insight-card">
       <h4>{chart.title}</h4>
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={chart.title} style={{ width: "100%", marginTop: 16 }}>
-        {chart.series.map((series, seriesIndex) => (
-          <polyline
-            key={series.name}
-            points={series.values
-              .map((value, index) => {
-                const x = chart.labels.length > 1 ? (index / (chart.labels.length - 1)) * width : width / 2;
-                const y = height - (Math.max(0, value) / max) * height;
-                return `${x},${y}`;
-              })
-              .join(" ")}
-            fill="none"
-            stroke={palette[seriesIndex % palette.length]}
-            strokeWidth={2}
-          />
-        ))}
-      </svg>
+      <div className="ai-chart-canvas">
+        <Line
+          data={{
+            labels: chart.labels,
+            datasets: chart.series.map((series, index) => ({
+              label: series.name,
+              data: series.values,
+              borderColor: chartPalette[index % chartPalette.length],
+              backgroundColor: `${chartPalette[index % chartPalette.length]}33`,
+              tension: 0.35,
+              pointRadius: 3,
+            })),
+          }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: chart.series.length > 1, position: "bottom" as const, labels: { color: chartTheme.muted } },
+              tooltip: { callbacks: { label: plainTooltipLabel(chart.unit) } },
+            },
+            scales: {
+              x: { ticks: { color: chartTheme.muted }, grid: { display: false } },
+              y: {
+                ticks: { color: chartTheme.muted, callback: (value: number | string) => formatChartValueWithUnit(Number(value), chart.unit) },
+                grid: { color: chartTheme.gridColor },
+                beginAtZero: true,
+              },
+            },
+          }}
+        />
+      </div>
     </article>
   );
 }
 
 export function AIReportChart({ chart }: AIReportChartProps) {
   if (chart.type === "radar") return <RadarCard chart={chart} />;
-  if (chart.type === "pie") return <PieCard chart={chart} />;
+  if (chart.type === "pie" || chart.type === "doughnut") return <DonutCard chart={chart} />;
   if (chart.type === "gauge") return <GaugeCard chart={chart} />;
   if (chart.type === "line") return <LineCard chart={chart} />;
   return <BarCard chart={chart} />;

@@ -4809,6 +4809,26 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   margin-top: 12px;
 }
 
+.ai-chart-canvas {
+  position: relative;
+  height: 240px;
+  margin-top: 12px;
+}
+
+.ai-chart-canvas--radar {
+  height: 280px;
+}
+
+.ai-chart-canvas--donut {
+  height: 220px;
+}
+
+.ai-chart-canvas--gauge {
+  width: clamp(170px, 15vw, 215px);
+  height: clamp(170px, 15vw, 215px);
+  margin: 22px auto;
+}
+
 .chart-legend {
   grid-column: 1 / -1;
   display: grid;
@@ -5965,6 +5985,12 @@ dt,
     justify-self: center;
   }
   .admin-chart-canvas {
+    height: 200px;
+  }
+  .ai-chart-canvas--radar {
+    height: 220px;
+  }
+  .ai-chart-canvas--donut {
     height: 200px;
   }
   .insight-bar-row {

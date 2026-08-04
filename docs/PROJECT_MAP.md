@@ -54,8 +54,9 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/organisms/LandingHero.tsx` | Hero landing dan CTA. | Saat mengubah landing page atas. |
 | `src/components/organisms/RadarProfile.tsx` | Business snapshot dari inventory metrics. | Saat mengubah snapshot dashboard. |
 | `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |
-| `src/components/organisms/AIReportChart.tsx` | Render chart generik (bar/line/radar/pie/gauge) dari data `AIReportChartData` laporan AI. | Saat mengubah tipe chart atau tampilan visual laporan AI. |
+| `src/components/organisms/AIReportChart.tsx` | Render chart Chart.js (bar horizontal/radar/doughnut/line/doughnut-gauge via `react-chartjs-2`) dari `AIReportChartData` untuk laporan AI; juga meng-export `statusLabel(score)` yang dipakai `AIReportPage`. | Saat mengubah tipe chart atau tampilan visual laporan AI. |
 | `src/components/organisms/AdminAnalyticsChart.tsx` | Render chart Chart.js (bar/doughnut/line/pie via `react-chartjs-2`) dari `AIReportChartData` untuk `AdminSummaryPage` saja. | Saat mengubah tipe/tampilan chart di Ringkasan Admin. |
+| `src/components/organisms/chartHelpers.ts` | Registrasi elemen Chart.js bersama (`ChartJS.register`) dan helper lintas-chart: `colorsFor`, `buildLegendLabels`, `percentTooltipLabel`, `plainTooltipLabel`, `buildCenterTextPlugin`. Dipakai `AdminAnalyticsChart` dan `AIReportChart`. | Saat mengubah perilaku tooltip/legend/plugin yang dipakai bersama kedua komponen chart. |
 | `src/components/organisms/chartTheme.ts` | Palet warna, formatter angka/persen, dan `getChartTheme()` (baca CSS var `--ink`/`--muted`/`--surface`/`--border`) untuk `AdminAnalyticsChart`. | Saat mengubah warna/formatting chart admin atau menambah field tema baru. |
 | `src/components/atoms/Button.tsx` | Button base dengan variant. | Saat menambah variant/button behavior. |
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |

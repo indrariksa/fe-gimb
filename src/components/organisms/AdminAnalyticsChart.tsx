@@ -1,42 +1,14 @@
 import { useMemo } from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-import type { TooltipItem } from "chart.js";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import type { AIReportChartData } from "../../services/api/types";
 import { useThemeSettings } from "../../theme/ThemeContext";
-import { chartPalette, formatChartValue, formatChartPercent, formatChartValueWithUnit, getChartTheme } from "./chartTheme";
+import { chartPalette, formatChartValueWithUnit, getChartTheme } from "./chartTheme";
+import { colorsFor, buildLegendLabels, percentTooltipLabel, plainTooltipLabel } from "./chartHelpers";
 import { formatMonthYear } from "../../utils/dateTime";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Filler,
-);
 
 type AdminAnalyticsChartProps = {
   chart: AIReportChartData;
 };
-
-function colorsFor(count: number) {
-  return Array.from({ length: count }, (_, index) => chartPalette[index % chartPalette.length]);
-}
 
 const barTopN = 6;
 
@@ -53,34 +25,6 @@ function bucketTopN(labels: string[], values: number[], topN: number, restMode: 
   return {
     labels: [...top.map((row) => row.label), "Lainnya"],
     values: [...top.map((row) => row.value), restValue],
-  };
-}
-
-function buildLegendLabels(labels: string[], values: number[]) {
-  return (chart: ChartJS) => {
-    const total = values.reduce((sum, value) => sum + Math.max(0, value), 0) || 1;
-    return labels.map((label, index) => ({
-      text: `${label}: ${formatChartValue(values[index] ?? 0)} (${formatChartPercent(((values[index] ?? 0) / total) * 100)})`,
-      fillStyle: chartPalette[index % chartPalette.length],
-      strokeStyle: chartPalette[index % chartPalette.length],
-      hidden: !chart.getDataVisibility(index),
-      index,
-    }));
-  };
-}
-
-function percentTooltipLabel(values: number[]) {
-  return (context: TooltipItem<"pie"> | TooltipItem<"doughnut">) => {
-    const total = values.reduce((sum, value) => sum + Math.max(0, value), 0) || 1;
-    const value = values[context.dataIndex] ?? 0;
-    return `${context.label}: ${formatChartValue(value)} (${formatChartPercent((value / total) * 100)})`;
-  };
-}
-
-function plainTooltipLabel(unit?: string) {
-  return (context: TooltipItem<"bar"> | TooltipItem<"line">) => {
-    const value = typeof context.parsed === "object" ? context.parsed.y : context.parsed;
-    return `${context.dataset.label}: ${formatChartValueWithUnit(value as number, unit)}`;
   };
 }
 

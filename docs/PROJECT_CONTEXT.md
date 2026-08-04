@@ -403,7 +403,7 @@ Script test: Belum teridentifikasi.
 - Admin user list menampilkan status verifikasi email dan menyediakan verifikasi manual dengan confirmation dialog untuk user yang belum verified.
 - Admin dashboard menampilkan tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
 - Admin inventory input/detail page.
-- Laporan bisnis AI: halaman `/businesses/:businessId/ai-report` (dan versi admin) dengan polling status `processing`/`ready`/`failed`, narasi per sub-skor beserta `score_drivers` dan `alternative_solutions`, chart bar/line/radar/pie/gauge, export PDF/XLSX, dan tombol generate ulang saat gagal; menu sidebar user "Laporan AI" mengikuti pola enable/disable nav lain berdasarkan hasil inventory.
+- Laporan bisnis AI: halaman `/businesses/:businessId/ai-report` (dan versi admin) dengan polling status `processing`/`ready`/`failed`, narasi per sub-skor beserta `score_drivers` dan `alternative_solutions`, 10 chart Chart.js (bar horizontal/radar/doughnut/doughnut-gauge), export PDF/XLSX, dan tombol generate ulang saat gagal; menu sidebar user "Laporan AI" mengikuti pola enable/disable nav lain berdasarkan hasil inventory.
 - Dark/light mode dan theme colors, termasuk toggle publik di landing/login/register.
 
 ## Pola Kode yang Harus Dipertahankan

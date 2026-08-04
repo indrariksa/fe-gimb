@@ -55,7 +55,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - WebSocket realtime dengan reconnect sederhana;
   - dropdown dan toast menampilkan waktu notifikasi di kanan judul dengan format relatif lalu tanggal/jam Asia/Jakarta untuk data lama.
 - Admin inventory detail/input readout page.
-- Laporan bisnis AI `/businesses/:businessId/ai-report` (dan versi admin `/admin/businesses/:businessId/ai-report`): polling status processing/ready/failed, narasi per sub-skor dengan score drivers dan alternative solutions, chart bar/line/radar/pie/gauge (`AIReportChart`), export PDF/XLSX reuse `downloadPdfReport`/`downloadWorkbook`, dan tombol generate ulang saat status gagal.
+- Laporan bisnis AI `/businesses/:businessId/ai-report` (dan versi admin `/admin/businesses/:businessId/ai-report`): polling status processing/ready/failed, narasi per sub-skor dengan score drivers dan alternative solutions, 10 chart Chart.js (`AIReportChart`) per submission — bar horizontal (`indexAxis: 'y'`, tinggi menyesuaikan jumlah baris) untuk 7 chart nilai, radar untuk profil skor, doughnut dengan teks tengah untuk struktur biaya, dan doughnut gauge (nilai vs sisa 100) dengan teks tengah skor+status untuk skor keseluruhan sebagai capstone card full-width, export PDF/XLSX reuse `downloadPdfReport`/`downloadWorkbook`, dan tombol generate ulang saat status gagal.
 - SVG favicon dan brand mark aplikasi melalui `public/gimb-icon.svg`.
 - TypeScript type kontrak API di `src/services/api/types.ts`.
 - Helper tanggal/jam terpusat `src/utils/dateTime.ts` memformat tampilan manusia dengan timezone eksplisit `Asia/Jakarta`.
