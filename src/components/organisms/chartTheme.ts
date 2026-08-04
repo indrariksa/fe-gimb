@@ -8,6 +8,12 @@ export function formatChartPercent(value: number) {
   return `${formatChartValue(value)}%`;
 }
 
+export function formatChartValueWithUnit(value: number, unit?: string) {
+  if (unit === "Rp") return `Rp ${formatChartValue(value)}`;
+  if (unit) return `${formatChartValue(value)}${unit}`;
+  return formatChartValue(value);
+}
+
 export type ChartTheme = {
   ink: string;
   muted: string;

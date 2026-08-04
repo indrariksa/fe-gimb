@@ -81,7 +81,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/DashboardPage.tsx` | Dashboard diagnosis utama. | Saat mengubah summary dashboard/user insight. |
 | `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, insight inventory operasional, dan legend. | Saat mengubah visualisasi sub-score atau data inventarisasi. |
 | `src/pages/SettingsPage.tsx` | Pengaturan profil, tautkan/lepas tautan Google, setup/ubah password mandiri, dan tema lokal. | Saat mengubah settings atau keamanan akun. |
-| `src/pages/AdminSummaryPage.tsx` | Ringkasan admin: metrics, business limit, dan 4 chart analytics. | Saat mengubah kartu ringkasan atau chart admin. |
+| `src/pages/AdminSummaryPage.tsx` | Ringkasan admin: metrics, business limit, dan 6 chart analytics. | Saat mengubah kartu ringkasan atau chart admin. |
 | `src/pages/AdminDiagnosisPage.tsx` | Tabel Monitoring Diagnosis dengan pagination dan aksi per baris. | Saat mengubah tabel/aksi diagnosis admin. |
 | `src/pages/AdminLimitPage.tsx` | Form limit toko per user. | Saat mengubah pengaturan limit toko. |
 | `src/pages/AdminUsersPage.tsx` | Tabel user, update status, verifikasi manual email. | Saat mengubah fitur manajemen user admin. |
