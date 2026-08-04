@@ -262,7 +262,7 @@ export type AIReportChartSeries = {
 
 export type AIReportChartData = {
   id: string;
-  type: "bar" | "line" | "radar" | "pie" | "gauge";
+  type: "bar" | "line" | "radar" | "pie" | "gauge" | "doughnut";
   title: string;
   unit?: string;
   labels: string[];

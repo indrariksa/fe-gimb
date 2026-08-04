@@ -44,6 +44,16 @@ export function formatJakartaTime(value: DateValue, fallback = "-") {
   }).format(date);
 }
 
+export function formatMonthYear(value: DateValue, fallback = "-") {
+  const date = toValidDate(value);
+  if (!date) return fallback;
+  return new Intl.DateTimeFormat("id-ID", {
+    timeZone: JAKARTA_TIME_ZONE,
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
 export function formatNotificationTime(value: DateValue, fallback = "-") {
   const date = toValidDate(value);
   if (!date) return fallback;

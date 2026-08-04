@@ -125,6 +125,10 @@ User-only route:
 Admin-only route:
 
 - `/admin`
+- `/admin/diagnosis`
+- `/admin/limit`
+- `/admin/users`
+- `/admin/audit-log`
 - `/admin/businesses/:businessId/inventory-input`
 - `/admin/businesses/:businessId/ai-report`
 
@@ -388,7 +392,8 @@ Script test: Belum teridentifikasi.
 - Sub-scores page dengan card, radar SVG, bar chart, insight operasional dari data inventarisasi, dan legend.
 - Export PDF report berbasis data dan workbook XLSX rapi untuk dashboard summary dan sub-scores analysis.
 - Settings page untuk update nama profil, tautkan/lepas tautan Google dengan konfirmasi, setup/ubah password mandiri, dan tema lokal full-width.
-- Admin dashboard summary.
+- Admin dashboard dipecah jadi 5 route/halaman terpisah (Ringkasan, Diagnosis, Limit, User, Audit Log), masing-masing fetch data sendiri.
+- Admin dashboard summary dengan 4 chart Chart.js (bar toko per industri, doughnut distribusi status kesehatan, line tren submission 12 bulan, pie user aktif vs suspended).
 - Card ringkasan admin dan user memakai efek holographic ringan saat hover.
 - Admin monitoring diagnosis dengan pagination.
 - Admin update business limit.

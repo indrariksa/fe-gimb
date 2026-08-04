@@ -55,6 +55,8 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/organisms/RadarProfile.tsx` | Business snapshot dari inventory metrics. | Saat mengubah snapshot dashboard. |
 | `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |
 | `src/components/organisms/AIReportChart.tsx` | Render chart generik (bar/line/radar/pie/gauge) dari data `AIReportChartData` laporan AI. | Saat mengubah tipe chart atau tampilan visual laporan AI. |
+| `src/components/organisms/AdminAnalyticsChart.tsx` | Render chart Chart.js (bar/doughnut/line/pie via `react-chartjs-2`) dari `AIReportChartData` untuk `AdminSummaryPage` saja. | Saat mengubah tipe/tampilan chart di Ringkasan Admin. |
+| `src/components/organisms/chartTheme.ts` | Palet warna, formatter angka/persen, dan `getChartTheme()` (baca CSS var `--ink`/`--muted`/`--surface`/`--border`) untuk `AdminAnalyticsChart`. | Saat mengubah warna/formatting chart admin atau menambah field tema baru. |
 | `src/components/atoms/Button.tsx` | Button base dengan variant. | Saat menambah variant/button behavior. |
 | `src/components/atoms/Icon.tsx` | Inline SVG icon registry. | Saat menambah icon. |
 | `src/components/atoms/LoadingState.tsx` | Loading state reusable dengan spinner theme-aware. | Saat mengubah tampilan loading halaman/table. |
@@ -79,7 +81,11 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/DashboardPage.tsx` | Dashboard diagnosis utama. | Saat mengubah summary dashboard/user insight. |
 | `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, insight inventory operasional, dan legend. | Saat mengubah visualisasi sub-score atau data inventarisasi. |
 | `src/pages/SettingsPage.tsx` | Pengaturan profil, tautkan/lepas tautan Google, setup/ubah password mandiri, dan tema lokal. | Saat mengubah settings atau keamanan akun. |
-| `src/pages/AdminPage.tsx` | Admin summary, diagnosis, limit, users, audit logs. | Saat mengubah fitur admin utama. |
+| `src/pages/AdminSummaryPage.tsx` | Ringkasan admin: metrics, business limit, dan 4 chart analytics. | Saat mengubah kartu ringkasan atau chart admin. |
+| `src/pages/AdminDiagnosisPage.tsx` | Tabel Monitoring Diagnosis dengan pagination dan aksi per baris. | Saat mengubah tabel/aksi diagnosis admin. |
+| `src/pages/AdminLimitPage.tsx` | Form limit toko per user. | Saat mengubah pengaturan limit toko. |
+| `src/pages/AdminUsersPage.tsx` | Tabel user, update status, verifikasi manual email. | Saat mengubah fitur manajemen user admin. |
+| `src/pages/AdminAuditLogPage.tsx` | Panel audit log dengan pagination dan search/filter. | Saat mengubah fitur audit log admin. |
 | `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role; punya tombol admin ke Laporan AI. | Saat mengubah review/detail inventory. |
 | `src/pages/AIReportPage.tsx` | Laporan bisnis AI: polling status, narasi per sub-skor, alternative solutions, chart, export PDF/XLSX, dan regenerate saat gagal. | Saat mengubah tampilan/alur laporan AI. |
 

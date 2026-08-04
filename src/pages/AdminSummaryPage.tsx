@@ -4,7 +4,7 @@ import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
-import { AIReportChart } from "../components/organisms/AIReportChart";
+import { AdminAnalyticsChart } from "../components/organisms/AdminAnalyticsChart";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AIReportChartData, BusinessLimitSetting } from "../services/api/types";
 
@@ -113,9 +113,9 @@ export function AdminSummaryPage() {
 
             <div className="inventory-insight-grid">
               {charts.map((chart) => (
-                <AIReportChart key={chart.id} chart={chart} />
+                <AdminAnalyticsChart key={chart.id} chart={chart} />
               ))}
-              <AIReportChart chart={userStatusChart} />
+              <AdminAnalyticsChart chart={userStatusChart} />
             </div>
           </>
         )}

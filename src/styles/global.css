@@ -4786,17 +4786,27 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .cost-donut strong {
-  margin-top: -14px;
+  margin-top: -20px;
   color: var(--ink);
   font-size: 1.35rem;
 }
 
 .cost-donut span {
-  margin-top: 36px;
+  margin-top: 42px;
   color: var(--muted);
   font-size: .72rem;
   font-weight: 850;
   text-transform: uppercase;
+}
+
+.admin-chart-card h4 {
+  margin-bottom: 4px;
+}
+
+.admin-chart-canvas {
+  position: relative;
+  height: 260px;
+  margin-top: 12px;
 }
 
 .chart-legend {
@@ -5953,6 +5963,9 @@ dt,
   .cost-donut {
     width: 128px;
     justify-self: center;
+  }
+  .admin-chart-canvas {
+    height: 200px;
   }
   .insight-bar-row {
     grid-template-columns: 1fr;

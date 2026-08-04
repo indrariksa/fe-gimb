@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 2 Agustus 2026
+Terakhir diperbarui: 4 Agustus 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -42,14 +42,12 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
 - Settings page untuk update nama profile dengan konfirmasi, metode login readonly, tautkan atau lepas tautan Google dengan konfirmasi, guard agar akun Google-only membuat password dulu sebelum unlink, dan setup/ubah password mandiri dalam layout 50/50, lalu warna tema lokal tampil full-width dengan preview tema mini.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, document title, dan toggle tema di landing/login/register.
-- Admin dashboard:
-  - summary metrics;
-  - efek holographic ringan pada card summary;
-  - diagnosis watchlist dengan pagination;
-  - update business limit;
-  - user list dengan pagination, update status selain akun admin sendiri, badge email verified, verifikasi manual email dengan konfirmasi, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
-  - audit log list dengan pagination, search/filter server-side, detail expand, reload seamless, fullscreen, dan kolom row rata kiri;
-  - tombol coba lagi pada error state utama, monitoring diagnosis, user list, dan audit log.
+- Admin dashboard dipecah jadi 5 route/halaman terpisah (`AdminSummaryPage`, `AdminDiagnosisPage`, `AdminLimitPage`, `AdminUsersPage`, `AdminAuditLogPage`), masing-masing fetch data sendiri:
+  - `AdminSummaryPage` (`/admin`): summary metrics, efek holographic ringan pada card summary, update business limit, 4 chart Chart.js (bar toko per industri, doughnut distribusi status kesehatan, line tren submission 12 bulan, pie user aktif vs suspended), dan tombol coba lagi saat load gagal;
+  - `AdminDiagnosisPage` (`/admin/diagnosis`): diagnosis watchlist dengan pagination dan tombol coba lagi;
+  - `AdminLimitPage` (`/admin/limit`): update business limit;
+  - `AdminUsersPage` (`/admin/users`): user list dengan pagination, update status selain akun admin sendiri, badge email verified, verifikasi manual email dengan konfirmasi, urutan user biasa terbaru lebih dulu, dan admin paling akhir;
+  - `AdminAuditLogPage` (`/admin/audit-log`): audit log list dengan pagination, search/filter server-side, detail expand, reload seamless, fullscreen, dan kolom row rata kiri, dengan tombol coba lagi.
 - Admin bell notification:
   - load recent notifications;
   - unread count;
@@ -82,6 +80,10 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/businesses/:businessId/ai-report`
 - `/settings`
 - `/admin`
+- `/admin/diagnosis`
+- `/admin/limit`
+- `/admin/users`
+- `/admin/audit-log`
 - `/admin/businesses/:businessId/inventory-input`
 - `/admin/businesses/:businessId/ai-report`
 
@@ -105,7 +107,7 @@ Tidak ditemukan marker `TODO`, `FIXME`, `HACK`, atau `XXX` di source frontend.
 Catatan penting yang ditemukan:
 
 - Tidak ada field `scoring_version` di type `BusinessHealthAnalysis` frontend.
-- `AdminPage.updateStatus` tidak memiliki try/catch lokal saat update user status.
+- `AdminUsersPage.updateStatus` tidak memiliki try/catch lokal saat update user status.
 - `AdminInventoryDetailPage` pada mode admin mencari submitter dari `adminUsers({ limit: 100, offset: 0 })`, sehingga user di luar 100 pertama bisa tidak ditemukan.
 - Halaman laporan AI belum diverifikasi manual end-to-end di browser (empat state: not-eligible/processing/ready/failed) karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi; baru diverifikasi lewat type-check dan build.
 
