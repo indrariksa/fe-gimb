@@ -2,10 +2,14 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { RequireAuth } from "./components/guards/RequireAuth";
-import { AnalysisPage } from "./pages/AnalysisPage";
+import { AdminAuditLogPage } from "./pages/AdminAuditLogPage";
+import { AdminDiagnosisPage } from "./pages/AdminDiagnosisPage";
 import { AdminInventoryDetailPage } from "./pages/AdminInventoryDetailPage";
+import { AdminLimitPage } from "./pages/AdminLimitPage";
+import { AdminSummaryPage } from "./pages/AdminSummaryPage";
+import { AdminUsersPage } from "./pages/AdminUsersPage";
 import { AIReportPage } from "./pages/AIReportPage";
-import { AdminPage } from "./pages/AdminPage";
+import { AnalysisPage } from "./pages/AnalysisPage";
 import { BusinessesPage } from "./pages/BusinessesPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { InventoryPage } from "./pages/InventoryPage";
@@ -49,7 +53,11 @@ export function App() {
             </Route>
 
             <Route element={<RequireAuth adminOnly />}>
-              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin" element={<AdminSummaryPage />} />
+              <Route path="/admin/diagnosis" element={<AdminDiagnosisPage />} />
+              <Route path="/admin/limit" element={<AdminLimitPage />} />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/audit-log" element={<AdminAuditLogPage />} />
               <Route path="/admin/businesses/:businessId/inventory-input" element={<AdminInventoryDetailPage />} />
               <Route path="/admin/businesses/:businessId/ai-report" element={<AIReportPage />} />
             </Route>
