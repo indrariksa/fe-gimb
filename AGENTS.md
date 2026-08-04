@@ -9,6 +9,25 @@ dependency, fleksibilitas, dan boilerplate yang belum diperlukan. Tetap ikuti
 pola codebase yang ada serta pertahankan keamanan, aksesibilitas, dan perilaku
 yang sudah berjalan.
 
+## Kebijakan Commit Git
+
+Claude/agent **tidak boleh** menjalankan `git commit` atau `git push` di
+repository ini. Tanpa pengecualian, tanpa kondisi, dan tanpa perlu
+konfirmasi — larangan ini mutlak, bukan default yang bisa dilonggarkan.
+Berlaku dalam kondisi apa pun, termasuk saat bekerja di git worktree
+terisolasi atau branch terpisah, dan termasuk apabila pengguna secara
+eksplisit memintanya. Jangan menanyakan izin untuk melakukan commit — commit
+adalah wewenang pengguna sepenuhnya, dilakukan secara manual oleh pengguna
+sendiri. Pengguna tidak ingin nama Claude muncul sebagai committer atau
+co-author di riwayat commit repository ini sama sekali.
+
+Yang boleh dilakukan Claude/agent:
+
+- membuat, mengubah, atau menghapus file (`git add` untuk staging boleh);
+- menjalankan `git status`, `git diff`, `git log`, dan perintah baca lainnya;
+- menyiapkan ringkasan perubahan atau draft pesan commit apabila diminta,
+  tanpa mengeksekusi `git commit`.
+
 ## Pemeliharaan Dokumentasi Project
 
 Sebelum mengerjakan perubahan, baca:
