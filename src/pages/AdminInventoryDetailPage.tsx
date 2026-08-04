@@ -64,7 +64,7 @@ export function AdminInventoryDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
-  const backPath = isAdmin ? "/admin#diagnoses" : "/businesses";
+  const backPath = isAdmin ? "/admin/diagnosis" : "/businesses";
 
   useEffect(() => {
     let isMounted = true;
