@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Bar, Doughnut, Line, Radar } from "react-chartjs-2";
 import type { AIReportChartData } from "../../services/api/types";
 import { useThemeSettings } from "../../theme/ThemeContext";
 import { chartPalette, formatChartValue, formatChartValueWithUnit, getChartTheme } from "./chartTheme";
-import { colorsFor, buildLegendLabels, percentTooltipLabel, plainTooltipLabel, buildCenterTextPlugin } from "./chartHelpers";
+import { colorsFor, buildLegendLabels, percentTooltipLabel, plainTooltipLabel, buildCenterTextPlugin, buildGradientFill } from "./chartHelpers";
 
 type AIReportChartProps = {
   chart: AIReportChartData;
@@ -17,15 +17,13 @@ export function statusLabel(score: number) {
   return "Sangat Buruk";
 }
 
-const barRowHeight = 46;
-
 function RadarCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
   const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
 
   return (
-    <article className="panel subscore-radar">
+    <article className="panel subscore-radar ai-chart-card">
       <h3>{chart.title}</h3>
       <div className="ai-chart-canvas ai-chart-canvas--radar">
         <Radar
@@ -68,11 +66,11 @@ function DonutCard({ chart }: AIReportChartProps) {
   const colors = colorsFor(chart.labels.length);
 
   return (
-    <article className="panel inventory-insight-card">
+    <article className="panel inventory-insight-card ai-chart-card">
       <h4>{chart.title}</h4>
       <div className="ai-chart-canvas ai-chart-canvas--donut">
         <Doughnut
-          data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] }}
+          data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] }}
           options={{
             responsive: true,
             maintainAspectRatio: false,
@@ -105,13 +103,13 @@ function BarCard({ chart }: AIReportChartProps) {
   const colors = colorsFor(chart.labels.length);
 
   return (
-    <article className="panel inventory-insight-card">
+    <article className="panel inventory-insight-card ai-chart-card">
       <h4>{chart.title}</h4>
-      <div className="ai-chart-canvas" style={{ height: Math.max(barRowHeight * chart.labels.length, 120) }}>
+      <div className="ai-chart-canvas">
         <Bar
           data={{
             labels: chart.labels,
-            datasets: [{ label: chart.series[0]?.name ?? chart.title, data: values, backgroundColor: colors, borderRadius: 6 }],
+            datasets: [{ label: chart.series[0]?.name ?? chart.title, data: values, backgroundColor: colors, borderRadius: 6, hoverBorderWidth: 2, hoverBorderColor: chartTheme.ink }],
           }}
           options={{
             indexAxis: "y" as const,
@@ -147,16 +145,22 @@ function GaugeCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
   const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
   const value = Math.max(0, Math.min(100, chart.series[0]?.values[0] ?? 0));
+  const [displayValue, setDisplayValue] = useState(value);
   const centerPlugin = buildCenterTextPlugin(formatChartValue(value), statusLabel(value), chartTheme);
 
+  const replayFill = () => {
+    setDisplayValue(0);
+    setTimeout(() => setDisplayValue(value), 20);
+  };
+
   return (
-    <article className="panel health-card">
+    <article className="panel health-card" onMouseEnter={replayFill}>
       <p>{chart.title}</p>
       <div className="ai-chart-canvas ai-chart-canvas--gauge">
         <Doughnut
           data={{
             labels: [chart.series[0]?.name ?? "Skor", "Sisa"],
-            datasets: [{ data: [value, 100 - value], backgroundColor: [chartPalette[0], chartTheme.gridColor], borderWidth: 0 }],
+            datasets: [{ data: [displayValue, 100 - displayValue], backgroundColor: [chartPalette[0], chartTheme.gridColor], borderWidth: 0 }],
           }}
           options={{
             responsive: true,
@@ -176,7 +180,7 @@ function LineCard({ chart }: AIReportChartProps) {
   const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
 
   return (
-    <article className="panel inventory-insight-card">
+    <article className="panel inventory-insight-card ai-chart-card">
       <h4>{chart.title}</h4>
       <div className="ai-chart-canvas">
         <Line
@@ -186,7 +190,8 @@ function LineCard({ chart }: AIReportChartProps) {
               label: series.name,
               data: series.values,
               borderColor: chartPalette[index % chartPalette.length],
-              backgroundColor: `${chartPalette[index % chartPalette.length]}33`,
+              backgroundColor: buildGradientFill(chartPalette[index % chartPalette.length]),
+              fill: true,
               tension: 0.35,
               pointRadius: 3,
             })),

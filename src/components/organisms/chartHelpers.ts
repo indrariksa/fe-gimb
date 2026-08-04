@@ -11,7 +11,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import type { Plugin, TooltipItem } from "chart.js";
+import type { Plugin, ScriptableContext, TooltipItem } from "chart.js";
 import { chartPalette, formatChartValue, formatChartPercent, formatChartValueWithUnit, type ChartTheme } from "./chartTheme";
 
 ChartJS.register(
@@ -55,6 +55,17 @@ export function percentTooltipLabel(values: number[]) {
 export function plainTooltipLabel(unit?: string) {
   return (context: TooltipItem<"bar"> | TooltipItem<"line"> | TooltipItem<"radar">) =>
     `${context.dataset.label}: ${formatChartValueWithUnit(context.raw as number, unit)}`;
+}
+
+export function buildGradientFill(color: string) {
+  return (context: ScriptableContext<"line">) => {
+    const { ctx, chartArea } = context.chart;
+    if (!chartArea) return undefined;
+    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+    gradient.addColorStop(0, `${color}66`);
+    gradient.addColorStop(1, `${color}00`);
+    return gradient;
+  };
 }
 
 export function buildCenterTextPlugin(value: string, label: string, theme: ChartTheme): Plugin<"doughnut"> {

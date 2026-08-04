@@ -3,7 +3,7 @@ import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import type { AIReportChartData } from "../../services/api/types";
 import { useThemeSettings } from "../../theme/ThemeContext";
 import { chartPalette, formatChartValueWithUnit, getChartTheme } from "./chartTheme";
-import { colorsFor, buildLegendLabels, percentTooltipLabel, plainTooltipLabel } from "./chartHelpers";
+import { colorsFor, buildLegendLabels, percentTooltipLabel, plainTooltipLabel, buildGradientFill } from "./chartHelpers";
 import { formatMonthYear } from "../../utils/dateTime";
 
 type AdminAnalyticsChartProps = {
@@ -55,7 +55,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
         <h4>{chart.title}</h4>
         <div className="admin-chart-canvas">
           <Doughnut
-            data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] }}
+            data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] }}
             options={{ responsive: true, maintainAspectRatio: false, cutout: "68%", plugins: categoricalPlugins }}
           />
         </div>
@@ -69,7 +69,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
         <h4>{chart.title}</h4>
         <div className="admin-chart-canvas">
           <Pie
-            data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] }}
+            data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] }}
             options={{ responsive: true, maintainAspectRatio: false, plugins: categoricalPlugins }}
           />
         </div>
@@ -107,7 +107,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
                   label: chart.series[0]?.name ?? chart.title,
                   data: values,
                   borderColor: chartPalette[0],
-                  backgroundColor: `${chartPalette[0]}33`,
+                  backgroundColor: buildGradientFill(chartPalette[0]),
                   fill: true,
                   tension: 0.35,
                   pointRadius: 3,
@@ -129,7 +129,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
         <Bar
           data={{
             labels: bucketed.labels,
-            datasets: [{ label: chart.series[0]?.name ?? chart.title, data: bucketed.values, backgroundColor: colorsFor(bucketed.labels.length), borderRadius: 6 }],
+            datasets: [{ label: chart.series[0]?.name ?? chart.title, data: bucketed.values, backgroundColor: colorsFor(bucketed.labels.length), borderRadius: 6, hoverBorderWidth: 2, hoverBorderColor: chartTheme.ink }],
           }}
           options={axisOptions}
         />

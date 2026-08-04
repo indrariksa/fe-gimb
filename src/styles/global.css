@@ -4809,18 +4809,27 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   margin-top: 12px;
 }
 
+/* AIReportChart cards stretch to match the tallest sibling in their grid row (default grid
+   align-items: stretch). ai-chart-card makes the card a flex column so ai-chart-canvas can grow
+   with flex to fill that stretched height instead of leaving empty space below a fixed size. */
+.ai-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
 .ai-chart-canvas {
   position: relative;
-  height: 240px;
+  flex: 1 1 auto;
+  min-height: 160px;
   margin-top: 12px;
 }
 
 .ai-chart-canvas--radar {
-  height: 280px;
+  min-height: 280px;
 }
 
 .ai-chart-canvas--donut {
-  height: 220px;
+  min-height: 220px;
 }
 
 .ai-chart-canvas--gauge {
@@ -5988,10 +5997,10 @@ dt,
     height: 200px;
   }
   .ai-chart-canvas--radar {
-    height: 220px;
+    min-height: 220px;
   }
   .ai-chart-canvas--donut {
-    height: 200px;
+    min-height: 200px;
   }
   .insight-bar-row {
     grid-template-columns: 1fr;
