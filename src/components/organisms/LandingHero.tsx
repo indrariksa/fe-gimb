@@ -67,9 +67,36 @@ function RotatingWord() {
   );
 }
 
+const navSectionIds = ["beranda", "tentang", "fitur"];
+
+function useScrollSpy(ids: string[]) {
+  const [active, setActive] = useState(ids[0]);
+
+  useEffect(() => {
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-35% 0px -55% 0px", threshold: 0 },
+    );
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [ids]);
+
+  return active;
+}
+
 export function LandingHero() {
   const { theme } = useThemeSettings();
   const navigate = useNavigate();
+  const activeSection = useScrollSpy(navSectionIds);
 
   return (
     <>
@@ -82,15 +109,18 @@ export function LandingHero() {
           <small className="landing__brand-tagline">Monitoring · Diagnosa · Insight Bisnis</small>
         </div>
         <nav>
-          <a href="#beranda" className="active">Beranda</a>
-          <a href="#tentang">Tentang</a>
-          <a href="#fitur">Fitur</a>
-          <button onClick={() => navigate("/dashboard")}>Dashboard</button>
+          <a href="#beranda" className={activeSection === "beranda" ? "active" : undefined}>Beranda</a>
+          <a href="#tentang" className={activeSection === "tentang" ? "active" : undefined}>Tentang</a>
+          <a href="#fitur" className={activeSection === "fitur" ? "active" : undefined}>Fitur</a>
         </nav>
         <div className="landing__nav-actions">
           <PublicThemeToggle />
           <div className="landing__nav-cta">
-            <button className="landing__nav-cta__label" onClick={() => navigate("/dashboard")}>Login</button>
+            <button className="landing__nav-cta__label" onClick={() => navigate("/dashboard")}>
+              {"Login".split("").map((letter, index) => (
+                <span key={index} className="landing__nav-cta__letter" style={{ "--i": index } as React.CSSProperties}>{letter}</span>
+              ))}
+            </button>
             <button className="landing__nav-cta__arrow" onClick={() => navigate("/dashboard")} aria-label="Masuk ke dashboard">
               <Icon name="arrow" size={18} />
             </button>

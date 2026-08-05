@@ -20,6 +20,12 @@ const highlightFeature = {
   dimensions: ["Profit", "Cashflow", "Marketing", "Retensi", "Operasional", "SDM"],
 };
 
+const steps = [
+  { title: "Isi Data Bisnis", body: "Lengkapi form inventarisasi singkat: kondisi operasional, keuangan, marketing, dan tim." },
+  { title: "Sistem Menganalisis", body: "Jawaban diproses jadi skor tiap dimensi dan dibandingkan dengan pola bisnis sejenis." },
+  { title: "Terima Rekomendasi", body: "Dapatkan skor kesehatan bisnis, rencana aksi, atau laporan naratif AI sesuai skala usahamu." },
+];
+
 const features: Array<{ title: string; body: string; icon: ComponentProps<typeof Icon>["name"] }> = [
   { title: "Kelola Multi-Toko", body: "Daftarkan dan pantau beberapa toko dalam satu akun, masing-masing punya data inventarisasi serta histori diagnosis sendiri.", icon: "home" },
   { title: "Laporan Naratif AI", body: "Hasil diagnosis diterjemahkan jadi narasi bisnis yang mudah dipahami, lengkap konteks dan rekomendasinya.", icon: "file" },
@@ -41,6 +47,15 @@ export function LandingPage() {
         >
           <motion.h2 variants={fadeUp}>Dari data operasional menjadi prioritas aksi.</motion.h2>
           <motion.p variants={fadeUp}>Dashboard ini dirancang untuk UMKM yang butuh gambaran cepat: area bisnis mana yang sehat, mana yang rawan, dan input apa yang perlu dilengkapi untuk diagnosis berikutnya.</motion.p>
+          <motion.ol className="content-band__steps" variants={stagger}>
+            {steps.map((step, index) => (
+              <motion.li key={step.title} variants={fadeUp}>
+                <span className="content-band__step-number">{index + 1}</span>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </motion.li>
+            ))}
+          </motion.ol>
         </motion.section>
         <motion.section
           id="fitur"
