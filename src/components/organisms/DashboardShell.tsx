@@ -212,7 +212,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   ];
 
   const adminNavigation: NavigationItem[] = [
-    { view: "adminSummary", label: "Ringkasan", icon: "chart" },
+    { view: "adminSummary", label: "Dashboard", icon: "dashboard" },
     { view: "adminDiagnosis", label: "Diagnosis", icon: "alert" },
     { view: "adminLimit", label: "Limit", icon: "settings" },
     { view: "adminUsers", label: "User", icon: "home" },

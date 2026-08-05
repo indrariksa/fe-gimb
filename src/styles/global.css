@@ -1291,7 +1291,6 @@ a { color: inherit; text-decoration: none; }
 }
 .dashboard-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
 .health-card {
-  grid-column: span 3;
   padding: 28px;
   text-align: center;
   min-height: 0;
@@ -1342,7 +1341,7 @@ a { color: inherit; text-decoration: none; }
 .score-card--danger .meter i { background: var(--color-danger); }
 .score-card--warning .meter i { background: var(--color-accent); }
 .meter { height: 7px; border-radius: 999px; background: color-mix(in srgb, var(--color-primary) 10%, var(--surface-muted)); overflow: hidden; }
-.trend-card { grid-column: span 8; padding: 34px; min-height: 390px; }
+.trend-card { padding: 34px; min-height: 390px; }
 .panel__header { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
 .panel h2 { margin: 0; }
 .panel p { margin-top: 6px; color: var(--muted); }
@@ -1410,7 +1409,7 @@ a { color: inherit; text-decoration: none; }
 .action-plan svg {
   color: var(--color-primary);
 }
-.radar-card { grid-column: span 4; padding: 34px; min-height: 390px; }
+.radar-card { padding: 34px; min-height: 390px; }
 .snapshot-card {
   display: grid;
   align-content: start;
@@ -3347,6 +3346,10 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   line-height: 1.55;
 }
 
+.admin-inventory-hero__content .page-nav {
+  margin-top: 16px;
+}
+
 .admin-inventory-hero__score {
   display: grid;
   justify-items: end;
@@ -4555,6 +4558,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   margin-top: 24px;
   display: grid;
   grid-template-columns: minmax(320px, .9fr) minmax(0, 1.4fr);
+  align-items: start;
   gap: 24px;
 }
 
