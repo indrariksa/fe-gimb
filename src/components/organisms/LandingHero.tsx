@@ -145,7 +145,10 @@ export function LandingHero() {
         <div className="landing__copy">
           <motion.span className="eyebrow" variants={fadeUp}><i /> Platform Analitik Bisnis #1 untuk UMKM Indonesia</motion.span>
           <motion.p className="product-kicker" variants={fadeUp}><span><Icon name="chart" /></span> Smart Business Dashboard</motion.p>
-          <motion.h1 variants={fadeUp}>Diagnosa Kesehatan <strong>Bisnis</strong> yang <RotatingWord /><br />untuk <em>UMKM</em> Indonesia</motion.h1>
+          <motion.h1 variants={fadeUp}>
+            Diagnosa Kesehatan <strong>Bisnis</strong> yang <RotatingWord />
+            <span className="landing__h1-line2">untuk <em>UMKM</em> Indonesia</span>
+          </motion.h1>
           <motion.p className="lead" variants={fadeUp}>
             Sistem diagnostik berbasis data yang membantu mengidentifikasi masalah bisnis, mengukur performa secara objektif, dan memberi rekomendasi prioritas yang tepat sasaran.
           </motion.p>

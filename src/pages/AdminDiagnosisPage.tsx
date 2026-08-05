@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
@@ -16,7 +16,6 @@ const aiReportRevenueThreshold = 50_000_000;
 const defaultDiagnosisPageSize = 5;
 
 export function AdminDiagnosisPage() {
-  const navigate = useNavigate();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [businessesError, setBusinessesError] = useState("");
   const [businessesReloadKey, setBusinessesReloadKey] = useState(0);
@@ -104,10 +103,6 @@ export function AdminDiagnosisPage() {
     };
   }, [diagnosisPage, diagnosisPageSize, realtimeRefreshKey]);
 
-  const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
-  const goToBusinessInventoryInput = (publicId: string) => navigate(`/admin/businesses/${publicId}/inventory-input`);
-  const goToBusinessAIReport = (publicId: string) => navigate(`/admin/businesses/${publicId}/ai-report`);
-
   return (
     <DashboardShell activeView="adminDiagnosis" title="Admin Dashboard">
       <section className="admin-page">
@@ -172,10 +167,10 @@ export function AdminDiagnosisPage() {
                         <div className="admin-row-actions">
                           {business ? (
                             <>
-                              <button className="admin-row-action--score" onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
-                              <button className="admin-row-action--input" onClick={() => goToBusinessInventoryInput(business.public_id)}>Lihat Input <Icon name="arrow" size={16} /></button>
+                              <Link className="admin-row-action--score" to={`/businesses/${business.public_id}/sub-scores`}>Sub Skor <Icon name="arrow" size={16} /></Link>
+                              <Link className="admin-row-action--input" to={`/admin/businesses/${business.public_id}/inventory-input`}>Lihat Input <Icon name="arrow" size={16} /></Link>
                               {submission.six_month_revenue > aiReportRevenueThreshold && (
-                                <button className="admin-row-action--ai-report" onClick={() => goToBusinessAIReport(business.public_id)}>Laporan AI <Icon name="arrow" size={16} /></button>
+                                <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/ai-report`}>Laporan AI <Icon name="arrow" size={16} /></Link>
                               )}
                             </>
                           ) : (
