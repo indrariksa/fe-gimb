@@ -2982,6 +2982,9 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .admin-row-actions button {
   --admin-action-color: var(--color-primary);
   --admin-action-on: var(--on-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 36px;
   border: 1px solid color-mix(in srgb, var(--admin-action-color) 52%, var(--line));
   border-radius: 8px;
@@ -4372,8 +4375,15 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .subscore-card-grid {
+  margin-top: 24px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.dashboard-merge-stack {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }
 

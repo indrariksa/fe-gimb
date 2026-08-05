@@ -127,7 +127,7 @@ export function InventoryPage() {
         if (!isMounted) return;
         if (latestSubmission) {
           localStorage.removeItem(storageKey(businessId));
-          navigate(`/businesses/${businessId}/dashboard`, { replace: true });
+          navigate(`/businesses/${businessId}/sub-scores`, { replace: true });
           return;
         }
 
@@ -231,7 +231,7 @@ export function InventoryPage() {
               </small>
             </label>
             <footer>
-              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>Batal</Button>
+              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Batal</Button>
               <Button className="btn--shiny-dashboard" onClick={() => setIsConfirmOpen(true)} disabled={isSubmitting}>Simpan & Lanjutkan <Icon name="arrow" size={18} /></Button>
             </footer>
           </form>

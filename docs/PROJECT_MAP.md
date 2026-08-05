@@ -64,7 +64,6 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/atoms/TextField.tsx` | Field input dengan prefix/suffix/note/example. | Saat mengubah field inventory/theme input. |
 | `src/components/molecules/Brand.tsx` | Brand/logo text dan brand mark dari SVG publik. | Saat mengubah brand display. |
 | `src/components/molecules/HolographicCard.tsx` | Wrapper card ringan dengan mouse tilt dan CSS variable untuk efek holographic. | Saat mengubah animasi card ringkasan. |
-| `src/components/molecules/ScoreCard.tsx` | Score card reusable. | Saat mengubah card score dashboard. |
 
 ## Pages
 
@@ -79,8 +78,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/InventoryPage.tsx` | Inventory form, local draft, numeric formatting, validation, submit. | Saat mengubah field/payload inventory. |
 | `src/pages/AnalysisPage.tsx` | Progress animation dan CTA score. | Saat mengubah flow setelah submit. |
 | `src/pages/ScoreResultPage.tsx` | Hasil skor keseluruhan. | Saat mengubah score summary. |
-| `src/pages/DashboardPage.tsx` | Dashboard diagnosis utama. | Saat mengubah summary dashboard/user insight. |
-| `src/pages/SubScoresPage.tsx` | Detail enam sub-score, radar, bar chart, insight inventory operasional, dan legend. | Saat mengubah visualisasi sub-score atau data inventarisasi. |
+| `src/pages/SubScoresPage.tsx` | Halaman utama diagnosis toko (menggantikan `DashboardPage` yang sudah dihapus): health ring skor keseluruhan, business snapshot, action plan 30 hari, insight prioritas/kekuatan/rekomendasi, enam sub-score detail, radar, bar chart, insight inventory operasional, legend, dan export PDF/XLSX gabungan. | Saat mengubah ringkasan dashboard atau visualisasi sub-score/data inventarisasi. |
 | `src/pages/SettingsPage.tsx` | Pengaturan profil, tautkan/lepas tautan Google, setup/ubah password mandiri, dan tema lokal. | Saat mengubah settings atau keamanan akun. |
 | `src/pages/AdminSummaryPage.tsx` | Ringkasan admin: metrics, business limit, dan 6 chart analytics. | Saat mengubah kartu ringkasan atau chart admin. |
 | `src/pages/AdminDiagnosisPage.tsx` | Tabel Monitoring Diagnosis dengan pagination dan aksi per baris. | Saat mengubah tabel/aksi diagnosis admin. |
@@ -95,7 +93,6 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | Path | Fungsi | Kapan dibaca/diubah |
 | --- | --- | --- |
 | `src/data/inventoryFields.ts` | Sumber label/order/note/example field inventory. | Wajib dibaca sebelum mengubah form inventory atau payload mapping. |
-| `src/data/dashboardData.ts` | Fallback score cards/trend sample. | Saat mengubah fallback visual sebelum data ada. |
 | `src/types.ts` | Type UI umum: `View`, `ThemeSettings`, `InventoryField`. | Saat mengubah view enum, navigasi, theme, atau inventory field model. |
 | `src/utils/formValidation.ts` | Sanitasi text dan validasi string sederhana. | Saat mengubah validasi form lokal. |
 | `src/utils/number.ts` | `formatScore`, `clampPercent`. | Saat mengubah formatting score/progress. |

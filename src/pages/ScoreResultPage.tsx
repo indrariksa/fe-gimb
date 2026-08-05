@@ -125,9 +125,6 @@ export function ScoreResultPage() {
                 <Button className="btn--shiny-dashboard" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>
                   Lihat Sub Skor <Icon name="arrow" size={18} />
                 </Button>
-                <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/dashboard`)}>
-                  Buka Dashboard
-                </Button>
               </div>
             </div>
           </>

@@ -104,7 +104,6 @@ export function AdminDiagnosisPage() {
     };
   }, [diagnosisPage, diagnosisPageSize, realtimeRefreshKey]);
 
-  const goToBusinessDashboard = (publicId: string) => navigate(`/businesses/${publicId}/dashboard`);
   const goToBusinessSubScores = (publicId: string) => navigate(`/businesses/${publicId}/sub-scores`);
   const goToBusinessInventoryInput = (publicId: string) => navigate(`/admin/businesses/${publicId}/inventory-input`);
   const goToBusinessAIReport = (publicId: string) => navigate(`/admin/businesses/${publicId}/ai-report`);
@@ -173,7 +172,6 @@ export function AdminDiagnosisPage() {
                         <div className="admin-row-actions">
                           {business ? (
                             <>
-                              <button className="admin-row-action--dashboard" onClick={() => goToBusinessDashboard(business.public_id)}>Dashboard <Icon name="arrow" size={16} /></button>
                               <button className="admin-row-action--score" onClick={() => goToBusinessSubScores(business.public_id)}>Sub Skor <Icon name="arrow" size={16} /></button>
                               <button className="admin-row-action--input" onClick={() => goToBusinessInventoryInput(business.public_id)}>Lihat Input <Icon name="arrow" size={16} /></button>
                               {submission.six_month_revenue > aiReportRevenueThreshold && (

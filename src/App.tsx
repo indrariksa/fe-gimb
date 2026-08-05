@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { RequireAuth } from "./components/guards/RequireAuth";
@@ -11,7 +11,6 @@ import { AdminUsersPage } from "./pages/AdminUsersPage";
 import { AIReportPage } from "./pages/AIReportPage";
 import { AnalysisPage } from "./pages/AnalysisPage";
 import { BusinessesPage } from "./pages/BusinessesPage";
-import { DashboardPage } from "./pages/DashboardPage";
 import { InventoryPage } from "./pages/InventoryPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -21,6 +20,11 @@ import { ScoreResultPage } from "./pages/ScoreResultPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SubScoresPage } from "./pages/SubScoresPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
+
+function DashboardRedirect() {
+  const { businessId } = useParams();
+  return <Navigate to={`/businesses/${businessId}/sub-scores`} replace />;
+}
 
 export function App() {
   return (
@@ -35,7 +39,7 @@ export function App() {
             <Route path="/verify-email" element={<VerifyEmailPage />} />
 
             <Route element={<RequireAuth />}>
-              <Route path="/businesses/:businessId/dashboard" element={<DashboardPage />} />
+              <Route path="/businesses/:businessId/dashboard" element={<DashboardRedirect />} />
               <Route path="/businesses/:businessId/score" element={<ScoreResultPage />} />
               <Route path="/businesses/:businessId/sub-scores" element={<SubScoresPage />} />
               <Route path="/businesses/:businessId/inventory-input" element={<AdminInventoryDetailPage />} />

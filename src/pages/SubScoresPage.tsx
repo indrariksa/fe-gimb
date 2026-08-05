@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { DashboardShell } from "../components/organisms/DashboardShell";
+import { RadarProfile } from "../components/organisms/RadarProfile";
+import { TrendChart } from "../components/organisms/TrendChart";
 import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
@@ -86,6 +88,7 @@ function formatPercent(value: number) {
 }
 
 export function SubScoresPage() {
+  const navigate = useNavigate();
   const { businessId = "" } = useParams();
   const { isAdmin } = useAuth();
   const [business, setBusiness] = useState<Business | null>(null);
@@ -251,19 +254,25 @@ export function SubScoresPage() {
   }, [submission, metrics]);
 
   const businessName = business?.name ?? submission?.business_name ?? "Bisnis";
+  const overallScore = submission?.analysis.overall_score ?? 0;
+  const overallProgress = clampPercent(overallScore);
+  const overallScoreText = formatScore(overallScore);
+  const overallStatus = submission?.analysis.status ?? "Belum Ada Data";
+  const primaryIssue = submission?.analysis.priority_issues?.[0] ?? "Belum ada prioritas perbaikan. Isi inventarisasi agar sistem dapat membaca area kritis bisnis.";
+  const strength = submission?.analysis.strengths?.[0] ?? "Kekuatan utama akan muncul setelah data inventarisasi pertama selesai dianalisis.";
+  const recommendation = submission?.analysis.recommendations?.[0] ?? "Rekomendasi strategis akan tersedia setelah proses diagnosis selesai.";
 
-  const exportSubScoresExcel = () => {
+  const exportExcel = () => {
     if (!submission || !inventoryInsights) return;
-    const reportMetrics = submission.analysis.metrics;
-    downloadWorkbook(reportFilename("sub-scores-analysis", businessName, "xlsx"), [
+    downloadWorkbook(reportFilename("business-health-report", businessName, "xlsx"), [
       {
         name: "Ringkasan",
         rows: [
-          ["Detailed Analysis Report"],
+          ["Laporan Kesehatan Bisnis"],
           ["Bisnis", businessName],
           ["Tanggal Diagnosis", formatJakartaDate(submission.created_at)],
-          ["Skor Keseluruhan", formatScore(submission.analysis.overall_score)],
-          ["Status", submission.analysis.status],
+          ["Skor Keseluruhan", overallScoreText],
+          ["Status", overallStatus],
         ],
       },
       {
@@ -271,6 +280,33 @@ export function SubScoresPage() {
         rows: [
           ["Sub Dimensi", "Nilai", "Status", "Deskripsi"],
           ...items.map((item) => [item.shortLabel, item.score, statusShort(item.score), item.description]),
+        ],
+      },
+      {
+        name: "Diagnosis",
+        rows: [
+          ["Kategori", "Catatan"],
+          ...submission.analysis.priority_issues.map((item) => ["Prioritas Diagnosis", item]),
+          ...submission.analysis.strengths.map((item) => ["Kekuatan Utama", item]),
+          ...submission.analysis.recommendations.map((item) => ["Rekomendasi", item]),
+        ],
+      },
+      {
+        name: "Action Plan",
+        rows: [
+          ["Periode", "Judul", "Deskripsi"],
+          ...(submission.analysis.action_plan ?? []).map((item) => [item.period, item.title, item.description]),
+        ],
+      },
+      {
+        name: "Business Snapshot",
+        rows: [
+          ["Metrik", "Nilai"],
+          ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
+          ["Total Transaksi", submission.six_month_transactions],
+          ["Pelanggan Aktif", submission.active_customers],
+          ["Laba Bersih", formatRupiah(submission.analysis.metrics.net_profit)],
+          ["Total Biaya", formatRupiah(submission.analysis.metrics.total_expense)],
         ],
       },
       {
@@ -282,7 +318,7 @@ export function SubScoresPage() {
           ["Margin Laba Bersih", formatPercent(inventoryInsights.remainingMargin)],
           ["Aset", submission.asset_value],
           ["Modal", submission.capital_investment],
-          ["Laba", reportMetrics.net_profit],
+          ["Laba", metrics!.net_profit],
         ],
         currencyColumns: [1],
       },
@@ -306,20 +342,19 @@ export function SubScoresPage() {
     ]);
   };
 
-  const exportSubScoresPdf = () => {
+  const exportPdf = () => {
     if (!submission || !inventoryInsights) return;
-    const reportMetrics = submission.analysis.metrics;
     downloadPdfReport({
-      filename: reportFilename("sub-scores-analysis", businessName, "pdf"),
-      title: "Detailed Analysis Report",
+      filename: reportFilename("business-health-report", businessName, "pdf"),
+      title: "Laporan Kesehatan Bisnis",
       subtitle: `${businessName} - Diagnosis ${formatJakartaDate(submission.created_at)}`,
       summary: [
         ["Bisnis", businessName],
-        ["Skor Keseluruhan", formatScore(submission.analysis.overall_score)],
-        ["Status", submission.analysis.status],
+        ["Skor Keseluruhan", overallScoreText],
+        ["Status", overallStatus],
         ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
-        ["Laba Bersih", formatRupiah(reportMetrics.net_profit)],
-        ["Total Biaya", formatRupiah(reportMetrics.total_expense)],
+        ["Laba Bersih", formatRupiah(submission.analysis.metrics.net_profit)],
+        ["Total Biaya", formatRupiah(submission.analysis.metrics.total_expense)],
       ],
       scores: items.map((item) => ({
         label: item.shortLabel,
@@ -328,6 +363,10 @@ export function SubScoresPage() {
         color: item.color,
       })),
       sections: [
+        { title: "Prioritas Diagnosis", headers: ["No", "Catatan"], rows: submission.analysis.priority_issues.map((item, index) => [index + 1, item]) },
+        { title: "Kekuatan Utama", headers: ["No", "Catatan"], rows: submission.analysis.strengths.map((item, index) => [index + 1, item]) },
+        { title: "Rekomendasi", headers: ["No", "Catatan"], rows: submission.analysis.recommendations.map((item, index) => [index + 1, item]) },
+        { title: "Action Plan 30 Hari", headers: ["Periode", "Judul", "Deskripsi"], rows: (submission.analysis.action_plan ?? []).map((item) => [item.period, item.title, item.description]) },
         { title: "Sub Dimensi", headers: ["Dimensi", "Nilai", "Status", "Deskripsi"], rows: items.map((item) => [item.shortLabel, formatScore(item.score), statusShort(item.score), item.description]) },
         { title: "Alokasi Biaya", headers: ["Kategori", "Nominal", "Persentase"], rows: inventoryInsights.costItems.map((item) => [item.label, formatRupiah(item.value), item.percent ?? "-"]) },
         { title: "Ringkasan Arus Uang", headers: ["Metrik", "Nilai"], rows: [...inventoryInsights.financialItems.map((item) => [item.label, formatRupiah(item.value)]), ["Laba per Rp 100 Omzet", formatRupiah(inventoryInsights.profitPerHundred)], ["Margin Laba Bersih", formatPercent(inventoryInsights.remainingMargin)]] },
@@ -335,25 +374,43 @@ export function SubScoresPage() {
         { title: "Efisiensi Transaksi & Beban SDM", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.gauges.map((item) => [item.label, item.value, item.note]) },
         { title: "Keseimbangan Modal", headers: ["Metrik", "Nilai"], rows: inventoryInsights.capitalItems.map((item) => [item.label, formatRupiah(item.value)]) },
         { title: "Kualitas Transaksi & Pelanggan", headers: ["Metrik", "Nilai"], rows: inventoryInsights.customerQualityItems.map((item) => [item.label, item.formatted]) },
+        {
+          title: "Business Snapshot",
+          headers: ["Metrik", "Nilai"],
+          rows: [
+            ["Omzet 6 Bulan", formatRupiah(submission.six_month_revenue)],
+            ["Total Transaksi", submission.six_month_transactions],
+            ["Pelanggan Aktif", submission.active_customers],
+            ["Laba Bersih", formatRupiah(submission.analysis.metrics.net_profit)],
+            ["Total Biaya", formatRupiah(submission.analysis.metrics.total_expense)],
+          ],
+        },
       ],
     });
   };
 
   return (
-    <DashboardShell activeView="subscores" title="Dashboard 6 Sub Skor Bisnis">
+    <DashboardShell activeView="subscores">
       <section className="subscores-page">
         <nav className="page-nav">
-          <Link className="page-nav__link" to={`/businesses/${businessId}/dashboard`}><Icon name="dashboard" size={16} /> Dashboard</Link>
           <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
           <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
         </nav>
-        {isLoading && <LoadingState>Memuat sub skor...</LoadingState>}
+        {isLoading && <LoadingState>Memuat dashboard bisnis...</LoadingState>}
         {error && (
           <article className="panel empty-state retry-state">
             <span>{error}</span>
             <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
               Coba lagi <Icon name="refresh" size={18} />
             </Button>
+          </article>
+        )}
+        {!isLoading && !error && !submission && (
+          <article className="panel dashboard-empty">
+            <span><Icon name="alert" /></span>
+            <h3>Belum ada hasil diagnosis</h3>
+            <p>Masukkan data inventarisasi pertama untuk menghitung skor kesehatan bisnis {business?.name ?? "toko ini"}.</p>
+            <Button onClick={() => navigate(`/businesses/${businessId}/inventory/new`)}>Mulai Inventarisasi <Icon name="arrow" size={18} /></Button>
           </article>
         )}
 
@@ -363,12 +420,24 @@ export function SubScoresPage() {
               <div>
                 <span>Sub Dimensi</span>
                 <h2>{business?.name ?? submission.business_name}</h2>
-                <p>Enam dimensi utama dari hasil analisis inventarisasi terbaru.</p>
+                <p>Diagnosa terakhir: {formatJakartaDate(submission.created_at, "long")}</p>
               </div>
               <div className="subscores-actions">
-                <Button className="btn--dashboard-hover btn--dashboard-export" variant="secondary" disabled={!submission || !inventoryInsights} onClick={exportSubScoresPdf}><Icon name="download" size={18} /> PDF</Button>
-                <Button className="btn--dashboard-hover" disabled={!submission || !inventoryInsights} onClick={exportSubScoresExcel}><Icon name="download" size={18} /> Excel</Button>
+                <Button className="btn--dashboard-hover btn--dashboard-export" variant="secondary" disabled={!submission || !inventoryInsights} onClick={exportPdf}><Icon name="download" size={18} /> PDF</Button>
+                <Button className="btn--dashboard-hover" disabled={!submission || !inventoryInsights} onClick={exportExcel}><Icon name="download" size={18} /> Excel</Button>
               </div>
+            </div>
+
+            <div className="subscore-visual-grid">
+              <section className="health-card panel">
+                <p>Skor Kesehatan Keseluruhan</p>
+                <div className="health-ring" style={{ "--health-progress": `${overallProgress}%` } as CSSProperties}>
+                  <strong>{overallScoreText}</strong>
+                  <span>{overallStatus}</span>
+                </div>
+                <p>Skor <strong>{overallScoreText}</strong> menunjukkan bisnis berada pada kategori <strong>{overallStatus}</strong> berdasarkan data terakhir.</p>
+              </section>
+              <RadarProfile submission={submission} />
             </div>
 
             <div className="subscore-card-grid">
@@ -446,6 +515,31 @@ export function SubScoresPage() {
                   ))}
                 </div>
               </section>
+            </div>
+
+            <div className="dashboard-merge-stack">
+              <TrendChart
+                priorityIssues={submission.analysis.priority_issues}
+                recommendations={submission.analysis.recommendations}
+                actionPlan={submission.analysis.action_plan}
+              />
+              <div className="insight-grid">
+                <article className="insight-card insight-card--dark">
+                  <span><Icon name="alert" /></span>
+                  <h3>Prioritas Perbaikan</h3>
+                  <p>{primaryIssue}</p>
+                </article>
+                <article className="insight-card">
+                  <span><Icon name="chart" /></span>
+                  <h3>Kekuatan Utama</h3>
+                  <p>{strength}</p>
+                </article>
+                <article className="insight-card insight-card--warm">
+                  <span><Icon name="bulb" /></span>
+                  <h3>Rekomendasi Kunci</h3>
+                  <p>{recommendation}</p>
+                </article>
+              </div>
             </div>
 
             {inventoryInsights && (

@@ -220,7 +220,7 @@ export function BusinessesPage() {
               <article className="panel empty-state business-empty">
                 <span><Icon name="home" /></span>
                 <h3>Belum ada toko</h3>
-                <p>Buat toko pertama untuk mulai mengisi inventarisasi dan melihat dashboard diagnosis.</p>
+                <p>Buat toko pertama untuk mulai mengisi inventarisasi dan melihat hasil sub skor diagnosis.</p>
               </article>
             )}
             {!loadError && businesses.map((business) => {
@@ -247,10 +247,10 @@ export function BusinessesPage() {
                     <Button
                       className="btn--shiny-dashboard"
                       disabled={!hasDiagnosis}
-                      title={hasDiagnosis ? "Buka dashboard diagnosis" : "Isi inventory dulu untuk membuka dashboard"}
-                      onClick={() => navigate(`/businesses/${business.public_id}/dashboard`)}
+                      title={hasDiagnosis ? "Buka hasil sub skor diagnosis" : "Isi inventory dulu untuk membuka sub skor"}
+                      onClick={() => navigate(`/businesses/${business.public_id}/sub-scores`)}
                     >
-                      Dashboard <Icon name="arrow" size={18} />
+                      Sub Skor <Icon name="arrow" size={18} />
                     </Button>
                     <Button
                       className="btn--dashboard-hover"
@@ -263,9 +263,9 @@ export function BusinessesPage() {
                     </Button>
                   </div>
                   {hasDiagnosis ? (
-                    <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil dashboard.</small>
+                    <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil sub skor.</small>
                   ) : (
-                    <small className="business-card__notice business-card__notice--pending">Inventory belum diisi. Mulai input data untuk membuka dashboard.</small>
+                    <small className="business-card__notice business-card__notice--pending">Inventory belum diisi. Mulai input data untuk membuka sub skor.</small>
                   )}
                 </article>
               );

@@ -45,7 +45,7 @@ Konfigurasi:
 | `src/App.tsx` | Provider dan routing utama. |
 | `src/pages` | Halaman fitur utama. |
 | `src/components/atoms` | Komponen kecil: `Button`, `Icon`, `TextField`. |
-| `src/components/molecules` | Komponen menengah: `Brand`, `ScoreCard`, `ThemeCustomizer`. |
+| `src/components/molecules` | Komponen menengah: `Brand`, `ThemeCustomizer`. |
 | `src/components/organisms` | Layout/visual besar: `DashboardShell`, `LandingHero`, `RadarProfile`, `TrendChart`. |
 | `src/components/guards` | Route guard `RequireAuth`. |
 | `src/context` | `AuthContext` untuk session/auth state. |

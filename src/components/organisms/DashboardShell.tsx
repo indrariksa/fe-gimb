@@ -17,7 +17,6 @@ const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
 const showUpgradePlanButton = false; // toggle to true to bring back the sidebar "Upgrade Plan" button
 
 function routeByView(view: View, businessId?: string) {
-  const businessDashboard = businessId ? `/businesses/${businessId}/dashboard` : "/businesses";
   const score = businessId ? `/businesses/${businessId}/score` : "/businesses";
   const subScores = businessId ? `/businesses/${businessId}/sub-scores` : "/businesses";
   const inventoryInput = businessId ? `/businesses/${businessId}/inventory-input` : "/businesses";
@@ -28,7 +27,6 @@ function routeByView(view: View, businessId?: string) {
     landing: "/",
     businesses: "/businesses",
     score,
-    dashboard: businessDashboard,
     subscores: subScores,
     inventoryInput,
     inventory,
@@ -201,7 +199,6 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const needsBusiness = !businessId;
   const userNavigation: NavigationItem[] = [
     { view: "businesses", label: "Daftar Toko", icon: "home" },
-    { view: "dashboard", label: "Dashboard", icon: "dashboard", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
     { view: "inventoryInput", label: "Hasil Input", icon: "file", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },

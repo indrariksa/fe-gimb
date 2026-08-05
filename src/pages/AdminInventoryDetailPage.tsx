@@ -162,7 +162,6 @@ export function AdminInventoryDetailPage() {
                   {submitter ? ` oleh ${submitter.full_name}` : ` oleh user ${shortValue(submission.user_id)}`}
                 </p>
                 <nav className="page-nav">
-                  <Link className="page-nav__link" to={`/businesses/${businessId}/dashboard`}><Icon name="dashboard" size={16} /> Dashboard</Link>
                   <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
                   <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
                 </nav>

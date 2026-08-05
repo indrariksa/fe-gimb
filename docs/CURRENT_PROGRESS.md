@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 4 Agustus 2026
+Terakhir diperbarui: 5 Agustus 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -31,15 +31,15 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Halaman user utama menyediakan tombol coba lagi saat load data gagal.
 - Create toko dengan validasi lokal dan business limit dari backend.
 - Status inventory tiap toko melalui latest inventory check.
-- Detail data inventarisasi untuk user dari dashboard toko dan daftar toko.
+- Detail data inventarisasi untuk user dari Sub Skor toko dan daftar toko.
 - Form inventarisasi business-scoped.
 - Draft inventory per business di localStorage.
 - Confirmation dialog submit inventory.
 - Analysis progress page berbasis timer lokal.
 - Score result page.
-- Dashboard diagnosis dengan score ring, score cards, action plan 30 hari dari `analysis.action_plan`, business snapshot, dan insight cards yang readable di light/dark mode.
-- Sub-scores page dengan card, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend.
-- Export PDF report berbasis data dan XLSX rapi yang berbeda untuk dashboard summary dan sub-scores detailed analysis.
+- Halaman `DashboardPage` terpisah sudah dihapus dan digabung ke `/businesses/:businessId/sub-scores` (`SubScoresPage`) supaya tidak ada dua halaman dengan informasi sama; `/businesses/:businessId/dashboard` sekarang redirect ke sub-scores. Sub-scores page kini berisi: health ring skor keseluruhan, business snapshot, action plan 30 hari dari `analysis.action_plan`, insight prioritas/kekuatan/rekomendasi, card enam sub-skor, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend — semua readable di light/dark mode.
+- Export PDF report dan XLSX gabungan (satu tombol masing-masing) untuk seluruh laporan kesehatan bisnis di sub-scores page (sebelumnya terpisah antara dashboard summary dan sub-scores detailed analysis).
+- Page navigation (pill nav dengan style tersendiri, bukan tombol biasa) antar halaman Sub Skor, Lihat Input, dan Laporan AI untuk memudahkan pindah halaman satu sama lain.
 - Settings page untuk update nama profile dengan konfirmasi, metode login readonly, tautkan atau lepas tautan Google dengan konfirmasi, guard agar akun Google-only membuat password dulu sebelum unlink, dan setup/ubah password mandiri dalam layout 50/50, lalu warna tema lokal tampil full-width dengan preview tema mini.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, document title, dan toggle tema di landing/login/register.
 - Admin dashboard dipecah jadi 5 route/halaman terpisah (`AdminSummaryPage`, `AdminDiagnosisPage`, `AdminLimitPage`, `AdminUsersPage`, `AdminAuditLogPage`), masing-masing fetch data sendiri:
@@ -71,7 +71,6 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/registration-success`
 - `/verify-email`
 - `/businesses`
-- `/businesses/:businessId/dashboard`
 - `/businesses/:businessId/score`
 - `/businesses/:businessId/sub-scores`
 - `/businesses/:businessId/inventory-input`
@@ -89,6 +88,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 
 Redirect/fallback:
 
+- `/businesses/:businessId/dashboard` -> `/businesses/:businessId/sub-scores` (halaman dashboard terpisah sudah dihapus)
 - `/dashboard` -> `/businesses`
 - `/inventory` -> `/businesses`
 - `/analysis` -> `/businesses`
