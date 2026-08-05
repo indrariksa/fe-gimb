@@ -26,9 +26,13 @@ function snapshotItems(submission: InventorySubmission, metrics: HealthMetrics) 
   return [
     { label: "Omzet 6 bulan", value: formatCurrency(submission.six_month_revenue), icon: "$" },
     { label: "Estimasi laba bersih", value: formatCurrency(metrics.net_profit), icon: "↗" },
+    { label: "Total biaya", value: formatCurrency(metrics.total_expense), icon: "Σ" },
     { label: "Total transaksi", value: formatNumber(submission.six_month_transactions), icon: "☷" },
     { label: "Rata-rata transaksi", value: formatCurrency(metrics.average_transaction_value), icon: "▣" },
-    { label: "Repeat ratio", value: formatPercent(metrics.repeat_to_new_ratio), icon: "↯" },
+    { label: "Repeat ratio", value: formatPercent(metrics.retention_rate), icon: "↯" },
+    { label: "Pelanggan aktif", value: formatNumber(submission.active_customers), icon: "☺" },
+    { label: "Aset", value: formatCurrency(submission.asset_value), icon: "⌂" },
+    { label: "Modal", value: formatCurrency(submission.capital_investment), icon: "◈" },
   ];
 }
 

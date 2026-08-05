@@ -433,7 +433,7 @@ export function SubScoresPage() {
               </div>
             </div>
 
-            <div className="subscore-visual-grid">
+            <div className="dashboard-merge-stack">
               <section className="health-card panel">
                 <p>Skor Kesehatan Keseluruhan</p>
                 <div className="health-ring" style={{ "--health-progress": `${overallProgress}%` } as CSSProperties}>

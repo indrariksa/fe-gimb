@@ -315,12 +315,12 @@ a { color: inherit; text-decoration: none; }
   .subscore-chart__bar i,
   .subscore-card__top span,
   .cost-donut,
-  .dashboard .health-card,
-  .dashboard .score-card,
-  .dashboard .trend-card,
-  .dashboard .radar-card,
-  .dashboard .snapshot-card,
-  .dashboard .insight-card,
+  .subscores-page .health-card,
+  .subscores-page .score-card,
+  .subscores-page .trend-card,
+  .subscores-page .radar-card,
+  .subscores-page .snapshot-card,
+  .subscores-page .insight-card,
   .admin-inventory-hero,
   .admin-inventory-hero__score,
   .admin-inventory-summary article,
@@ -1301,7 +1301,7 @@ a { color: inherit; text-decoration: none; }
 }
 /* Unscoped fallback so the score ring gets the same lift-on-hover treatment as
    .inventory-insight-card on pages (like the AI report grid) that don't wrap it in
-   .dashboard — the more specific .dashboard .health-card:hover rule further below still
+   .subscores-page — the more specific .subscores-page .health-card:hover rule further below still
    wins wherever it applies. */
 .health-card:hover,
 .health-card:focus-within {
@@ -1542,24 +1542,24 @@ a { color: inherit; text-decoration: none; }
   --insight-icon: #75f0d1;
 }
 
-.dashboard .health-card,
-.dashboard .score-card,
-.dashboard .trend-card,
-.dashboard .radar-card,
-.dashboard .snapshot-card,
-.dashboard .insight-card {
+.subscores-page .health-card,
+.subscores-page .score-card,
+.subscores-page .trend-card,
+.subscores-page .radar-card,
+.subscores-page .snapshot-card,
+.subscores-page .insight-card {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   transition: transform .2s ease, border-color .22s ease, box-shadow .22s ease, filter .22s ease;
 }
 
-.dashboard .health-card::after,
-.dashboard .score-card::after,
-.dashboard .trend-card::after,
-.dashboard .radar-card::after,
-.dashboard .snapshot-card::after,
-.dashboard .insight-card::after {
+.subscores-page .health-card::after,
+.subscores-page .score-card::after,
+.subscores-page .trend-card::after,
+.subscores-page .radar-card::after,
+.subscores-page .snapshot-card::after,
+.subscores-page .insight-card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1572,28 +1572,28 @@ a { color: inherit; text-decoration: none; }
   transition: opacity .2s ease;
 }
 
-.dashboard .health-card > *,
-.dashboard .score-card > *,
-.dashboard .trend-card > *,
-.dashboard .radar-card > *,
-.dashboard .snapshot-card > *,
-.dashboard .insight-card > * {
+.subscores-page .health-card > *,
+.subscores-page .score-card > *,
+.subscores-page .trend-card > *,
+.subscores-page .radar-card > *,
+.subscores-page .snapshot-card > *,
+.subscores-page .insight-card > * {
   position: relative;
   z-index: 1;
 }
 
-.dashboard .health-card:hover,
-.dashboard .score-card:hover,
-.dashboard .trend-card:hover,
-.dashboard .radar-card:hover,
-.dashboard .snapshot-card:hover,
-.dashboard .insight-card:hover,
-.dashboard .health-card:focus-within,
-.dashboard .score-card:focus-within,
-.dashboard .trend-card:focus-within,
-.dashboard .radar-card:focus-within,
-.dashboard .snapshot-card:focus-within,
-.dashboard .insight-card:focus-within {
+.subscores-page .health-card:hover,
+.subscores-page .score-card:hover,
+.subscores-page .trend-card:hover,
+.subscores-page .radar-card:hover,
+.subscores-page .snapshot-card:hover,
+.subscores-page .insight-card:hover,
+.subscores-page .health-card:focus-within,
+.subscores-page .score-card:focus-within,
+.subscores-page .trend-card:focus-within,
+.subscores-page .radar-card:focus-within,
+.subscores-page .snapshot-card:focus-within,
+.subscores-page .insight-card:focus-within {
   transform: translateY(-3px);
   border-color: color-mix(in srgb, var(--color-primary) 28%, var(--line));
   box-shadow:
@@ -1601,45 +1601,45 @@ a { color: inherit; text-decoration: none; }
     0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
-.dashboard .health-card:hover::after,
-.dashboard .score-card:hover::after,
-.dashboard .trend-card:hover::after,
-.dashboard .radar-card:hover::after,
-.dashboard .snapshot-card:hover::after,
-.dashboard .insight-card:hover::after,
-.dashboard .health-card:focus-within::after,
-.dashboard .score-card:focus-within::after,
-.dashboard .trend-card:focus-within::after,
-.dashboard .radar-card:focus-within::after,
-.dashboard .snapshot-card:focus-within::after,
-.dashboard .insight-card:focus-within::after {
+.subscores-page .health-card:hover::after,
+.subscores-page .score-card:hover::after,
+.subscores-page .trend-card:hover::after,
+.subscores-page .radar-card:hover::after,
+.subscores-page .snapshot-card:hover::after,
+.subscores-page .insight-card:hover::after,
+.subscores-page .health-card:focus-within::after,
+.subscores-page .score-card:focus-within::after,
+.subscores-page .trend-card:focus-within::after,
+.subscores-page .radar-card:focus-within::after,
+.subscores-page .snapshot-card:focus-within::after,
+.subscores-page .insight-card:focus-within::after {
   opacity: 1;
 }
 
-.dashboard .score-card__icon,
-.dashboard .snapshot-card__icon,
-.dashboard .insight-card > span {
+.subscores-page .score-card__icon,
+.subscores-page .snapshot-card__icon,
+.subscores-page .insight-card > span {
   transition: transform .18s ease, box-shadow .18s ease;
 }
 
-.dashboard .score-card:hover .score-card__icon,
-.dashboard .snapshot-card:hover .snapshot-card__icon,
-.dashboard .insight-card:hover > span {
+.subscores-page .score-card:hover .score-card__icon,
+.subscores-page .snapshot-card:hover .snapshot-card__icon,
+.subscores-page .insight-card:hover > span {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 12px 24px color-mix(in srgb, var(--color-primary) 13%, transparent);
 }
 
-.dashboard .score-card:hover .meter i {
+.subscores-page .score-card:hover .meter i {
   filter: saturate(1.12);
   box-shadow: 0 0 16px color-mix(in srgb, var(--color-primary) 24%, transparent);
 }
 
-:root[data-theme="dark"] .dashboard .health-card::after,
-:root[data-theme="dark"] .dashboard .score-card::after,
-:root[data-theme="dark"] .dashboard .trend-card::after,
-:root[data-theme="dark"] .dashboard .radar-card::after,
-:root[data-theme="dark"] .dashboard .snapshot-card::after,
-:root[data-theme="dark"] .dashboard .insight-card::after {
+:root[data-theme="dark"] .subscores-page .health-card::after,
+:root[data-theme="dark"] .subscores-page .score-card::after,
+:root[data-theme="dark"] .subscores-page .trend-card::after,
+:root[data-theme="dark"] .subscores-page .radar-card::after,
+:root[data-theme="dark"] .subscores-page .snapshot-card::after,
+:root[data-theme="dark"] .subscores-page .insight-card::after {
   display: none;
 }
 

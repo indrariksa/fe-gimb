@@ -35,14 +35,6 @@ function formatCurrency(value: number) {
   return `Rp ${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(value || 0)}`;
 }
 
-function formatCurrencyAmount(value: number) {
-  return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(value || 0);
-}
-
-function formatPercent(value: number) {
-  return `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value || 0)}%`;
-}
-
 function formatInventoryValue(value: number, prefix?: string, suffix?: string) {
   if (prefix === "Rp") return formatCurrency(value);
   const formatted = formatNumber(value);
@@ -122,16 +114,6 @@ export function AdminInventoryDetailPage() {
     ];
   }, [submission]);
 
-  const metrics = submission?.analysis.metrics;
-  const summaryCards = submission && metrics ? [
-    { label: "Omzet 6 Bulan", value: formatCurrencyAmount(submission.six_month_revenue), prefix: "Rp", icon: "chart" as const },
-    { label: "Total Transaksi", value: formatNumber(submission.six_month_transactions), icon: "grid" as const },
-    { label: "Rata-rata Transaksi", value: formatCurrencyAmount(metrics.average_transaction_value), prefix: "Rp", icon: "file" as const },
-    { label: "Estimasi Laba Bersih", value: formatCurrencyAmount(metrics.net_profit), prefix: "Rp", icon: "arrow" as const },
-    { label: "Repeat Ratio", value: formatPercent(metrics.retention_rate), icon: "refresh" as const },
-    { label: "Total Biaya", value: formatCurrencyAmount(metrics.total_expense), prefix: "Rp", icon: "settings" as const },
-  ] : [];
-
   return (
     <DashboardShell activeView={isAdmin ? "adminDiagnosis" : "inventoryInput"} title="Detail Data Inventarisasi">
       <section className="admin-inventory-page">
@@ -171,21 +153,6 @@ export function AdminInventoryDetailPage() {
                 <strong>{formatScore(submission.analysis.overall_score)}</strong>
                 <b>{submission.analysis.status}</b>
               </div>
-            </div>
-
-            <div className="admin-inventory-summary">
-              {summaryCards.map((card) => (
-                <article className="panel" key={card.label}>
-                  <span><Icon name={card.icon} size={22} /></span>
-                  <div>
-                    <small>{card.label}</small>
-                    <strong className="admin-inventory-summary__value">
-                      {card.prefix && <span>{card.prefix}</span>}
-                      <b>{card.value}</b>
-                    </strong>
-                  </div>
-                </article>
-              ))}
             </div>
 
             <div className="admin-inventory-layout">
