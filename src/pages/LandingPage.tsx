@@ -32,6 +32,21 @@ const features: Array<{ title: string; body: string; icon: ComponentProps<typeof
   { title: "Ekspor Sekali Klik", body: "Unduh laporan dalam format PDF atau Excel, siap dibagikan ke tim atau dilampirkan ke pengajuan modal.", icon: "download" },
 ];
 
+const sparkleCount = 6;
+
+function IconBadge({ icon, size, large }: { icon: ComponentProps<typeof Icon>["name"]; size?: number; large?: boolean }) {
+  return (
+    <span className={large ? "feature-grid__icon feature-grid__icon--lg" : "feature-grid__icon"}>
+      <Icon name={icon} size={size} />
+      <span className="feature-grid__icon-sparkles" aria-hidden="true">
+        {Array.from({ length: sparkleCount }).map((_, index) => (
+          <i key={index} style={{ "--angle": `${(360 / sparkleCount) * index}deg`, "--delay": `${index * 0.03}s` } as React.CSSProperties} />
+        ))}
+      </span>
+    </span>
+  );
+}
+
 export function LandingPage() {
   return (
     <>
@@ -66,18 +81,20 @@ export function LandingPage() {
           variants={stagger}
         >
           <motion.article className="feature-grid__highlight" variants={fadeUp} whileHover={{ y: -6 }}>
-            <span className="feature-grid__icon feature-grid__icon--lg"><Icon name={highlightFeature.icon} size={26} /></span>
+            <IconBadge icon={highlightFeature.icon} size={26} large />
             <div>
               <h3>{highlightFeature.title}</h3>
               <p>{highlightFeature.body}</p>
               <ul className="feature-grid__dims">
-                {highlightFeature.dimensions.map((dim) => <li key={dim}>{dim}</li>)}
+                {highlightFeature.dimensions.map((dim, index) => (
+                  <li key={dim} style={{ "--i": index } as React.CSSProperties}>{dim}</li>
+                ))}
               </ul>
             </div>
           </motion.article>
           {features.map(({ title, body, icon }) => (
             <motion.article key={title} variants={fadeUp} whileHover={{ y: -6 }}>
-              <span className="feature-grid__icon"><Icon name={icon} /></span>
+              <IconBadge icon={icon} />
               <h3>{title}</h3>
               <p>{body}</p>
             </motion.article>
