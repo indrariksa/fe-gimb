@@ -1479,7 +1479,18 @@ a { color: inherit; text-decoration: none; }
 .insight-card > span { width: 54px; height: 54px; border-radius: 8px; display: grid; place-items: center; color: var(--insight-icon); background: var(--insight-icon-bg); }
 .insight-card h3 { font-size: 1.45rem; }
 .insight-card h3 { color: var(--insight-title); }
-.insight-card p { color: var(--insight-body); line-height: 1.65; font-size: 1.05rem; }
+.insight-card p,
+.insight-card ul {
+  color: var(--insight-body);
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+.insight-card ul {
+  margin: 0;
+  padding-left: 1.1em;
+  display: grid;
+  gap: 10px;
+}
 .insight-card button { padding: 0; border: 0; display: inline-flex; gap: 8px; align-items: center; background: transparent; color: var(--insight-action); text-transform: uppercase; font-weight: 950; }
 .insight-card--dark {
   --insight-bg: #e6f7f1;

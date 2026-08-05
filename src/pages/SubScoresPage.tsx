@@ -35,6 +35,11 @@ type InventoryInsightBar = {
 
 const inventoryPeriodMonths = 6;
 
+// Mirrors AI_REPORT_REVENUE_THRESHOLD on the backend (default Rp 50 juta) — di atas ini
+// Laporan AI sudah tersedia dan lebih detail, jadi action plan/insight rule-based di sini
+// disembunyikan untuk menghindari narasi yang berpotensi beda dengan Laporan AI.
+const aiReportRevenueThreshold = 50_000_000;
+
 function statusShort(score: number) {
   if (score >= 80) return "Sangat Sehat";
   if (score >= 60) return "Sehat";
@@ -258,9 +263,9 @@ export function SubScoresPage() {
   const overallProgress = clampPercent(overallScore);
   const overallScoreText = formatScore(overallScore);
   const overallStatus = submission?.analysis.status ?? "Belum Ada Data";
-  const primaryIssue = submission?.analysis.priority_issues?.[0] ?? "Belum ada prioritas perbaikan. Isi inventarisasi agar sistem dapat membaca area kritis bisnis.";
-  const strength = submission?.analysis.strengths?.[0] ?? "Kekuatan utama akan muncul setelah data inventarisasi pertama selesai dianalisis.";
-  const recommendation = submission?.analysis.recommendations?.[0] ?? "Rekomendasi strategis akan tersedia setelah proses diagnosis selesai.";
+  const priorityIssues = submission?.analysis.priority_issues?.length ? submission.analysis.priority_issues : ["Belum ada prioritas perbaikan. Isi inventarisasi agar sistem dapat membaca area kritis bisnis."];
+  const strengths = submission?.analysis.strengths?.length ? submission.analysis.strengths : ["Kekuatan utama akan muncul setelah data inventarisasi pertama selesai dianalisis."];
+  const recommendations = submission?.analysis.recommendations?.length ? submission.analysis.recommendations : ["Rekomendasi strategis akan tersedia setelah proses diagnosis selesai."];
 
   const exportExcel = () => {
     if (!submission || !inventoryInsights) return;
@@ -517,30 +522,38 @@ export function SubScoresPage() {
               </section>
             </div>
 
-            <div className="dashboard-merge-stack">
-              <TrendChart
-                priorityIssues={submission.analysis.priority_issues}
-                recommendations={submission.analysis.recommendations}
-                actionPlan={submission.analysis.action_plan}
-              />
-              <div className="insight-grid">
-                <article className="insight-card insight-card--dark">
-                  <span><Icon name="alert" /></span>
-                  <h3>Prioritas Perbaikan</h3>
-                  <p>{primaryIssue}</p>
-                </article>
-                <article className="insight-card">
-                  <span><Icon name="chart" /></span>
-                  <h3>Kekuatan Utama</h3>
-                  <p>{strength}</p>
-                </article>
-                <article className="insight-card insight-card--warm">
-                  <span><Icon name="bulb" /></span>
-                  <h3>Rekomendasi Kunci</h3>
-                  <p>{recommendation}</p>
-                </article>
+            {submission.six_month_revenue <= aiReportRevenueThreshold && (
+              <div className="dashboard-merge-stack">
+                <TrendChart
+                  priorityIssues={submission.analysis.priority_issues}
+                  recommendations={submission.analysis.recommendations}
+                  actionPlan={submission.analysis.action_plan}
+                />
+                <div className="insight-grid">
+                  <article className="insight-card insight-card--dark">
+                    <span><Icon name="alert" /></span>
+                    <h3>Prioritas Perbaikan</h3>
+                    <ul>
+                      {priorityIssues.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  </article>
+                  <article className="insight-card">
+                    <span><Icon name="chart" /></span>
+                    <h3>Kekuatan Utama</h3>
+                    <ul>
+                      {strengths.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  </article>
+                  <article className="insight-card insight-card--warm">
+                    <span><Icon name="bulb" /></span>
+                    <h3>Rekomendasi Kunci</h3>
+                    <ul>
+                      {recommendations.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  </article>
+                </div>
               </div>
-            </div>
+            )}
 
             {inventoryInsights && (
               <section className="inventory-insights">
