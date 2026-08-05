@@ -51,7 +51,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | Path | Fungsi | Kapan dibaca/diubah |
 | --- | --- | --- |
 | `src/components/organisms/DashboardShell.tsx` | Layout authenticated, sidebar, nav, topbar, logout, inventory-result nav guard, dan bell notifikasi admin. | Saat mengubah navigasi, shell, logout UI, role nav, sidebar mobile/collapse, atau notifikasi admin. |
-| `src/components/organisms/LandingHero.tsx` | Hero landing dan CTA. | Saat mengubah landing page atas. |
+| `src/components/organisms/LandingHero.tsx` | Hero landing dan CTA. Entrance animation stagger, aurora background, angka animasi (`AnimatedNumber`), dan tilt panel skor (`HolographicCard`) via library `motion`. | Saat mengubah landing page atas atau animasinya. |
 | `src/components/organisms/RadarProfile.tsx` | Business snapshot dari inventory metrics. | Saat mengubah snapshot dashboard. |
 | `src/components/organisms/TrendChart.tsx` | Action plan 30 hari dari `analysis.action_plan`, fallback ke issues/recommendations untuk response lama. | Saat mengubah rekomendasi dashboard. |
 | `src/components/organisms/AIReportChart.tsx` | Render chart Chart.js (bar horizontal/radar/doughnut/line/doughnut-gauge via `react-chartjs-2`) dari `AIReportChartData` untuk laporan AI; juga meng-export `statusLabel(score)` yang dipakai `AIReportPage`. | Saat mengubah tipe chart atau tampilan visual laporan AI. |
@@ -69,7 +69,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 
 | Path | Fungsi | Kapan dibaca/diubah |
 | --- | --- | --- |
-| `src/pages/LandingPage.tsx` | Landing sections bawah hero. | Saat mengubah copy/section landing. |
+| `src/pages/LandingPage.tsx` | Landing sections bawah hero (Tentang, Fitur). Scroll-reveal via `motion` `whileInView`, feature card pakai icon dari `Icon`. | Saat mengubah copy/section landing atau animasinya. |
 | `src/pages/LoginPage.tsx` | Login form dan redirect after login. | Saat mengubah login UX/validasi. |
 | `src/pages/RegisterPage.tsx` | Register form dan instruksi verifikasi email. | Saat mengubah register UX/validasi. |
 | `src/pages/RegistrationSuccessPage.tsx` | Halaman pemberitahuan setelah register, resend verification, dan countdown. | Saat mengubah alur setelah register email/password. |

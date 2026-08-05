@@ -1,70 +1,180 @@
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AnimatePresence, animate, motion, type Variants } from "motion/react";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
 import { Brand } from "../molecules/Brand";
+import { HolographicCard } from "../molecules/HolographicCard";
 import { PublicThemeToggle } from "../molecules/PublicThemeToggle";
 import { useThemeSettings } from "../../theme/ThemeContext";
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const stagger: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+};
+
+function AnimatedNumber({ value, suffix = "", prefix = "", delay = 0.5 }: { value: number; suffix?: string; prefix?: string; delay?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const controls = animate(0, value, {
+      duration: 1.5,
+      delay,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate(latest) {
+        node.textContent = `${prefix}${Math.round(latest).toLocaleString("id-ID")}${suffix}`;
+      },
+    });
+    return () => controls.stop();
+  }, [value, suffix, prefix, delay]);
+  return <span ref={ref}>{prefix}0{suffix}</span>;
+}
+
+const rotatingWords = ["Cepat", "Akurat", "Terukur", "Objektif", "Andal"];
+
+function RotatingWord() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setTimeout(() => {
+      setIndex((prev) => (prev === rotatingWords.length - 1 ? 0 : prev + 1));
+    }, 2000);
+    return () => clearTimeout(id);
+  }, [index]);
+
+  return (
+    <span className="rotating-word">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={rotatingWords[index]}
+          className="rotating-word__item"
+          initial={{ opacity: 0, y: "-100%" }}
+          animate={{ opacity: 1, y: "0%" }}
+          exit={{ opacity: 0, y: "100%" }}
+          transition={{ type: "spring", stiffness: 50 }}
+        >
+          {rotatingWords[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
 
 export function LandingHero() {
   const { theme } = useThemeSettings();
   const navigate = useNavigate();
 
   return (
-    <section className="landing">
+    <>
       <header className="landing__nav">
-        <Brand name="SBD" compact />
+        <span className="landing__nav-dots" aria-hidden="true">
+          <i /><i /><i />
+        </span>
+        <div className="landing__brand">
+          <Brand name="SBD" compact />
+          <small className="landing__brand-tagline">Monitoring · Diagnosa · Insight Bisnis</small>
+        </div>
         <nav>
-          <a href="#beranda">Beranda</a>
+          <a href="#beranda" className="active">Beranda</a>
           <a href="#tentang">Tentang</a>
           <a href="#fitur">Fitur</a>
           <button onClick={() => navigate("/dashboard")}>Dashboard</button>
         </nav>
         <div className="landing__nav-actions">
           <PublicThemeToggle />
-          <Button variant="dark" onClick={() => navigate("/dashboard")}>Login</Button>
+          <div className="landing__nav-cta">
+            <button className="landing__nav-cta__label" onClick={() => navigate("/dashboard")}>Login</button>
+            <button className="landing__nav-cta__arrow" onClick={() => navigate("/dashboard")} aria-label="Masuk ke dashboard">
+              <Icon name="arrow" size={18} />
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="landing__content" id="beranda">
+      <section className="landing">
+      <div className="landing__aurora" aria-hidden="true">
+        <span className="landing__aurora-blob landing__aurora-blob--a" />
+        <span className="landing__aurora-blob landing__aurora-blob--b" />
+        <span className="landing__aurora-blob landing__aurora-blob--c" />
+      </div>
+
+      <motion.div
+        className="landing__content"
+        id="beranda"
+        initial="hidden"
+        animate="show"
+        variants={stagger}
+      >
         <div className="landing__copy">
-          <span className="eyebrow"><i /> Platform Analitik Bisnis #1 untuk UMKM Indonesia</span>
-          <p className="product-kicker"><span><Icon name="chart" /></span> Smart Business Dashboard</p>
-          <h1>Diagnosa Kesehatan <strong>Bisnis</strong> untuk <em>UMKM</em> Indonesia</h1>
-          <p className="lead">
+          <motion.span className="eyebrow" variants={fadeUp}><i /> Platform Analitik Bisnis #1 untuk UMKM Indonesia</motion.span>
+          <motion.p className="product-kicker" variants={fadeUp}><span><Icon name="chart" /></span> Smart Business Dashboard</motion.p>
+          <motion.h1 variants={fadeUp}>Diagnosa Kesehatan <strong>Bisnis</strong> yang <RotatingWord /><br />untuk <em>UMKM</em> Indonesia</motion.h1>
+          <motion.p className="lead" variants={fadeUp}>
             Sistem diagnostik berbasis data yang membantu mengidentifikasi masalah bisnis, mengukur performa secara objektif, dan memberi rekomendasi prioritas yang tepat sasaran.
-          </p>
-          <div className="landing__actions">
-            <Button onClick={() => navigate("/inventory")}>Mulai Diagnosa <Icon name="arrow" size={20} /></Button>
-            <Button variant="secondary" onClick={() => navigate("/dashboard")}>Lihat Demo</Button>
-          </div>
-          <dl className="landing__stats">
-            <div><dt>2,400+</dt><dd>UMKM Terdaftar</dd></div>
-            <div><dt>98%</dt><dd>Akurasi Analisis</dd></div>
-            <div><dt>3 Menit</dt><dd>Waktu Diagnosa</dd></div>
-          </dl>
+          </motion.p>
+          <motion.div className="landing__actions" variants={fadeUp}>
+            <motion.div whileHover={{ y: -3, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button className="btn--shiny-dashboard" onClick={() => navigate("/inventory")}>Mulai Diagnosa <Icon name="arrow" size={20} /></Button>
+            </motion.div>
+          </motion.div>
+          <motion.dl className="landing__stats" variants={fadeUp}>
+            <div><dt><AnimatedNumber value={2400} suffix="+" delay={0.6} /></dt><dd>UMKM Terdaftar</dd></div>
+            <div><dt><AnimatedNumber value={98} suffix="%" delay={0.72} /></dt><dd>Akurasi Analisis</dd></div>
+            <div><dt><AnimatedNumber value={3} suffix=" Menit" delay={0.84} /></dt><dd>Waktu Diagnosa</dd></div>
+          </motion.dl>
         </div>
-        <div className="hero-visual" aria-label={`Preview ${theme.appName}`}>
-          <div className="hero-visual__panel">
+        <motion.div
+          className="hero-visual"
+          aria-label={`Preview ${theme.appName}`}
+          variants={fadeUp}
+        >
+          <HolographicCard className="hero-visual__panel">
             <span>Skor Kesehatan Bisnis</span>
             <div className="hero-score">
-              <div><small>Total Skor</small><strong>42</strong><b>Cukup Sehat</b></div>
-              <div className="donut">42%</div>
+              <div><small>Total Skor</small><strong><AnimatedNumber value={42} delay={0.5} /></strong><b>Cukup Sehat</b></div>
+              <div className="donut" style={{ "--donut-target": 42 } as React.CSSProperties}>42%</div>
             </div>
             <div className="hero-mini-grid">
               {["Profit", "Cashflow", "Marketing"].map((label, index) => (
                 <div key={label}>
                   <small>{label}</small>
-                  <strong>{[55, 40, 65][index]}</strong>
-                  <i style={{ width: `${[55, 40, 65][index]}%` }} />
+                  <strong><AnimatedNumber value={[55, 40, 65][index]} delay={0.6 + index * 0.08} /></strong>
+                  <i style={{ "--bar-target": `${[55, 40, 65][index]}%` } as React.CSSProperties} />
                 </div>
               ))}
             </div>
-            <div className="hero-bars">{Array.from({ length: 6 }).map((_, index) => <i key={index} />)}</div>
-          </div>
-          <aside className="float-card float-card--top">Retensi <strong>+18% ↑</strong></aside>
-          <aside className="float-card float-card--bottom">UMKM Terdiagnosa <strong>2,400+</strong></aside>
-        </div>
-      </div>
-    </section>
+            <div className="hero-bars">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <i key={index} style={{ "--bar-delay": `${0.6 + index * 0.06}s` } as React.CSSProperties} />
+              ))}
+            </div>
+          </HolographicCard>
+          <motion.aside
+            className="float-card float-card--top"
+            initial={{ opacity: 0, y: 14, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.9, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Retensi <strong>+18% ↑</strong>
+          </motion.aside>
+          <motion.aside
+            className="float-card float-card--bottom"
+            initial={{ opacity: 0, y: 14, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 1.05, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            UMKM Terdiagnosa <strong><AnimatedNumber value={2400} suffix="+" delay={1.2} /></strong>
+          </motion.aside>
+        </motion.div>
+      </motion.div>
+      </section>
+    </>
   );
 }

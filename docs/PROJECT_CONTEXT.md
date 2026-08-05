@@ -25,6 +25,7 @@ Versi dari `package.json` dan versi ter-resolve dari `package-lock.json`:
 | React | `^19.0.0` | `19.2.7` |
 | React DOM | `^19.0.0` | `19.2.7` |
 | React Router DOM | `^7.18.0` | `7.18.0` |
+| motion | `^13.0.0` | `13.0.0` |
 | Vite | `^7.0.0` | `7.3.5` |
 | TypeScript | `^5.8.0` | `5.9.3` |
 | @vitejs/plugin-react | `^5.0.0` | `5.2.0` |
