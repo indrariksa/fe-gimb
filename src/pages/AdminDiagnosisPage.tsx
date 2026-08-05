@@ -135,7 +135,7 @@ export function AdminDiagnosisPage() {
                   <th>Status</th>
                   <th>Tanggal</th>
                   <th>Skor</th>
-                  <th>Aksi</th>
+                  <th className="admin-table__actions-col">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -168,7 +168,7 @@ export function AdminDiagnosisPage() {
                       <td><b className="status-pill">{submission.analysis.status}</b></td>
                       <td>{formatJakartaDate(submission.created_at, "short")}</td>
                       <td><strong className="admin-table__score">{formatScore(submission.analysis.overall_score)}</strong></td>
-                      <td>
+                      <td className="admin-table__actions-col">
                         <div className="admin-row-actions">
                           {business ? (
                             <>

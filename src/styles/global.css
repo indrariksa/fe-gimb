@@ -2972,10 +2972,10 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .admin-row-actions {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
 }
 
@@ -3132,6 +3132,11 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .admin-table__score {
   color: var(--color-primary) !important;
   font-size: 1.55rem;
+}
+
+.admin-table__actions-col {
+  width: 1%;
+  white-space: nowrap;
 }
 
 .admin-table--audit {
