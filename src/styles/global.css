@@ -6109,17 +6109,85 @@ dt,
   }
   .admin-table-wrap {
     max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: visible;
+    border: none;
+    background: transparent;
   }
   .admin-table {
-    min-width: 620px;
+    min-width: 0;
   }
   .admin-table--audit {
     min-width: 780px;
   }
   .admin-table--inventory {
     min-width: 880px;
+  }
+  .admin-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+    padding: 0;
+    margin: -1px;
+  }
+  .admin-table, .admin-table tbody, .admin-table tr {
+    display: block;
+    width: 100%;
+  }
+  .admin-table tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 4px 14px;
+    background: var(--surface-muted);
+  }
+  .admin-table tr:last-child {
+    margin-bottom: 0;
+  }
+  .admin-table td {
+    display: block;
+    position: relative;
+    padding: 10px 0 10px 42%;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+  }
+  .admin-table td:last-child {
+    border-bottom: 0;
+  }
+  .admin-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 38%;
+    color: var(--ink);
+    font-size: .76rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .admin-table td.admin-table__actions-col {
+    width: auto;
+    padding: 32px 0 10px;
+  }
+  .admin-table__actions-col .admin-row-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-table__actions-col .admin-row-actions button {
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+  }
+  .admin-table td[colspan] {
+    padding-left: 0;
+  }
+  .admin-table td[colspan]::before {
+    content: none;
   }
   .admin-inventory-detail {
     padding: 16px;
@@ -6199,10 +6267,6 @@ dt,
   .audit-log-detail code,
   .audit-metadata pre {
     font-size: .78rem;
-  }
-  .admin-table th,
-  .admin-table td {
-    padding: 13px 12px;
   }
   .admin-setting-form input,
   .admin-setting-form .btn,

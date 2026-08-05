@@ -161,14 +161,14 @@ export function AdminDiagnosisPage() {
                   const business = businesses.find((item) => item.id === submission.business_id);
                   return (
                     <tr key={submission.public_id}>
-                      <td>
+                      <td data-label="Toko">
                         <strong>{submission.business_name || business?.name || submission.public_id}</strong>
                         <span>{business?.industry || "Tanpa industri"}</span>
                       </td>
-                      <td><b className="status-pill">{submission.analysis.status}</b></td>
-                      <td>{formatJakartaDate(submission.created_at, "short")}</td>
-                      <td><strong className="admin-table__score">{formatScore(submission.analysis.overall_score)}</strong></td>
-                      <td className="admin-table__actions-col">
+                      <td data-label="Status"><b className="status-pill">{submission.analysis.status}</b></td>
+                      <td data-label="Tanggal">{formatJakartaDate(submission.created_at, "short")}</td>
+                      <td data-label="Skor"><strong className="admin-table__score">{formatScore(submission.analysis.overall_score)}</strong></td>
+                      <td className="admin-table__actions-col" data-label="Aksi">
                         <div className="admin-row-actions">
                           {business ? (
                             <>
