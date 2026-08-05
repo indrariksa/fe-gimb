@@ -6351,6 +6351,14 @@ dt,
 .ai-report__callout { padding: 16px 18px; margin: 4px 0 16px; border-radius: 14px; background: color-mix(in srgb, var(--color-primary) 8%, var(--surface)); }
 .ai-report__callout p { margin: 0; color: var(--ink); line-height: 1.7; text-align: justify; }
 .ai-report__disclaimer { color: var(--text-tertiary); font-size: var(--text-caption); margin-top: 12px; }
+.ai-report .admin-inventory-note p,
+.ai-report .subscore-card p {
+  text-align: justify;
+}
+.admin-inventory-page .admin-inventory-note p,
+.admin-inventory-page .admin-inventory-note li {
+  text-align: justify;
+}
 /* Each card sizes to its own content instead of stretching to match the tallest sibling in the row. */
 .ai-report__sub-scores { align-items: start; }
 

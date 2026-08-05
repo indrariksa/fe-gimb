@@ -21,12 +21,17 @@ export type ChartTheme = {
   gridColor: string;
 };
 
-export function getChartTheme(): ChartTheme {
-  const style = getComputedStyle(document.documentElement);
-  return {
-    ink: style.getPropertyValue("--ink").trim(),
-    muted: style.getPropertyValue("--muted").trim(),
-    surface: style.getPropertyValue("--surface").trim(),
-    gridColor: style.getPropertyValue("--border").trim(),
-  };
+// Mirrors --ink/--muted/--surface/--border from global.css for each theme mode.
+// Derived directly from theme.mode instead of reading getComputedStyle(), because
+// ThemeProvider applies data-theme to <html> inside a useEffect that runs after
+// this component's render — reading the DOM here would race that effect and show
+// the previous theme's colors for one render (or longer, since the useMemo below
+// only recomputes when theme.mode itself changes again).
+const chartThemeByMode: Record<"light" | "dark", ChartTheme> = {
+  light: { ink: "#10172a", muted: "#536078", surface: "#ffffff", gridColor: "#e4e8f0" },
+  dark: { ink: "#eef2ff", muted: "#a7b0c3", surface: "#111827", gridColor: "#242e42" },
+};
+
+export function getChartTheme(mode: "light" | "dark"): ChartTheme {
+  return chartThemeByMode[mode];
 }

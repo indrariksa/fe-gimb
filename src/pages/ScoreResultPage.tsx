@@ -12,6 +12,22 @@ import { useAuth } from "../context/AuthContext";
 import { formatJakartaDate } from "../utils/dateTime";
 import { clampPercent, formatScore } from "../utils/number";
 
+const statusBands = ["Sangat Buruk", "Buruk", "Cukup Sehat", "Sehat", "Sangat Sehat"];
+
+function statusIndexForScore(score: number) {
+  if (score >= 80) return 4;
+  if (score >= 60) return 3;
+  if (score >= 40) return 2;
+  if (score >= 20) return 1;
+  return 0;
+}
+
+function nextTargetLabel(dimensionLabel: string, score: number) {
+  const currentIndex = statusIndexForScore(score);
+  if (currentIndex === statusBands.length - 1) return `${dimensionLabel}: pertahankan`;
+  return `${dimensionLabel}: menuju ${statusBands[currentIndex + 1]}`;
+}
+
 function getScoreInsights(submission: InventorySubmission) {
   const scores = submission.analysis.sub_scores;
   const dimensions = [
@@ -23,9 +39,12 @@ function getScoreInsights(submission: InventorySubmission) {
     { label: "SDM", score: scores.hr },
   ];
 
-  const strongest = [...dimensions].sort((a, b) => b.score - a.score)[0]?.label ?? "-";
-  const priority = [...dimensions].sort((a, b) => a.score - b.score)[0]?.label ?? "-";
-  return { strongest, priority };
+  const strongestDimension = [...dimensions].sort((a, b) => b.score - a.score)[0];
+  const priorityDimension = [...dimensions].sort((a, b) => a.score - b.score)[0];
+  const strongest = strongestDimension?.label ?? "-";
+  const priority = priorityDimension?.label ?? "-";
+  const nextTarget = priorityDimension ? nextTargetLabel(priorityDimension.label, priorityDimension.score) : "-";
+  return { strongest, priority, nextTarget };
 }
 
 export function ScoreResultPage() {
@@ -72,7 +91,7 @@ export function ScoreResultPage() {
   const progress = clampPercent(score);
   const scoreText = formatScore(score);
   const status = submission?.analysis.status ?? "Belum Ada Data";
-  const insights = submission ? getScoreInsights(submission) : { strongest: "-", priority: "-" };
+  const insights = submission ? getScoreInsights(submission) : { strongest: "-", priority: "-", nextTarget: "-" };
 
   return (
     <DashboardShell activeView="score" title="Hasil Skor">
@@ -119,7 +138,7 @@ export function ScoreResultPage() {
               <div className="score-result-stats">
                 <article><span>Dimensi Terkuat</span><strong>{insights.strongest}</strong></article>
                 <article><span>Area Prioritas</span><strong>{insights.priority}</strong></article>
-                <article><span>Target Berikutnya</span><strong>Pertahankan 90+</strong></article>
+                <article><span>Target Berikutnya</span><strong>{insights.nextTarget}</strong></article>
               </div>
               <div className="score-result-actions">
                 <Button className="btn--shiny-dashboard" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>

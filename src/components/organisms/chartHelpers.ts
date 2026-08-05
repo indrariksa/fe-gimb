@@ -31,13 +31,14 @@ export function colorsFor(count: number) {
   return Array.from({ length: count }, (_, index) => chartPalette[index % chartPalette.length]);
 }
 
-export function buildLegendLabels(labels: string[], values: number[]) {
+export function buildLegendLabels(labels: string[], values: number[], textColor: string) {
   return (chart: ChartJS) => {
     const total = values.reduce((sum, value) => sum + Math.max(0, value), 0) || 1;
     return labels.map((label, index) => ({
       text: `${label}: ${formatChartValue(values[index] ?? 0)} (${formatChartPercent(((values[index] ?? 0) / total) * 100)})`,
       fillStyle: chartPalette[index % chartPalette.length],
       strokeStyle: chartPalette[index % chartPalette.length],
+      fontColor: textColor,
       hidden: !chart.getDataVisibility(index),
       index,
     }));

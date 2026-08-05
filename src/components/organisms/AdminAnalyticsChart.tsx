@@ -30,14 +30,14 @@ function bucketTopN(labels: string[], values: number[], topN: number, restMode: 
 
 export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
   const { theme } = useThemeSettings();
-  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
   const colors = colorsFor(chart.labels.length);
 
   const categoricalPlugins = {
     legend: {
       position: "bottom" as const,
-      labels: { color: chartTheme.muted, generateLabels: buildLegendLabels(chart.labels, values), boxWidth: 12, padding: 12 },
+      labels: { color: chartTheme.muted, generateLabels: buildLegendLabels(chart.labels, values, chartTheme.muted), boxWidth: 12, padding: 12 },
     },
     tooltip: {
       backgroundColor: chartTheme.surface,
@@ -55,6 +55,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
         <h4>{chart.title}</h4>
         <div className="admin-chart-canvas">
           <Doughnut
+            key={theme.mode}
             data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] }}
             options={{ responsive: true, maintainAspectRatio: false, cutout: "68%", plugins: categoricalPlugins }}
           />
@@ -69,6 +70,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
         <h4>{chart.title}</h4>
         <div className="admin-chart-canvas">
           <Pie
+            key={theme.mode}
             data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] }}
             options={{ responsive: true, maintainAspectRatio: false, plugins: categoricalPlugins }}
           />
@@ -100,6 +102,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
         <h4>{chart.title}</h4>
         <div className="admin-chart-canvas">
           <Line
+            key={theme.mode}
             data={{
               labels: chart.labels.map((label) => formatMonthYear(`${label}-01`, label)),
               datasets: [
@@ -127,6 +130,7 @@ export function AdminAnalyticsChart({ chart }: AdminAnalyticsChartProps) {
       <h4>{chart.title}</h4>
       <div className="admin-chart-canvas">
         <Bar
+          key={theme.mode}
           data={{
             labels: bucketed.labels,
             datasets: [{ label: chart.series[0]?.name ?? chart.title, data: bucketed.values, backgroundColor: colorsFor(bucketed.labels.length), borderRadius: 6, hoverBorderWidth: 2, hoverBorderColor: chartTheme.ink }],

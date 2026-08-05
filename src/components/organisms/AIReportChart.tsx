@@ -19,7 +19,7 @@ export function statusLabel(score: number) {
 
 function RadarCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
-  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
 
   return (
@@ -27,6 +27,7 @@ function RadarCard({ chart }: AIReportChartProps) {
       <h3>{chart.title}</h3>
       <div className="ai-chart-canvas ai-chart-canvas--radar">
         <Radar
+          key={theme.mode}
           data={{
             labels: chart.labels,
             datasets: [
@@ -61,7 +62,7 @@ function RadarCard({ chart }: AIReportChartProps) {
 
 function DonutCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
-  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
   const colors = colorsFor(chart.labels.length);
 
@@ -70,6 +71,7 @@ function DonutCard({ chart }: AIReportChartProps) {
       <h4>{chart.title}</h4>
       <div className="ai-chart-canvas ai-chart-canvas--donut">
         <Doughnut
+          key={theme.mode}
           data={{ labels: chart.labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] }}
           options={{
             responsive: true,
@@ -78,7 +80,7 @@ function DonutCard({ chart }: AIReportChartProps) {
             plugins: {
               legend: {
                 position: "bottom" as const,
-                labels: { color: chartTheme.muted, generateLabels: buildLegendLabels(chart.labels, values), boxWidth: 12, padding: 12 },
+                labels: { color: chartTheme.muted, generateLabels: buildLegendLabels(chart.labels, values, chartTheme.muted), boxWidth: 12, padding: 12 },
               },
               tooltip: {
                 backgroundColor: chartTheme.surface,
@@ -98,7 +100,7 @@ function DonutCard({ chart }: AIReportChartProps) {
 
 function BarCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
-  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
   const values = chart.series[0]?.values ?? [];
   const colors = colorsFor(chart.labels.length);
 
@@ -107,6 +109,7 @@ function BarCard({ chart }: AIReportChartProps) {
       <h4>{chart.title}</h4>
       <div className="ai-chart-canvas">
         <Bar
+          key={theme.mode}
           data={{
             labels: chart.labels,
             datasets: [{ label: chart.series[0]?.name ?? chart.title, data: values, backgroundColor: colors, borderRadius: 6, hoverBorderWidth: 2, hoverBorderColor: chartTheme.ink }],
@@ -143,7 +146,7 @@ function BarCard({ chart }: AIReportChartProps) {
 
 function GaugeCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
-  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
   const value = Math.max(0, Math.min(100, chart.series[0]?.values[0] ?? 0));
   const [displayValue, setDisplayValue] = useState(value);
   const centerPlugin = buildCenterTextPlugin(formatChartValue(value), statusLabel(value), chartTheme);
@@ -158,6 +161,7 @@ function GaugeCard({ chart }: AIReportChartProps) {
       <p>{chart.title}</p>
       <div className="ai-chart-canvas ai-chart-canvas--gauge">
         <Doughnut
+          key={theme.mode}
           data={{
             labels: [chart.series[0]?.name ?? "Skor", "Sisa"],
             datasets: [{ data: [displayValue, 100 - displayValue], backgroundColor: [chartPalette[0], chartTheme.gridColor], borderWidth: 0 }],
@@ -177,13 +181,14 @@ function GaugeCard({ chart }: AIReportChartProps) {
 
 function LineCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
-  const chartTheme = useMemo(() => getChartTheme(), [theme.mode]);
+  const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
 
   return (
     <article className="panel inventory-insight-card ai-chart-card">
       <h4>{chart.title}</h4>
       <div className="ai-chart-canvas">
         <Line
+          key={theme.mode}
           data={{
             labels: chart.labels,
             datasets: chart.series.map((series, index) => ({
