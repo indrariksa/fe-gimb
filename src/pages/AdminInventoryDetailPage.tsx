@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
@@ -56,7 +56,6 @@ function shortValue(value: string, length = 10) {
 
 export function AdminInventoryDetailPage() {
   const { businessId } = useParams();
-  const navigate = useNavigate();
   const { isAdmin, user } = useAuth();
   const [business, setBusiness] = useState<Business | null>(null);
   const [submission, setSubmission] = useState<InventorySubmission | null>(null);
@@ -144,17 +143,17 @@ export function AdminInventoryDetailPage() {
             <Button className="btn--dashboard-hover" onClick={() => setReloadKey((current) => current + 1)}>
               Coba lagi <Icon name="refresh" size={18} />
             </Button>
-            <Button variant="secondary" onClick={() => navigate(backPath)}>Kembali</Button>
+            <Link className="btn btn--secondary" to={backPath}>Kembali</Link>
           </article>
         )}
 
         {!isLoading && !error && submission && (
           <>
             <div className="admin-inventory-hero">
-              <button type="button" className="admin-inventory-hero__back" onClick={() => navigate(backPath)}>
+              <Link className="admin-inventory-hero__back" to={backPath}>
                 <Icon name="arrow" size={18} />
                 Kembali
-              </button>
+              </Link>
               <div className="admin-inventory-hero__content">
                 <span>Data inventarisasi user</span>
                 <h2>{business?.name || submission.business_name || "Detail Bisnis"}</h2>
@@ -162,11 +161,11 @@ export function AdminInventoryDetailPage() {
                   {business?.industry || "Tanpa industri"} · diinput {formatJakartaDate(submission.created_at)}
                   {submitter ? ` oleh ${submitter.full_name}` : ` oleh user ${shortValue(submission.user_id)}`}
                 </p>
-                {isAdmin && (
-                  <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/admin/businesses/${businessId}/ai-report`)}>
-                    Laporan AI <Icon name="bulb" size={18} />
-                  </Button>
-                )}
+                <nav className="page-nav">
+                  <Link className="page-nav__link" to={`/businesses/${businessId}/dashboard`}><Icon name="dashboard" size={16} /> Dashboard</Link>
+                  <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
+                  <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
+                </nav>
               </div>
               <div className="admin-inventory-hero__score">
                 <span>Skor Kesehatan</span>

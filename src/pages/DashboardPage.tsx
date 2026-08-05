@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
@@ -197,11 +197,11 @@ export function DashboardPage() {
             <p>{business?.name ?? theme.businessName} - Diagnosa terakhir: {formatJakartaDate(submission?.created_at, "long", "Belum ada diagnosis")}</p>
           </div>
           <div className="dashboard__actions">
-            <Button className="btn--shiny-dashboard" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Sub Skor</Button>
-            <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/inventory-input`)}>
-              Lihat Input <Icon name="file" size={18} />
-            </Button>
-            <Button className="btn--dashboard-hover">Rekomendasi <Icon name="arrow" size={18} /></Button>
+            <nav className="page-nav">
+              <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
+              <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
+              <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
+            </nav>
             <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark" disabled={!submission} onClick={exportDashboardExcel}><Icon name="download" size={18} /> Excel</Button>
             <Button className="btn--dashboard-hover btn--dashboard-export" variant="dark" disabled={!submission} onClick={exportDashboardPdf}><Icon name="file" size={18} /> PDF</Button>
           </div>

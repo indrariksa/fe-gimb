@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
@@ -172,6 +172,11 @@ export function AIReportPage() {
   return (
     <DashboardShell activeView="aiReport" title="Laporan Bisnis AI">
       <section className="ai-report">
+        <nav className="page-nav">
+          <Link className="page-nav__link" to={`/businesses/${businessId}/dashboard`}><Icon name="dashboard" size={16} /> Dashboard</Link>
+          <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
+          <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
+        </nav>
         {isLoading && <LoadingState>Memuat laporan AI...</LoadingState>}
 
         {!isLoading && notEligible && (

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PropsWithChildren } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import type { View } from "../../types";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
@@ -224,11 +224,6 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
 
   const navigation = isAdmin ? adminNavigation : userNavigation;
 
-  const navigateToView = (view: View) => {
-    setIsMenuOpen(false);
-    navigateRoute(routeByView(view, businessId));
-  };
-
   const isNavigationActive = (item: NavigationItem) => activeView === item.view;
 
   const handleLogout = async () => {
@@ -264,11 +259,6 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
 
   const realtimeLabel = realtimeStatus === "connected" ? "Realtime aktif" : realtimeStatus === "connecting" ? "Menghubungkan realtime" : "Menyambungkan ulang";
 
-  const openSettings = () => {
-    setIsAccountMenuOpen(false);
-    navigateToView("settings");
-  };
-
   const confirmLogout = () => {
     setIsAccountMenuOpen(false);
     setIsLogoutConfirmOpen(true);
@@ -292,23 +282,35 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           </button>
         </div>
         <nav>
-          {navigation.map((item) => (
-            <button
-              key={item.label}
-              className={`${isNavigationActive(item) ? "active" : ""} ${item.disabledReason ? "is-disabled" : ""}`}
-              data-label={item.disabledReason ? `${item.label} - ${item.disabledReason}` : item.label}
-              data-tooltip={item.disabledReason}
-              disabled={Boolean(item.disabledReason)}
-              onClick={() => navigateToView(item.view)}
-            >
-              <Icon name={item.icon} />
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {navigation.map((item) =>
+            item.disabledReason ? (
+              <button
+                key={item.label}
+                className="is-disabled"
+                data-label={`${item.label} - ${item.disabledReason}`}
+                data-tooltip={item.disabledReason}
+                disabled
+              >
+                <Icon name={item.icon} />
+                <span>{item.label}</span>
+              </button>
+            ) : (
+              <Link
+                key={item.label}
+                to={routeByView(item.view, businessId)}
+                className={isNavigationActive(item) ? "active" : ""}
+                data-label={item.label}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Icon name={item.icon} />
+                <span>{item.label}</span>
+              </Link>
+            )
+          )}
         </nav>
         <div className="sidebar__bottom">
           {showUpgradePlanButton && !isAdmin && <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>}
-          <button className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => navigateToView("settings")}><Icon name="settings" /> <span>Pengaturan</span></button>
+          <Link to="/settings" className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => setIsMenuOpen(false)}><Icon name="settings" /> <span>Pengaturan</span></Link>
           <button data-label="Keluar" onClick={() => setIsLogoutConfirmOpen(true)}><Icon name="logout" /> <span>Keluar</span></button>
         </div>
       </aside>
@@ -395,7 +397,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
                       <b>{user?.role === "admin" ? "Admin" : "User"}</b>
                     </div>
                   </div>
-                  <button onClick={openSettings}><Icon name="settings" size={18} /> Pengaturan</button>
+                  <Link to="/settings" onClick={() => setIsAccountMenuOpen(false)}><Icon name="settings" size={18} /> Pengaturan</Link>
                   <button onClick={confirmLogout}><Icon name="logout" size={18} /> Keluar</button>
                 </div>
               )}

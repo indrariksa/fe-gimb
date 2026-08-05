@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
@@ -342,6 +342,11 @@ export function SubScoresPage() {
   return (
     <DashboardShell activeView="subscores" title="Dashboard 6 Sub Skor Bisnis">
       <section className="subscores-page">
+        <nav className="page-nav">
+          <Link className="page-nav__link" to={`/businesses/${businessId}/dashboard`}><Icon name="dashboard" size={16} /> Dashboard</Link>
+          <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
+          <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
+        </nav>
         {isLoading && <LoadingState>Memuat sub skor...</LoadingState>}
         {error && (
           <article className="panel empty-state retry-state">
