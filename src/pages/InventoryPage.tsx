@@ -86,13 +86,23 @@ function buildPayload(values: Record<string, string>): InventoryPayload {
   return payload;
 }
 
-function validateInventoryPayload(payload: InventoryPayload) {
+// Semua 12 indikator wajib diisi. Kecuali biaya marketing (lihat catatannya di
+// inventoryFields.ts: "Jika tidak pernah beriklan, isi dengan angka 0."), 0 tidak
+// dianggap jawaban valid karena berarti field belum benar-benar diisi.
+const fieldsAllowingZero = new Set(["marketingCost"]);
+
+function validateInventoryPayload(payload: InventoryPayload, values: Record<string, string>) {
+  const missingField = inventoryFields.find((field) => !digitsOnly(values[field.id] ?? ""));
+  if (missingField) {
+    return `${missingField.shortLabel} wajib diisi.`;
+  }
+  const zeroField = inventoryFields.find(
+    (field) => !fieldsAllowingZero.has(field.id) && toNumber(values[field.id]) <= 0,
+  );
+  if (zeroField) {
+    return `${zeroField.shortLabel} wajib lebih dari 0.`;
+  }
   return firstValidationError([
-    payload.six_month_revenue <= 0 ? "Total omzet 6 bulan wajib lebih dari 0." : "",
-    payload.six_month_transactions <= 0 ? "Total transaksi 6 bulan wajib lebih dari 0." : "",
-    payload.new_customers < 0 || payload.repeat_customers < 0 || payload.active_customers < 0
-      ? "Jumlah pelanggan tidak boleh bernilai negatif."
-      : "",
     validateMaxLength(payload.description, "Deskripsi masalah", 5000),
   ]);
 }
@@ -149,7 +159,7 @@ export function InventoryPage() {
   const submitInventory = async () => {
     setError("");
     const payload = buildPayload(values);
-    const validationError = validateInventoryPayload(payload);
+    const validationError = validateInventoryPayload(payload, values);
     if (validationError) {
       setError(validationError);
       setIsConfirmOpen(false);

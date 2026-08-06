@@ -4,6 +4,7 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "sixMonthRevenue",
     label: "1. Berapa total omzet (seluruh pemasukan dari penjualan) bisnis Anda selama 6 bulan terakhir?",
+    shortLabel: "Total omzet 6 bulan",
     prefix: "Rp",
     note: "Catatan: Masukkan total seluruh uang yang masuk dari penjualan produk atau jasa selama 6 bulan terakhir sebelum dikurangi biaya apa pun.",
     example: "Contoh: Januari Rp10 juta + Februari Rp12 juta + Maret Rp11 juta + April Rp13 juta + Mei Rp14 juta + Juni Rp15 juta = Rp75 juta",
@@ -11,6 +12,7 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "sixMonthTransactions",
     label: "2. Berapa total jumlah transaksi yang terjadi selama 6 bulan terakhir?",
+    shortLabel: "Total transaksi 6 bulan",
     suffix: "transaksi",
     note: "Catatan: Satu transaksi dihitung setiap kali terjadi pembelian.",
     example: "Contoh: Jika hari ini ada 10 pelanggan membeli, berarti ada 10 transaksi.",
@@ -18,24 +20,28 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "newCustomers",
     label: "3. Berapa total pelanggan baru yang berhasil Anda dapatkan selama 6 bulan terakhir?",
+    shortLabel: "Pelanggan baru",
     suffix: "pelanggan",
     note: "Catatan: Pelanggan baru adalah orang yang pertama kali membeli produk atau jasa Anda.",
   },
   {
     id: "repeatCustomers",
     label: "4. Berapa total pelanggan lama yang kembali membeli selama 6 bulan terakhir?",
+    shortLabel: "Pelanggan lama yang kembali membeli",
     suffix: "pelanggan",
     note: "Catatan: Pelanggan repeat adalah pelanggan yang pernah membeli sebelumnya lalu melakukan pembelian kembali.",
   },
   {
     id: "activeCustomers",
     label: "5. Saat ini, berapa jumlah pelanggan aktif yang masih Anda miliki?",
+    shortLabel: "Pelanggan aktif",
     suffix: "pelanggan",
     note: "Catatan: Pelanggan aktif adalah pelanggan yang masih berpotensi membeli kembali atau masih berinteraksi dengan bisnis Anda.",
   },
   {
     id: "cogs",
     label: "6. Berapa total biaya produksi atau modal barang (HPP) selama 6 bulan terakhir?",
+    shortLabel: "Biaya produksi (HPP)",
     prefix: "Rp",
     note: "Catatan: Masukkan biaya untuk menghasilkan atau menyediakan produk/jasa. Jangan masukkan gaji, listrik, atau biaya promosi.",
     example: "Contoh: Bahan baku, barang dagangan, kemasan produk, biaya produksi langsung.",
@@ -43,6 +49,7 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "operationalCost",
     label: "7. Berapa total biaya operasional usaha selama 6 bulan terakhir?",
+    shortLabel: "Biaya operasional",
     prefix: "Rp",
     note: "Catatan: Masukkan biaya untuk menjalankan usaha sehari-hari.",
     example: "Contoh: Listrik, air, internet, transportasi, sewa tempat, administrasi, perlengkapan kantor.",
@@ -50,12 +57,14 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "salaryCost",
     label: "8. Berapa total gaji yang dibayarkan kepada seluruh karyawan selama 6 bulan terakhir?",
+    shortLabel: "Biaya gaji karyawan",
     prefix: "Rp",
     note: "Catatan: Masukkan seluruh gaji, upah, bonus, dan tunjangan karyawan.",
   },
   {
     id: "marketingCost",
     label: "9. Berapa total biaya promosi atau pemasaran yang Anda keluarkan selama 6 bulan terakhir?",
+    shortLabel: "Biaya marketing",
     prefix: "Rp",
     note: "Catatan: Jika tidak pernah beriklan, isi dengan angka 0.",
     example: "Contoh biaya pemasaran: Facebook Ads, Instagram Ads, TikTok Ads, Google Ads, endorsement, cetak brosur, banner promosi.",
@@ -63,12 +72,14 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "employeeCount",
     label: "10. Berapa jumlah karyawan yang saat ini bekerja di bisnis Anda?",
+    shortLabel: "Jumlah karyawan",
     suffix: "orang",
     note: "Catatan: Masukkan jumlah seluruh karyawan tetap maupun kontrak yang aktif bekerja saat ini. Jika usaha dikelola sendiri tanpa karyawan, isi 1.",
   },
   {
     id: "assetValue",
     label: "11. Berapa perkiraan total nilai aset bisnis Anda saat ini?",
+    shortLabel: "Nilai aset bisnis",
     prefix: "Rp",
     note: "Catatan: Aset adalah barang atau perlengkapan yang digunakan untuk menjalankan usaha. Gunakan nilai perkiraan saat ini.",
     example: "Contoh: Mesin produksi, kendaraan operasional, komputer, peralatan kerja, inventaris toko.",
@@ -76,6 +87,7 @@ export const inventoryFields: InventoryField[] = [
   {
     id: "capitalInvestment",
     label: "12. Berapa total modal atau investasi yang sudah ditanamkan ke dalam bisnis sampai hari ini?",
+    shortLabel: "Modal atau investasi",
     prefix: "Rp",
     note: "Catatan: Masukkan seluruh modal yang pernah digunakan untuk membangun dan mengembangkan usaha.",
     example: "Contoh: Modal awal usaha, tambahan modal pribadi, investasi pemilik.",

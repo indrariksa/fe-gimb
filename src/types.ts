@@ -14,6 +14,7 @@ export type ThemeSettings = {
 export type InventoryField = {
   id: string;
   label: string;
+  shortLabel: string;
   suffix?: string;
   prefix?: string;
   note: string;
