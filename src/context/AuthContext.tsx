@@ -31,11 +31,18 @@ const storageKey = "gimb:auth";
 const refreshSkewSeconds = 60;
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+// Access token lives in memory only (never persisted) so it can't be lifted
+// from localStorage at rest; only the refresh token is persisted, matching
+// what the "stay logged in" flow needs. Lost on reload by design, which is
+// why bootstrap() always re-derives it via /auth/refresh below.
+let liveAccessToken: string | null = null;
+
 function readStoredAuth(): StoredAuth | null {
   const saved = localStorage.getItem(storageKey);
   if (!saved) return null;
   try {
-    return JSON.parse(saved) as StoredAuth;
+    const persisted = JSON.parse(saved) as Omit<StoredAuth, "accessToken">;
+    return { ...persisted, accessToken: liveAccessToken ?? "" };
   } catch {
     return null;
   }
@@ -70,9 +77,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [showTimeoutNotice, setShowTimeoutNotice] = useState(false);
 
   const persistAuth = useCallback((nextAuth: StoredAuth | null) => {
+    liveAccessToken = nextAuth?.accessToken ?? null;
     setAuth(nextAuth);
     if (nextAuth) {
-      localStorage.setItem(storageKey, JSON.stringify(nextAuth));
+      localStorage.setItem(storageKey, JSON.stringify({ user: nextAuth.user, refreshToken: nextAuth.refreshToken }));
     } else {
       localStorage.removeItem(storageKey);
       for (const key of Object.keys(localStorage)) {
@@ -83,7 +91,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     configureApiClient({
-      getAccessToken: () => readStoredAuth()?.accessToken ?? null,
+      getAccessToken: () => liveAccessToken,
       onRefreshAuth: async () => {
         const stored = readStoredAuth();
         if (!stored?.refreshToken) return null;
