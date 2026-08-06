@@ -75,6 +75,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       localStorage.setItem(storageKey, JSON.stringify(nextAuth));
     } else {
       localStorage.removeItem(storageKey);
+      for (const key of Object.keys(localStorage)) {
+        if (key.startsWith("gimb:sbd:")) localStorage.removeItem(key);
+      }
     }
   }, []);
 
