@@ -158,7 +158,7 @@ export function LandingHero() {
             </motion.div>
           </motion.div>
           <motion.dl className="landing__stats" variants={fadeUp}>
-            <div><dt><AnimatedNumber value={2400} suffix="+" delay={0.6} /></dt><dd>UMKM Terdaftar</dd></div>
+            <div><dt>24/7</dt><dd>Bisa Diakses</dd></div>
             <div><dt><AnimatedNumber value={98} suffix="%" delay={0.72} /></dt><dd>Akurasi Analisis</dd></div>
             <div><dt><AnimatedNumber value={3} suffix=" Menit" delay={0.84} /></dt><dd>Waktu Diagnosa</dd></div>
           </motion.dl>
@@ -203,7 +203,7 @@ export function LandingHero() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 1.05, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            UMKM Terdiagnosa <strong><AnimatedNumber value={2400} suffix="+" delay={1.2} /></strong>
+            Diagnosa <strong>Real-time</strong>
           </motion.aside>
         </motion.div>
       </motion.div>
