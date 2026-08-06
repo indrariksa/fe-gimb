@@ -62,7 +62,7 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | Unread count | `src/services/api/notifications.ts` | GET | `/admin/notifications/unread-count` | Tidak ada | `{ count: number }` | `DashboardShell` fallback ke `0` jika gagal. |
 | Mark notification read | `src/services/api/notifications.ts` | PATCH | `/admin/notifications/{id}/read` | Tidak ada | `null` | UI melakukan optimistic update dan mengabaikan error agar dropdown tetap responsif. |
 | Mark all notifications read | `src/services/api/notifications.ts` | PATCH | `/admin/notifications/read-all` | Tidak ada | `null` | UI melakukan optimistic update dan mengabaikan error agar dropdown tetap responsif. |
-| Notification WebSocket | `src/services/api/notifications.ts` | WS | `/admin/notifications/ws?access_token={token}` | Access token di query string | `NotificationEvent` | `DashboardShell` reconnect setiap 3 detik jika koneksi tertutup saat admin masih login. |
+| Notification WebSocket | `src/services/api/notifications.ts` | WS | `/admin/notifications/ws` | Access token di parameter subprotocol (`new WebSocket(url, [accessToken])`, header `Sec-WebSocket-Protocol`) | `NotificationEvent` | `DashboardShell` reconnect setiap 3 detik jika koneksi tertutup saat admin masih login. |
 
 ## API Client Behavior
 
@@ -71,4 +71,4 @@ Base URL berasal dari `VITE_API_BASE_URL`, fallback `http://127.0.0.1:8080/api/v
 | Generic request | `src/services/api/client.ts` | Semua | `${baseUrl}${path}` | `RequestInit`, optional `auth:false` | `envelope.data as T` | Non-OK atau `success:false` menjadi `ApiError(status, message, error)`. Protected request dengan `401` mencoba refresh token dan retry request sekali. Request `GET`/`HEAD` yang timeout dicoba ulang otomatis sekali setelah 2 detik. |
 | Auth header | `src/services/api/client.ts` | Semua protected | Semua path dengan `auth !== false` | Access token dari configured provider | Header `Authorization: Bearer <token>` | Jika token kosong, request tetap dikirim tanpa header. |
 | Timeout | `src/services/api/client.ts` | Semua | Semua | `AbortSignal.timeout(15000)` | Tidak ada | DOMException `TimeoutError` pada request `GET`/`HEAD` dicoba ulang otomatis sekali; jika tetap gagal menjadi `ApiTimeoutError` dan memicu timeout notice global. |
-| Unauthorized hook | `src/services/api/client.ts` | Protected | Semua protected | Response status 401 setelah retry refresh gagal | Tidak ada | Memanggil `onUnauthorized`, yang di `AuthContext` menghapus `gimb:auth`. |
+| Unauthorized hook | `src/services/api/client.ts` | Protected | Semua protected | Response status 401 setelah retry refresh gagal | Tidak ada | Memanggil `onUnauthorized`, yang di `AuthContext` menghapus `gimb:auth` dan menyapu localStorage `gimb:sbd:*` (draft inventory, dll). |

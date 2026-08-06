@@ -180,8 +180,8 @@ Alur:
 3. Halaman `/verify-email` membaca token dari query string, deduplicate request per token, retry sekali untuk `404` sesaat, lalu memanggil API verify email. CTA kembali ke login membawa email dari query agar field email login otomatis terisi. Jika verifikasi gagal dan user resend, countdown memakai `resend_cooldown_seconds` dari response backend atau `retry_after_seconds` dari error `429`.
 4. Tombol Google muncul jika `VITE_GOOGLE_CLIENT_ID` diisi.
 5. Response auth login/Google diubah ke local shape `{ user, accessToken, refreshToken }`.
-6. Data disimpan di `localStorage` key `gimb:auth`.
-7. Saat bootstrap, frontend memakai access token tersimpan jika token masih valid.
+6. `user` dan `refreshToken` disimpan di `localStorage` key `gimb:auth`; `accessToken` hanya disimpan in-memory (tidak di-persist) supaya tidak nyangkut di disk kalau ada XSS.
+7. Saat bootstrap, frontend memakai access token in-memory jika token masih valid (tidak pernah valid setelah reload karena in-memory reset, sehingga langkah 8 selalu jalan setelah reload).
 8. Jika access token kosong, rusak, expired, atau akan expired dalam 60 detik, frontend memanggil `/auth/refresh`.
 9. API client dikonfigurasi dengan provider access token, refresh-on-401 sekali, dan handler unauthorized/timeout.
 10. Jika response protected mendapat `401`, API client mencoba refresh token dan retry request asli sekali.
@@ -189,11 +189,11 @@ Alur:
 12. Google login memakai Google Identity Services untuk mendapatkan `id_token`, lalu memanggil `/auth/google`; session yang disimpan tetap sama dengan login biasa. Komponen Google yang sama juga dipakai Settings untuk menautkan Google lewat `/me/google/link`, dan Settings menyediakan aksi lepas tautan Google via `DELETE /me/google/link` dengan konfirmasi.
 13. User response memiliki `has_password`, `has_google`, `google_linked_at`, dan `email_verified`; akun Google baru bisa membuat password manual melalui Settings agar login email/password ikut aktif.
 14. Jika login email/password ditolak karena email belum verified, LoginPage menampilkan action resend email verification.
-15. Logout menghapus session lokal terlebih dahulu, lalu mencoba memanggil `/auth/logout`.
+15. Logout menghapus session lokal terlebih dahulu (termasuk menyapu semua key `localStorage` berprefix `gimb:sbd:`, misal draft inventory, agar tidak nyangkut untuk user berikutnya di perangkat yang sama), lalu mencoba memanggil `/auth/logout`.
 
 Update nama profil serta ubah/setup password mandiri berada di `SettingsPage` dalam dua panel sejajar 50/50 di desktop, dengan panel tema full-width di bawahnya. Form profil memakai `PATCH /me`, menampilkan metode login readonly berdasarkan kombinasi `has_password`/`has_google`, menyediakan tombol tautkan Google jika belum tertaut, atau tombol lepas tautan Google dengan confirmation dialog jika sudah tertaut dan akun memiliki password manual. Jika akun Google-only belum punya password, tombol unlink dinonaktifkan dan user diarahkan membuat password dulu agar tidak terkunci. Jika `has_password=true`, form password memakai `PATCH /me/password` dan meminta password sekarang, password baru, dan konfirmasi password. Jika `has_password=false`, form password memakai `POST /me/password/setup` dan hanya meminta password baru serta konfirmasi; setelah berhasil frontend refresh profile `/me`.
 
-Tidak ditemukan penggunaan cookie untuk auth.
+Tidak ditemukan penggunaan cookie untuk auth. Migrasi ke httpOnly cookie (menghilangkan token dari localStorage sepenuhnya) sudah dipertimbangkan tapi ditunda karena domain production frontend/backend belum diputuskan satu induk atau terpisah — cookie cross-site (`SameSite=None`) berisiko diam-diam diblokir browser (Safari default) kalau domainnya ternyata tidak berhubungan.
 
 ## Role dan Proteksi Halaman
 
@@ -229,10 +229,10 @@ State management yang digunakan:
   - `AuthContext` untuk session user/token;
   - `ThemeContext` untuk tema dan preferensi tampilan.
 - `localStorage`:
-  - `gimb:auth` untuk session auth;
+  - `gimb:auth` untuk session auth, isinya `{ user, refreshToken }` saja — `accessToken` sengaja tidak ikut di-persist, hanya in-memory;
   - `gimb:sbd:theme` untuk tema;
   - `gimb:sbd:sidebar-collapsed` untuk sidebar;
-  - `gimb:sbd:inventory:<businessId>` untuk draft form inventory per toko.
+  - `gimb:sbd:inventory:<businessId>` untuk draft form inventory per toko, dibersihkan otomatis saat logout.
 
 Tidak ditemukan Redux, Zustand, React Query, atau state library lain.
 
@@ -246,7 +246,7 @@ Base URL:
 HTTP client:
 
 - `src/services/api/client.ts`;
-- `src/services/api/notifications.ts` membentuk URL WebSocket dari `VITE_API_BASE_URL`;
+- `src/services/api/notifications.ts` membentuk URL WebSocket dari `VITE_API_BASE_URL`; access token dikirim lewat parameter subprotocol `new WebSocket(url, [accessToken])`, bukan query string, supaya token tidak nyangkut di access log/proxy;
 - wrapper `fetch`;
 - timeout `15_000` ms via `AbortSignal.timeout`;
 - retry timeout otomatis sekali untuk request `GET`/`HEAD` setelah 2 detik;

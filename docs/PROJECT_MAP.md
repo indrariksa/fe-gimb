@@ -28,7 +28,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 
 | Path | Fungsi | Kapan dibaca/diubah |
 | --- | --- | --- |
-| `src/context/AuthContext.tsx` | Session state, localStorage `gimb:auth`, bootstrap refresh, logout, API client config. | Saat mengubah login lifecycle, token storage, refresh behavior, timeout/unauthorized handling. |
+| `src/context/AuthContext.tsx` | Session state; `user`/`refreshToken` di localStorage `gimb:auth`, `accessToken` in-memory saja (variabel modul `liveAccessToken`); bootstrap refresh; logout (termasuk menyapu localStorage `gimb:sbd:*`); API client config. | Saat mengubah login lifecycle, token storage, refresh behavior, timeout/unauthorized handling. |
 | `src/services/api/client.ts` | Base URL, fetch wrapper, auth header, timeout, retry timeout GET/HEAD, API errors. | Saat mengubah API transport, envelope handling, base URL, timeout/retry, atau friendly errors. |
 | `src/services/api/auth.ts` | Auth endpoints. | Saat mengubah login/register/email verification/refresh/logout/me/link/unlink Google/setup password/ubah password integration. |
 | `src/services/api/businesses.ts` | User business/inventory endpoints. | Saat mengubah fitur toko/inventory user. |

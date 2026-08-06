@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 5 Agustus 2026
+Terakhir diperbarui: 6 Agustus 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -13,7 +13,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Halaman sukses registrasi `/registration-success` dengan resend email verification, countdown dari response backend, dan `retry_after_seconds` saat `429`.
 - Login/register Google via Google Identity Services jika `VITE_GOOGLE_CLIENT_ID` diisi.
 - Update nama profile, tautkan/lepas tautan Google, setup password akun Google-only, dan ubah password mandiri dari halaman settings.
-- Session auth di `localStorage` key `gimb:auth`.
+- Session auth: `user` dan `refreshToken` disimpan di `localStorage` key `gimb:auth`; `accessToken` sengaja hanya disimpan in-memory (variabel modul `liveAccessToken` di `AuthContext.tsx`, tidak di-persist) supaya tidak nyangkut di disk kalau ada XSS — konsekuensinya reload halaman selalu memicu `/auth/refresh` karena access token hilang saat memory di-reset.
 - Lazy refresh token saat bootstrap aplikasi jika access token expired atau hampir expired.
 - API client fetch wrapper dengan timeout 15 detik, retry timeout sekali untuk request GET/HEAD, auth header, envelope parsing, refresh-on-401 sekali, dan unauthorized handler.
 - Route guard authenticated, admin-only, user-only, dan loader sesi dengan spinner ringan.
@@ -33,7 +33,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Status inventory tiap toko melalui latest inventory check.
 - Detail data inventarisasi untuk user dari Sub Skor toko dan daftar toko. Kartu ringkasan (omzet, transaksi, repeat ratio, dll) di halaman ini sudah dihapus karena dobel dengan Business Snapshot di Sub Skor — sekaligus memperbaiki bug "Repeat Ratio" di Business Snapshot (`RadarProfile.tsx`) yang sebelumnya salah pakai field `repeat_to_new_ratio` (bisa >100%) padahal seharusnya `retention_rate`.
 - Form inventarisasi business-scoped.
-- Draft inventory per business di localStorage.
+- Draft inventory per business di localStorage (`gimb:sbd:inventory:<businessId>`); ikut dibersihkan otomatis saat logout/sesi invalid (`AuthContext.tsx` menyapu semua key berprefix `gimb:sbd:`).
 - Confirmation dialog submit inventory.
 - Analysis progress page berbasis timer lokal.
 - Score result page.
@@ -149,4 +149,4 @@ Hasil: kedua perintah exit code `0`. Smoke test manual di browser (proses/ready/
 - Apakah landing copy lama tentang integrasi backend masih diinginkan.
 - Apakah admin inventory detail perlu endpoint submitter/detail user daripada mengambil 100 user pertama.
 - Apakah perlu test runner/lint formal untuk CI.
-- WebSocket notification frontend mengirim access token di query string karena browser WebSocket native tidak mendukung custom Authorization header.
+- Migrasi auth token ke httpOnly cookie ditunda sampai domain production (satu induk vs terpisah dari backend) diputuskan; lihat catatan di `PROJECT_CONTEXT.md` bagian localStorage.
