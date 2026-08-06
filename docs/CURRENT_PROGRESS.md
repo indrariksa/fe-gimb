@@ -103,7 +103,7 @@ Redirect/fallback:
 
 - Theme settings masih lokal dan copy menyebut siap disambungkan ke backend.
 - Landing page masih punya copy "Form Inventarisasi ... siap disimpan lokal sebelum integrasi backend", padahal form inventory sekarang memanggil backend.
-- Tombol `Rekomendasi` dan `Upgrade Plan` terlihat sebagai UI tetapi belum ditemukan aksi nyata.
+- Tombol `Rekomendasi` terlihat sebagai UI tetapi belum ditemukan aksi nyata.
 - Service `listBusinessInventories` dan `adminInventorySubmissions` tersedia, tetapi belum ditemukan pemakaian di halaman.
 ## TODO yang Ditemukan
 

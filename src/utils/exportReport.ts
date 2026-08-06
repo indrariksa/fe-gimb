@@ -1,3 +1,5 @@
+import { hexToRgb } from "./color";
+
 type CellValue = string | number | null | undefined;
 
 export type WorkbookSheet = {
@@ -34,16 +36,6 @@ function safeSlug(value?: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   return name || "bisnis";
-}
-
-function hexToRgb(hex = "#0ea5e9"): [number, number, number] {
-  const clean = hex.replace("#", "");
-  const value = clean.length === 3 ? clean.split("").map((char) => char + char).join("") : clean;
-  return [
-    parseInt(value.slice(0, 2), 16),
-    parseInt(value.slice(2, 4), 16),
-    parseInt(value.slice(4, 6), 16),
-  ];
 }
 
 export function reportFilename(prefix: string, businessName?: string, extension = "xlsx") {
@@ -146,7 +138,7 @@ export async function downloadPdfReport(options: PdfReportOptions) {
     y += 18;
 
     options.scores.forEach((item) => {
-      const [r, g, b] = hexToRgb(item.color);
+      const { r, g, b } = hexToRgb(item.color);
       const width = pageWidth - margin * 2;
       const barWidth = Math.max(0, Math.min(width, width * (item.score / 100)));
 

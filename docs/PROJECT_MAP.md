@@ -64,6 +64,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/components/atoms/TextField.tsx` | Field input dengan prefix/suffix/note/example. | Saat mengubah field inventory/theme input. |
 | `src/components/molecules/Brand.tsx` | Brand/logo text dan brand mark dari SVG publik. | Saat mengubah brand display. |
 | `src/components/molecules/HolographicCard.tsx` | Wrapper card ringan dengan mouse tilt dan CSS variable untuk efek holographic. | Saat mengubah animasi card ringkasan. |
+| `src/components/molecules/ConfirmDialog.tsx` | Dialog konfirmasi reusable (icon, title, message, cancel/confirm button, varian `dashboard`/`plain`, state busy/danger). Dipakai `ThemeCustomizer`, `DashboardShell` (logout), `AdminLimitPage`, `AdminUsersPage`, `InventoryPage`, `SettingsPage` (3 dialog). | Saat menambah/mengubah dialog konfirmasi di halaman mana pun, alih-alih menulis markup `confirm-dialog` baru. |
 
 ## Pages
 
@@ -74,7 +75,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/RegisterPage.tsx` | Register form dan instruksi verifikasi email. | Saat mengubah register UX/validasi. |
 | `src/pages/RegistrationSuccessPage.tsx` | Halaman pemberitahuan setelah register, resend verification, dan countdown. | Saat mengubah alur setelah register email/password. |
 | `src/pages/VerifyEmailPage.tsx` | Halaman public untuk submit token verifikasi email dari query string. | Saat mengubah alur verifikasi email. |
-| `src/pages/BusinessesPage.tsx` | List/create business, business limit, completed inventory check, industry combobox. | Saat mengubah toko/user workspace. |
+| `src/pages/BusinessesPage.tsx` | List/create business, business limit, completed inventory check, input industri native `<input list><datalist>` (bebas ketik, dengan saran). | Saat mengubah toko/user workspace. |
 | `src/pages/InventoryPage.tsx` | Inventory form, local draft, numeric formatting, validation, submit. | Saat mengubah field/payload inventory. |
 | `src/pages/AnalysisPage.tsx` | Progress animation dan CTA score. | Saat mengubah flow setelah submit. |
 | `src/pages/ScoreResultPage.tsx` | Hasil skor keseluruhan. | Saat mengubah score summary. |
@@ -97,6 +98,8 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/utils/formValidation.ts` | Sanitasi text dan validasi string sederhana. | Saat mengubah validasi form lokal. |
 | `src/utils/number.ts` | `formatScore`, `clampPercent`. | Saat mengubah formatting score/progress. |
 | `src/utils/exportReport.ts` | `downloadPdfReport`, `downloadWorkbook`, formatter Rupiah, dan filename export. | Saat mengubah export PDF/Excel frontend. |
+| `src/utils/color.ts` | `hexToRgb(hex?, fallback?)` — parser hex ke `{r,g,b}` dipakai bersama oleh `exportReport.ts` (warna PDF) dan `theme/theme.ts` (relative luminance). | Saat menambah kebutuhan parsing warna baru; jangan re-implement hex parser di file lain. |
+| `src/hooks/useAdminRealtimeSignal.ts` | Hook `useAdminRealtimeSignal()` — listen event `gimb:admin-notification`, return counter yang naik tiap kali event masuk. Dipakai `AdminAuditLogPage`, `AdminUsersPage`, `AdminDiagnosisPage`, `AdminSummaryPage` untuk trigger soft-refresh data tanpa reload penuh. | Saat menambah halaman admin baru yang perlu ikut realtime-refresh saat ada notifikasi. |
 | `src/vite-env.d.ts` | Type env Vite. | Saat menambah type env custom jika diperlukan. |
 
 ## Existing Docs

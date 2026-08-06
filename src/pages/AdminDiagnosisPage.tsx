@@ -4,6 +4,7 @@ import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { PaginationControls } from "../components/organisms/PaginationControls";
+import { useAdminRealtimeSignal } from "../hooks/useAdminRealtimeSignal";
 import * as adminApi from "../services/api/admin";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { emptyPaginationMeta, normalizePaginationMeta } from "../utils/pagination";
@@ -26,7 +27,7 @@ export function AdminDiagnosisPage() {
   const [diagnosisError, setDiagnosisError] = useState("");
   const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(true);
   const [diagnosisReloadKey, setDiagnosisReloadKey] = useState(0);
-  const [realtimeRefreshKey, setRealtimeRefreshKey] = useState(0);
+  const realtimeRefreshKey = useAdminRealtimeSignal();
 
   useEffect(() => {
     let isMounted = true;
@@ -72,12 +73,6 @@ export function AdminDiagnosisPage() {
       isMounted = false;
     };
   }, [diagnosisPage, diagnosisPageSize, diagnosisReloadKey]);
-
-  useEffect(() => {
-    const refreshOnNotification = () => setRealtimeRefreshKey((current) => current + 1);
-    window.addEventListener("gimb:admin-notification", refreshOnNotification);
-    return () => window.removeEventListener("gimb:admin-notification", refreshOnNotification);
-  }, []);
 
   useEffect(() => {
     if (realtimeRefreshKey === 0) return;

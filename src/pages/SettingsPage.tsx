@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "../components/atoms/Button";
+import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
 import { Icon } from "../components/atoms/Icon";
 import { GoogleLoginButton } from "../components/molecules/GoogleLoginButton";
 import { ThemeCustomizer } from "../components/molecules/ThemeCustomizer";
@@ -380,7 +381,7 @@ export function SettingsPage() {
             </form>
           </div>
 
-          <ThemeCustomizer scope="colors" />
+          <ThemeCustomizer />
         </div>
 
         {notice && (
@@ -391,51 +392,46 @@ export function SettingsPage() {
         )}
 
         {isProfileConfirmOpen && (
-          <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="profile-confirm-title">
-            <div className="confirm-dialog__card">
-              <span className="confirm-dialog__icon">
-                <Icon name="settings" size={34} />
-              </span>
-              <h2 id="profile-confirm-title">Simpan nama baru?</h2>
-              <p>Nama ini akan tampil di dashboard, menu akun, dan beberapa halaman admin.</p>
-              <div className="confirm-dialog__actions">
-                <Button variant="secondary" onClick={() => setIsProfileConfirmOpen(false)} disabled={isProfileSubmitting}>Batal</Button>
-                <Button onClick={saveProfile} disabled={isProfileSubmitting}>{isProfileSubmitting ? "Menyimpan..." : "Ya, Simpan"}</Button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDialog
+            titleId="profile-confirm-title"
+            icon="settings"
+            title="Simpan nama baru?"
+            message="Nama ini akan tampil di dashboard, menu akun, dan beberapa halaman admin."
+            cancelLabel="Batal"
+            confirmLabel={isProfileSubmitting ? "Menyimpan..." : "Ya, Simpan"}
+            onCancel={() => setIsProfileConfirmOpen(false)}
+            onConfirm={saveProfile}
+            isBusy={isProfileSubmitting}
+          />
         )}
 
         {isPasswordConfirmOpen && (
-          <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="password-confirm-title">
-            <div className="confirm-dialog__card">
-              <span className="confirm-dialog__icon">
-                <Icon name="settings" size={34} />
-              </span>
-              <h2 id="password-confirm-title">{hasPassword ? "Simpan password baru?" : "Buat password login?"}</h2>
-              <p>{hasPassword ? "Pastikan password baru sudah benar. Perubahan ini akan dipakai untuk login berikutnya." : "Password ini akan mengaktifkan login email/password untuk akun Google Anda."}</p>
-              <div className="confirm-dialog__actions">
-                <Button variant="secondary" onClick={() => setIsPasswordConfirmOpen(false)} disabled={isSubmitting}>Batal</Button>
-                <Button onClick={savePassword} disabled={isSubmitting}>{isSubmitting ? "Menyimpan..." : "Ya, Simpan"}</Button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDialog
+            titleId="password-confirm-title"
+            icon="settings"
+            title={hasPassword ? "Simpan password baru?" : "Buat password login?"}
+            message={hasPassword ? "Pastikan password baru sudah benar. Perubahan ini akan dipakai untuk login berikutnya." : "Password ini akan mengaktifkan login email/password untuk akun Google Anda."}
+            cancelLabel="Batal"
+            confirmLabel={isSubmitting ? "Menyimpan..." : "Ya, Simpan"}
+            onCancel={() => setIsPasswordConfirmOpen(false)}
+            onConfirm={savePassword}
+            isBusy={isSubmitting}
+          />
         )}
 
         {isGoogleUnlinkConfirmOpen && (
-          <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="google-unlink-confirm-title">
-            <div className="confirm-dialog__card">
-              <span className="confirm-dialog__icon confirm-dialog__icon--danger">
-                <Icon name="alert" size={34} />
-              </span>
-              <h2 id="google-unlink-confirm-title">Lepas tautan Google?</h2>
-              <p>Setelah dilepas, akun ini tidak bisa login menggunakan Google sampai kamu menautkannya kembali.</p>
-              <div className="confirm-dialog__actions">
-                <Button variant="secondary" onClick={() => setIsGoogleUnlinkConfirmOpen(false)} disabled={isGoogleUnlinkSubmitting}>Batal</Button>
-                <Button onClick={unlinkGoogle} disabled={isGoogleUnlinkSubmitting}>{isGoogleUnlinkSubmitting ? "Melepas..." : "Ya, Lepas"}</Button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDialog
+            danger
+            titleId="google-unlink-confirm-title"
+            icon="alert"
+            title="Lepas tautan Google?"
+            message="Setelah dilepas, akun ini tidak bisa login menggunakan Google sampai kamu menautkannya kembali."
+            cancelLabel="Batal"
+            confirmLabel={isGoogleUnlinkSubmitting ? "Melepas..." : "Ya, Lepas"}
+            onCancel={() => setIsGoogleUnlinkConfirmOpen(false)}
+            onConfirm={unlinkGoogle}
+            isBusy={isGoogleUnlinkSubmitting}
+          />
         )}
       </section>
     </DashboardShell>

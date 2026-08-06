@@ -5,6 +5,7 @@ import type { View } from "../../types";
 import { Button } from "../atoms/Button";
 import { Icon } from "../atoms/Icon";
 import { Brand } from "../molecules/Brand";
+import { ConfirmDialog } from "../molecules/ConfirmDialog";
 import { useThemeSettings } from "../../theme/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import * as businessApi from "../../services/api/businesses";
@@ -14,7 +15,6 @@ import type { AdminNotification, NotificationEvent } from "../../services/api/ty
 import { formatNotificationTime } from "../../utils/dateTime";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
-const showUpgradePlanButton = false; // toggle to true to bring back the sidebar "Upgrade Plan" button
 
 function routeByView(view: View, businessId?: string) {
   const score = businessId ? `/businesses/${businessId}/score` : "/businesses";
@@ -306,7 +306,6 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           )}
         </nav>
         <div className="sidebar__bottom">
-          {showUpgradePlanButton && !isAdmin && <Button variant="secondary" data-label="Upgrade Plan">Upgrade Plan</Button>}
           <Link to="/settings" className={activeView === "settings" ? "active" : ""} data-label="Pengaturan" onClick={() => setIsMenuOpen(false)}><Icon name="settings" /> <span>Pengaturan</span></Link>
           <button data-label="Keluar" onClick={() => setIsLogoutConfirmOpen(true)}><Icon name="logout" /> <span>Keluar</span></button>
         </div>
@@ -414,19 +413,18 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
         </button>
       )}
       {isLogoutConfirmOpen && (
-        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title">
-          <div className="confirm-dialog__card">
-            <span className="confirm-dialog__icon">
-              <Icon name="logout" size={34} />
-            </span>
-            <h2 id="logout-title">Keluar dari dashboard?</h2>
-            <p>Sesi Anda akan ditutup dan Anda akan diarahkan kembali ke halaman login.</p>
-            <div className="confirm-dialog__actions">
-              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => setIsLogoutConfirmOpen(false)} disabled={isLoggingOut}>Tidak</Button>
-              <Button className="btn--shiny-dashboard" onClick={handleLogout} disabled={isLoggingOut}>{isLoggingOut ? "Keluar..." : "Ya, Keluar"}</Button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          variant="dashboard"
+          titleId="logout-title"
+          icon="logout"
+          title="Keluar dari dashboard?"
+          message="Sesi Anda akan ditutup dan Anda akan diarahkan kembali ke halaman login."
+          cancelLabel="Tidak"
+          confirmLabel={isLoggingOut ? "Keluar..." : "Ya, Keluar"}
+          onCancel={() => setIsLogoutConfirmOpen(false)}
+          onConfirm={handleLogout}
+          isBusy={isLoggingOut}
+        />
       )}
     </div>
   );

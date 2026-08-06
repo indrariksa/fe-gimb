@@ -18,7 +18,7 @@ const stagger: Variants = {
   show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
 };
 
-function AnimatedNumber({ value, suffix = "", prefix = "", delay = 0.5 }: { value: number; suffix?: string; prefix?: string; delay?: number }) {
+function AnimatedNumber({ value, suffix = "", delay = 0.5 }: { value: number; suffix?: string; delay?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const node = ref.current;
@@ -28,12 +28,12 @@ function AnimatedNumber({ value, suffix = "", prefix = "", delay = 0.5 }: { valu
       delay,
       ease: [0.16, 1, 0.3, 1],
       onUpdate(latest) {
-        node.textContent = `${prefix}${Math.round(latest).toLocaleString("id-ID")}${suffix}`;
+        node.textContent = `${Math.round(latest).toLocaleString("id-ID")}${suffix}`;
       },
     });
     return () => controls.stop();
-  }, [value, suffix, prefix, delay]);
-  return <span ref={ref}>{prefix}0{suffix}</span>;
+  }, [value, suffix, delay]);
+  return <span ref={ref}>0{suffix}</span>;
 }
 
 const rotatingWords = ["Cepat", "Akurat", "Terukur", "Objektif", "Andal"];

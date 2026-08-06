@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { DashboardShell } from "../components/organisms/DashboardShell";
-import { Button } from "../components/atoms/Button";
+import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { PaginationControls } from "../components/organisms/PaginationControls";
+import { useAdminRealtimeSignal } from "../hooks/useAdminRealtimeSignal";
 import { useAuth } from "../context/AuthContext";
 import * as adminApi from "../services/api/admin";
 import type { User, UserStatus } from "../services/api/types";
@@ -22,7 +23,7 @@ export function AdminUsersPage() {
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [emailVerifyTarget, setEmailVerifyTarget] = useState<User | null>(null);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
-  const [realtimeRefreshKey, setRealtimeRefreshKey] = useState(0);
+  const realtimeRefreshKey = useAdminRealtimeSignal();
 
   useEffect(() => {
     let isMounted = true;
@@ -51,12 +52,6 @@ export function AdminUsersPage() {
       isMounted = false;
     };
   }, [userPage, userPageSize, userReloadKey]);
-
-  useEffect(() => {
-    const refreshOnNotification = () => setRealtimeRefreshKey((current) => current + 1);
-    window.addEventListener("gimb:admin-notification", refreshOnNotification);
-    return () => window.removeEventListener("gimb:admin-notification", refreshOnNotification);
-  }, []);
 
   useEffect(() => {
     if (realtimeRefreshKey === 0) return;
@@ -166,23 +161,18 @@ export function AdminUsersPage() {
       </section>
 
       {emailVerifyTarget && (
-        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="email-verify-confirm-title">
-          <div className="confirm-dialog__card">
-            <span className="confirm-dialog__icon"><Icon name="check" size={34} /></span>
-            <h2 id="email-verify-confirm-title">Verifikasi manual email?</h2>
-            <p>
-              Akun <strong>{emailVerifyTarget.email}</strong> akan dianggap terverifikasi tanpa klik link email.
-            </p>
-            <div className="confirm-dialog__actions">
-              <Button className="btn--dashboard-hover" variant="secondary" disabled={isVerifyingEmail} onClick={() => setEmailVerifyTarget(null)}>
-                Tidak
-              </Button>
-              <Button className="btn--shiny-dashboard" disabled={isVerifyingEmail} onClick={verifyEmailManually}>
-                {isVerifyingEmail ? "Memverifikasi..." : "Ya, Verifikasi"}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          variant="dashboard"
+          titleId="email-verify-confirm-title"
+          icon="check"
+          title="Verifikasi manual email?"
+          message={<>Akun <strong>{emailVerifyTarget.email}</strong> akan dianggap terverifikasi tanpa klik link email.</>}
+          cancelLabel="Tidak"
+          confirmLabel={isVerifyingEmail ? "Memverifikasi..." : "Ya, Verifikasi"}
+          onCancel={() => setEmailVerifyTarget(null)}
+          onConfirm={verifyEmailManually}
+          isBusy={isVerifyingEmail}
+        />
       )}
     </DashboardShell>
   );

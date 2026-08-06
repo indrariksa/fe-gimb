@@ -1,4 +1,5 @@
 import type { ThemeSettings } from "../types";
+import { hexToRgb } from "../utils/color";
 
 export const defaultTheme: ThemeSettings = {
   appName: "GIMB Business",
@@ -13,23 +14,8 @@ export const defaultTheme: ThemeSettings = {
 
 export const themeStorageKey = "gimb:sbd:theme";
 
-function hexToRgb(hex: string) {
-  const normalized = hex.replace("#", "").trim();
-  const value = normalized.length === 3
-    ? normalized.split("").map((char) => char + char).join("")
-    : normalized;
-
-  if (value.length !== 6) return { r: 101, g: 88, b: 217 };
-
-  return {
-    r: Number.parseInt(value.slice(0, 2), 16),
-    g: Number.parseInt(value.slice(2, 4), 16),
-    b: Number.parseInt(value.slice(4, 6), 16),
-  };
-}
-
 function relativeLuminance(hex: string) {
-  const { r, g, b } = hexToRgb(hex);
+  const { r, g, b } = hexToRgb(hex, [101, 88, 217]);
   const values = [r, g, b].map((channel) => {
     const normalized = channel / 255;
     return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;

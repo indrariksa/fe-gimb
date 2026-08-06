@@ -5,6 +5,7 @@ import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
 import { AdminAnalyticsChart } from "../components/organisms/AdminAnalyticsChart";
+import { useAdminRealtimeSignal } from "../hooks/useAdminRealtimeSignal";
 import * as adminApi from "../services/api/admin";
 import type { AdminSummary, AIReportChartData, BusinessLimitSetting } from "../services/api/types";
 
@@ -15,7 +16,7 @@ export function AdminSummaryPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
-  const [realtimeRefreshKey, setRealtimeRefreshKey] = useState(0);
+  const realtimeRefreshKey = useAdminRealtimeSignal();
 
   useEffect(() => {
     let isMounted = true;
@@ -44,12 +45,6 @@ export function AdminSummaryPage() {
       isMounted = false;
     };
   }, [reloadKey]);
-
-  useEffect(() => {
-    const refreshOnNotification = () => setRealtimeRefreshKey((current) => current + 1);
-    window.addEventListener("gimb:admin-notification", refreshOnNotification);
-    return () => window.removeEventListener("gimb:admin-notification", refreshOnNotification);
-  }, []);
 
   useEffect(() => {
     if (realtimeRefreshKey === 0) return;

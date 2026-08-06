@@ -81,13 +81,6 @@ function formatCompactCurrency(value: number) {
   }).format(value || 0);
 }
 
-function formatCompactNumber(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value || 0);
-}
-
 function formatPercent(value: number) {
   return `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value || 0)}%`;
 }
@@ -179,9 +172,9 @@ export function SubScoresPage() {
     const remainingMargin = profitPerHundred;
 
     const customerItems: InventoryInsightBar[] = [
-      { label: "Pelanggan Baru", value: submission.new_customers, formatted: formatCompactNumber(submission.new_customers), color: "#3b82f6" },
-      { label: "Repeat Customer", value: submission.repeat_customers, formatted: formatCompactNumber(submission.repeat_customers), color: "#8b5cf6" },
-      { label: "Pelanggan Aktif", value: submission.active_customers, formatted: formatCompactNumber(submission.active_customers), color: "#10b981" },
+      { label: "Pelanggan Baru", value: submission.new_customers, formatted: formatCompactCurrency(submission.new_customers), color: "#3b82f6" },
+      { label: "Repeat Customer", value: submission.repeat_customers, formatted: formatCompactCurrency(submission.repeat_customers), color: "#8b5cf6" },
+      { label: "Pelanggan Aktif", value: submission.active_customers, formatted: formatCompactCurrency(submission.active_customers), color: "#10b981" },
     ];
     const customerMax = Math.max(1, ...customerItems.map((item) => item.value));
     const monthlySalaryPerEmployee = safeDivide(submission.salary_cost, inventoryPeriodMonths * submission.employee_count);
@@ -190,7 +183,7 @@ export function SubScoresPage() {
       {
         label: "Nilai rata-rata transaksi",
         value: `Rp ${formatCompactCurrency(metrics.average_transaction_value)}`,
-        note: `${formatCompactNumber(submission.six_month_transactions)} transaksi`,
+        note: `${formatCompactCurrency(submission.six_month_transactions)} transaksi`,
         percent: Math.min(100, safeDivide(metrics.average_transaction_value, 500000) * 100),
         color: "#3b82f6",
       },

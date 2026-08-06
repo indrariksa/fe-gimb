@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
+import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { TextField } from "../components/atoms/TextField";
@@ -57,7 +58,7 @@ function digitsOnly(value: string) {
 function formatNumberInput(value: string | undefined) {
   const digits = digitsOnly(value ?? "");
   if (!digits) return "";
-  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return Number(digits).toLocaleString("id-ID");
 }
 
 function buildPayload(values: Record<string, string>): InventoryPayload {
@@ -261,19 +262,18 @@ export function InventoryPage() {
       </section>
 
       {isConfirmOpen && (
-        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-          <div className="confirm-dialog__card">
-            <span className="confirm-dialog__icon">
-              <Icon name="alert" size={34} />
-            </span>
-            <h2 id="confirm-title">Data yang diinput sudah benar?</h2>
-            <p>Pastikan angka dan informasi bisnis sudah sesuai sebelum sistem mulai melakukan analisis.</p>
-            <div className="confirm-dialog__actions">
-              <Button className="btn--dashboard-hover" variant="secondary" onClick={() => setIsConfirmOpen(false)} disabled={isSubmitting}>Tidak</Button>
-              <Button className="btn--shiny-dashboard" onClick={submitInventory} disabled={isSubmitting}>{isSubmitting ? "Menyimpan..." : "Ya, Lanjutkan"}</Button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          variant="dashboard"
+          titleId="confirm-title"
+          icon="alert"
+          title="Data yang diinput sudah benar?"
+          message="Pastikan angka dan informasi bisnis sudah sesuai sebelum sistem mulai melakukan analisis."
+          cancelLabel="Tidak"
+          confirmLabel={isSubmitting ? "Menyimpan..." : "Ya, Lanjutkan"}
+          onCancel={() => setIsConfirmOpen(false)}
+          onConfirm={submitInventory}
+          isBusy={isSubmitting}
+        />
       )}
     </DashboardShell>
   );

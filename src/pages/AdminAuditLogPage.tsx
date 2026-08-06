@@ -3,6 +3,7 @@ import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { PaginationControls } from "../components/organisms/PaginationControls";
+import { useAdminRealtimeSignal } from "../hooks/useAdminRealtimeSignal";
 import * as adminApi from "../services/api/admin";
 import type { AuditLog } from "../services/api/types";
 import { emptyPaginationMeta, normalizePaginationMeta } from "../utils/pagination";
@@ -23,10 +24,9 @@ function shortValue(value: string, length = 12) {
 type AuditLevel = "info" | "warning" | "error";
 type AuditLevelFilter = AuditLevel | "all";
 
-function auditLevel(logOrAction: AuditLog | string): AuditLevel {
-  if (typeof logOrAction !== "string" && logOrAction.level) return logOrAction.level;
-  const action = typeof logOrAction === "string" ? logOrAction : logOrAction.action;
-  const lowered = action.toLowerCase();
+function auditLevel(log: AuditLog): AuditLevel {
+  if (log.level) return log.level;
+  const lowered = log.action.toLowerCase();
   if (lowered.includes("failed") || lowered.includes("error") || lowered.includes("blocked")) return "error";
   if (lowered.includes("updated") || lowered.includes("deleted") || lowered.includes("suspended") || lowered.includes("limit")) return "warning";
   return "info";
@@ -105,7 +105,7 @@ export function AdminAuditLogPage() {
   const [expandedAuditId, setExpandedAuditId] = useState<string | null>(null);
   const [auditError, setAuditError] = useState("");
   const [isAuditLoading, setIsAuditLoading] = useState(true);
-  const [realtimeRefreshKey, setRealtimeRefreshKey] = useState(0);
+  const realtimeRefreshKey = useAdminRealtimeSignal();
 
   useEffect(() => {
     let isMounted = true;
@@ -165,12 +165,6 @@ export function AdminAuditLogPage() {
       isMounted = false;
     };
   }, [auditLevelFilter, auditPage, auditPageSize, auditSearch, auditSoftReloadKey]);
-
-  useEffect(() => {
-    const refreshOnNotification = () => setRealtimeRefreshKey((current) => current + 1);
-    window.addEventListener("gimb:admin-notification", refreshOnNotification);
-    return () => window.removeEventListener("gimb:admin-notification", refreshOnNotification);
-  }, []);
 
   useEffect(() => {
     if (realtimeRefreshKey === 0) return;

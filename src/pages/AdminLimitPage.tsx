@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { DashboardShell } from "../components/organisms/DashboardShell";
-import { Button } from "../components/atoms/Button";
-import { Icon } from "../components/atoms/Icon";
+import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
 import * as adminApi from "../services/api/admin";
 
 export function AdminLimitPage() {
@@ -74,21 +73,18 @@ export function AdminLimitPage() {
       </section>
 
       {isLimitConfirmOpen && (
-        <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="limit-confirm-title">
-          <div className="confirm-dialog__card">
-            <span className="confirm-dialog__icon"><Icon name="settings" size={34} /></span>
-            <h2 id="limit-confirm-title">Simpan perubahan limit?</h2>
-            <p>Limit toko per user akan diubah menjadi <strong>{businessLimitInput}</strong>.</p>
-            <div className="confirm-dialog__actions">
-              <Button className="btn--dashboard-hover" variant="secondary" disabled={isSavingLimit} onClick={() => setIsLimitConfirmOpen(false)}>
-                Tidak
-              </Button>
-              <Button className="btn--shiny-dashboard" disabled={isSavingLimit} onClick={confirmBusinessLimitSave}>
-                {isSavingLimit ? "Menyimpan..." : "Ya, Simpan"}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          variant="dashboard"
+          titleId="limit-confirm-title"
+          icon="settings"
+          title="Simpan perubahan limit?"
+          message={<>Limit toko per user akan diubah menjadi <strong>{businessLimitInput}</strong>.</>}
+          cancelLabel="Tidak"
+          confirmLabel={isSavingLimit ? "Menyimpan..." : "Ya, Simpan"}
+          onCancel={() => setIsLimitConfirmOpen(false)}
+          onConfirm={confirmBusinessLimitSave}
+          isBusy={isSavingLimit}
+        />
       )}
     </DashboardShell>
   );

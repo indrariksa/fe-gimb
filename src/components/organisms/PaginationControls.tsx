@@ -70,18 +70,6 @@ export function PaginationControls({ page, pageSize, meta, isLoading, onPageChan
             )}
           </span>
           data
-          <select
-            className="admin-pagination__native-size"
-            value={pageSize}
-            disabled={isLoading}
-            onChange={(event) => onPageSizeChange(Number(event.target.value))}
-            aria-hidden="true"
-            tabIndex={-1}
-          >
-            {paginationSizeOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
         </label>
       </div>
       <div className="admin-pagination__controls">
