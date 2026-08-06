@@ -138,7 +138,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
 
     const connect = (isReconnect = false) => {
       setRealtimeStatus(isReconnect ? "reconnecting" : "connecting");
-      socket = new WebSocket(notificationApi.notificationWebSocketUrl(accessToken));
+      socket = new WebSocket(notificationApi.notificationWebSocketUrl(), [accessToken]);
       socket.onopen = () => setRealtimeStatus("connected");
       socket.onmessage = (event) => {
         try {

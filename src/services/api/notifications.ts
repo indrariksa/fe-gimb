@@ -17,10 +17,9 @@ export function markAllNotificationsRead() {
   return apiRequest<null>("/admin/notifications/read-all", { method: "PATCH" });
 }
 
-export function notificationWebSocketUrl(accessToken: string) {
+export function notificationWebSocketUrl() {
   const base = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8080/api/v1";
   const url = new URL(`${base.replace(/\/$/, "")}/admin/notifications/ws`);
   url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-  url.searchParams.set("access_token", accessToken);
   return url.toString();
 }
