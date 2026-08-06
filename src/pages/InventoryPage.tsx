@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
+import { FormErrorToast } from "../components/molecules/FormErrorToast";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { TextField } from "../components/atoms/TextField";
@@ -210,7 +211,6 @@ export function InventoryPage() {
               />
             ))}
             </div>
-            {error && <p className="form-error">{error}</p>}
             <label className="field field--wide">
               <span className="field__label">Ceritakan masalah bisnis Anda lebih detail</span>
               <p className="field__hint">
@@ -260,6 +260,8 @@ export function InventoryPage() {
         </>
         )}
       </section>
+
+      {error && <FormErrorToast message={error} onDismiss={() => setError("")} />}
 
       {isConfirmOpen && (
         <ConfirmDialog

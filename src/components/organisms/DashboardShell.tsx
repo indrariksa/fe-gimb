@@ -63,6 +63,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(sidebarCollapsedStorageKey) === "true");
   const [hasInventoryResult, setHasInventoryResult] = useState(false);
+  const [isCheckingInventoryResult, setIsCheckingInventoryResult] = useState(true);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
@@ -85,9 +86,11 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     async function checkInventoryResult() {
       if (!businessId) {
         setHasInventoryResult(false);
+        setIsCheckingInventoryResult(false);
         return;
       }
 
+      setIsCheckingInventoryResult(true);
       try {
         if (isAdmin) {
           await adminApi.adminLatestBusinessInventory(businessId);
@@ -97,6 +100,8 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
         if (isMounted) setHasInventoryResult(true);
       } catch {
         if (isMounted) setHasInventoryResult(false);
+      } finally {
+        if (isMounted) setIsCheckingInventoryResult(false);
       }
     }
 
@@ -197,18 +202,27 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   }, [isAccountMenuOpen]);
 
   const needsBusiness = !businessId;
+  const resultNavReason = needsBusiness
+    ? "Pilih toko dulu"
+    : isCheckingInventoryResult
+      ? "Memuat status..."
+      : !hasInventoryResult
+        ? "Isi inventory dulu"
+        : undefined;
+  const inventoryNavReason = needsBusiness
+    ? "Pilih toko dulu"
+    : isCheckingInventoryResult
+      ? "Memuat status..."
+      : hasInventoryResult
+        ? "Sudah diisi"
+        : undefined;
   const userNavigation: NavigationItem[] = [
     { view: "businesses", label: "Daftar Toko", icon: "home" },
-    { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
-    { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
-    { view: "inventoryInput", label: "Hasil Input", icon: "file", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
-    { view: "aiReport", label: "Laporan AI", icon: "bulb", disabledReason: needsBusiness ? "Pilih toko dulu" : !hasInventoryResult ? "Isi inventory dulu" : undefined },
-    {
-      view: "inventory",
-      label: "Input Masalah",
-      icon: "alert",
-      disabledReason: needsBusiness ? "Pilih toko dulu" : hasInventoryResult ? "Sudah diisi" : undefined,
-    },
+    { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: resultNavReason },
+    { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: resultNavReason },
+    { view: "inventoryInput", label: "Hasil Input", icon: "file", disabledReason: resultNavReason },
+    { view: "aiReport", label: "Laporan AI", icon: "bulb", disabledReason: resultNavReason },
+    { view: "inventory", label: "Input Masalah", icon: "alert", disabledReason: inventoryNavReason },
   ];
 
   const adminNavigation: NavigationItem[] = [

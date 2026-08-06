@@ -78,6 +78,9 @@ export function BusinessesPage() {
   const [completedBusinessIds, setCompletedBusinessIds] = useState<Set<string>>(() => new Set());
   const [businessLimit, setBusinessLimit] = useState(2);
   const [form, setForm] = useState({ name: "", industry: "", description: "" });
+  const [industrySearch, setIndustrySearch] = useState("");
+  const [isIndustryOpen, setIsIndustryOpen] = useState(false);
+  const [isCustomIndustry, setIsCustomIndustry] = useState(false);
   const [error, setError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -116,6 +119,12 @@ export function BusinessesPage() {
   const needInputCount = Math.max(0, businesses.length - completedBusinessIds.size);
   const diagnosisStatus = businesses.length === 0 ? "Belum mulai" : needInputCount === 0 ? "Lengkap" : "Belum lengkap";
   const isDiagnosisComplete = businesses.length > 0 && needInputCount === 0;
+  const normalizedIndustrySearch = industrySearch.toLowerCase().trim();
+  const filteredIndustries = industryOptions.filter((industry) => industry.toLowerCase().includes(normalizedIndustrySearch));
+  const canUseCustomIndustry = Boolean(
+    industrySearch.trim() &&
+    !industryOptions.some((industry) => industry.toLowerCase() === normalizedIndustrySearch),
+  );
 
   useEffect(() => {
     loadBusinesses();
@@ -180,19 +189,19 @@ export function BusinessesPage() {
         <div className="business-summary">
           <HolographicCard>
             <span>Total toko</span>
-            <strong>{businesses.length} dari {businessLimit}</strong>
+            {isLoading ? <i className="skeleton-bar" /> : <strong>{businesses.length} dari {businessLimit}</strong>}
           </HolographicCard>
           <HolographicCard>
             <span>Perlu input</span>
-            <strong>{needInputCount}</strong>
+            {isLoading ? <i className="skeleton-bar" /> : <strong>{needInputCount}</strong>}
           </HolographicCard>
           <HolographicCard>
             <span>Sudah ada hasil</span>
-            <strong>{completedBusinessIds.size}</strong>
+            {isLoading ? <i className="skeleton-bar" /> : <strong>{completedBusinessIds.size}</strong>}
           </HolographicCard>
           <HolographicCard>
             <span>Status diagnosis</span>
-            <strong className={isDiagnosisComplete ? "is-good" : "is-warning"}>{diagnosisStatus}</strong>
+            {isLoading ? <i className="skeleton-bar" /> : <strong className={isDiagnosisComplete ? "is-good" : "is-warning"}>{diagnosisStatus}</strong>}
           </HolographicCard>
         </div>
 
@@ -272,21 +281,71 @@ export function BusinessesPage() {
                 : "Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah."}
             </p>
             <label><span>Nama toko</span><input required disabled={hasReachedLimit} placeholder="Contoh: Toko Maju Jaya" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
-            <label>
+            <label className="industry-combobox">
               <span>Industri</span>
               <input
                 required
                 disabled={hasReachedLimit}
-                list="industry-options"
-                placeholder="Cari atau ketik industri"
-                value={form.industry}
-                onChange={(event) => setForm((current) => ({ ...current, industry: event.target.value }))}
+                placeholder={isCustomIndustry ? "Tulis nama industri Anda" : "Cari atau pilih industri"}
+                value={isIndustryOpen ? industrySearch : form.industry}
+                onFocus={() => {
+                  setIndustrySearch(form.industry);
+                  setIsIndustryOpen(true);
+                  setIsCustomIndustry(false);
+                }}
+                onBlur={() => {
+                  window.setTimeout(() => {
+                    setIndustrySearch("");
+                    setIsIndustryOpen(false);
+                    setIsCustomIndustry(false);
+                  }, 120);
+                }}
+                onChange={(event) => {
+                  setIndustrySearch(event.target.value);
+                  setForm((current) => ({ ...current, industry: event.target.value }));
+                  if (!isCustomIndustry) setIsIndustryOpen(true);
+                }}
               />
-              <datalist id="industry-options">
-                {industryOptions.filter((industry) => industry !== "Lainnya").map((industry) => (
-                  <option key={industry} value={industry} />
-                ))}
-              </datalist>
+              {isIndustryOpen && !hasReachedLimit && (
+                <div className="industry-combobox__menu">
+                  {canUseCustomIndustry && (
+                    <button
+                      type="button"
+                      className="industry-combobox__custom"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        setForm((current) => ({ ...current, industry: industrySearch.trim() }));
+                        setIndustrySearch("");
+                        setIsIndustryOpen(false);
+                      }}
+                    >
+                      Gunakan "{industrySearch.trim()}"
+                    </button>
+                  )}
+                  {filteredIndustries.map((industry) => (
+                    <button
+                      type="button"
+                      key={industry}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        if (industry === "Lainnya") {
+                          setForm((current) => ({ ...current, industry: "" }));
+                          setIndustrySearch("");
+                          setIsIndustryOpen(false);
+                          setIsCustomIndustry(true);
+                          return;
+                        }
+                        setForm((current) => ({ ...current, industry }));
+                        setIndustrySearch("");
+                        setIsIndustryOpen(false);
+                        setIsCustomIndustry(false);
+                      }}
+                    >
+                      {industry}
+                    </button>
+                  ))}
+                </div>
+              )}
             </label>
             <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} placeholder="Contoh: Toko kebutuhan harian dan produk rumah tangga" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
             {error && <p className="form-error">{error}</p>}

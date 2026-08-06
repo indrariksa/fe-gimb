@@ -34,7 +34,7 @@ Route ini memakai `RequireAuth userOnly`. Admin diarahkan ke `/admin`.
 
 | Route | Halaman | Komponen Utama | Auth | Role | API yang Digunakan | Fungsi |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/businesses` | `BusinessesPage` | `DashboardShell`, business cards, business create form, input industri `<input list><datalist>` | Yes | `user` | `GET /businesses`, `GET /settings/business-limit`, `GET /businesses/:id/inventory-submissions/latest`, `POST /businesses` | Daftar toko user, status inventory tiap toko, tombol Sub Skor/detail input untuk toko yang sudah ada hasil, business limit, tambah toko baru, dan tombol coba lagi saat load daftar gagal. |
+| `/businesses` | `BusinessesPage` | `DashboardShell`, business cards, business create form, industry combobox | Yes | `user` | `GET /businesses`, `GET /settings/business-limit`, `GET /businesses/:id/inventory-submissions/latest`, `POST /businesses` | Daftar toko user, status inventory tiap toko, tombol Sub Skor/detail input untuk toko yang sudah ada hasil, business limit, tambah toko baru, dan tombol coba lagi saat load daftar gagal. |
 
 ## Admin-Only
 

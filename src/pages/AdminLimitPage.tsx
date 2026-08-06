@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
+import { LoadingState } from "../components/atoms/LoadingState";
 import * as adminApi from "../services/api/admin";
 
 export function AdminLimitPage() {
@@ -9,6 +10,7 @@ export function AdminLimitPage() {
   const [settingMessage, setSettingMessage] = useState("");
   const [isSavingLimit, setIsSavingLimit] = useState(false);
   const [isLimitConfirmOpen, setIsLimitConfirmOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -19,6 +21,8 @@ export function AdminLimitPage() {
         if (isMounted) setBusinessLimitInput(String(limitData.value));
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat limit toko");
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     }
     load();
@@ -53,22 +57,26 @@ export function AdminLimitPage() {
         {error && <article className="panel empty-state retry-state"><span>{error}</span></article>}
         <section className="admin-section panel admin-anchor">
           <h3>Pengaturan Limit</h3>
-          <form className="admin-setting-form" onSubmit={saveBusinessLimit}>
-            <label>
-              <span>Batas toko per user</span>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={businessLimitInput}
-                onChange={(event) => setBusinessLimitInput(event.target.value)}
-              />
-            </label>
-            <button className="btn btn--shiny-dashboard" type="submit" disabled={isSavingLimit}>
-              {isSavingLimit ? "Menyimpan..." : "Simpan Limit"}
-            </button>
-            {settingMessage && <p>{settingMessage}</p>}
-          </form>
+          {isLoading ? (
+            <LoadingState>Memuat limit toko...</LoadingState>
+          ) : (
+            <form className="admin-setting-form" onSubmit={saveBusinessLimit}>
+              <label>
+                <span>Batas toko per user</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={businessLimitInput}
+                  onChange={(event) => setBusinessLimitInput(event.target.value)}
+                />
+              </label>
+              <button className="btn btn--shiny-dashboard" type="submit" disabled={isSavingLimit}>
+                {isSavingLimit ? "Menyimpan..." : "Simpan Limit"}
+              </button>
+              {settingMessage && <p>{settingMessage}</p>}
+            </form>
+          )}
         </section>
       </section>
 
