@@ -68,11 +68,11 @@ export function adminInventorySubmissions(params = { limit: 20, offset: 0 }) {
 }
 
 export function adminBusinessAIReport(publicId: string) {
-  return apiRequest<AIReport>(`/admin/businesses/${publicId}/ai-report`);
+  return apiRequest<AIReport>(`/admin/businesses/${publicId}/health-report`);
 }
 
 export function adminRegenerateBusinessAIReport(publicId: string) {
-  return apiRequest<AIReport>(`/admin/businesses/${publicId}/ai-report/regenerate`, {
+  return apiRequest<AIReport>(`/admin/businesses/${publicId}/health-report/regenerate`, {
     method: "POST",
   });
 }

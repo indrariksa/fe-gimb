@@ -86,7 +86,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/AdminLimitPage.tsx` | Form limit toko per user. | Saat mengubah pengaturan limit toko. |
 | `src/pages/AdminUsersPage.tsx` | Tabel user, update status, verifikasi manual email. | Saat mengubah fitur manajemen user admin. |
 | `src/pages/AdminAuditLogPage.tsx` | Panel audit log dengan pagination dan search/filter. | Saat mengubah fitur audit log admin. |
-| `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role; punya tombol admin ke Laporan AI. | Saat mengubah review/detail inventory. |
+| `src/pages/AdminInventoryDetailPage.tsx` | Detail input inventory shared untuk admin dan user, memilih service API berdasarkan role; punya tombol admin ke Laporan Kesehatan Bisnis. | Saat mengubah review/detail inventory. |
 | `src/pages/AIReportPage.tsx` | Laporan bisnis AI: polling status, narasi per sub-skor, alternative solutions, chart, export PDF/XLSX, dan regenerate saat gagal. | Saat mengubah tampilan/alur laporan AI. |
 
 ## Data, Types, Utilities

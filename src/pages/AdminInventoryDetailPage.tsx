@@ -145,7 +145,7 @@ export function AdminInventoryDetailPage() {
                 </p>
                 <nav className="page-nav">
                   <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
-                  <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
+                  <Link className="page-nav__link" to={`/businesses/${businessId}/health-report`}><Icon name="bulb" size={16} /> Laporan Kesehatan Bisnis</Link>
                 </nav>
               </div>
               <div className="admin-inventory-hero__score">

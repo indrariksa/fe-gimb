@@ -38,11 +38,11 @@ export function latestBusinessInventory(publicId: string) {
 }
 
 export function getBusinessAIReport(publicId: string) {
-  return apiRequest<AIReport>(`/businesses/${publicId}/ai-report`);
+  return apiRequest<AIReport>(`/businesses/${publicId}/health-report`);
 }
 
 export function regenerateBusinessAIReport(publicId: string) {
-  return apiRequest<AIReport>(`/businesses/${publicId}/ai-report/regenerate`, {
+  return apiRequest<AIReport>(`/businesses/${publicId}/health-report/regenerate`, {
     method: "POST",
   });
 }

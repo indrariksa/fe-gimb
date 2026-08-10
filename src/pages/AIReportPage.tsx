@@ -54,7 +54,7 @@ export function AIReportPage() {
         setNotEligible(true);
         setError("");
       } else {
-        setError(getFriendlyApiError(err, "Gagal memuat laporan AI"));
+        setError(getFriendlyApiError(err, "Gagal memuat laporan kesehatan bisnis"));
       }
     } finally {
       setIsLoading(false);
@@ -83,7 +83,7 @@ export function AIReportPage() {
       setReport(data);
       setError("");
     } catch (err) {
-      setError(getFriendlyApiError(err, "Gagal memulai ulang laporan AI"));
+      setError(getFriendlyApiError(err, "Gagal memulai ulang laporan kesehatan bisnis"));
     } finally {
       setIsRegenerating(false);
     }
@@ -96,8 +96,8 @@ export function AIReportPage() {
     setExportError("");
     try {
       await downloadPdfReport({
-        filename: reportFilename("ai-business-report", businessId, "pdf"),
-        title: "Laporan Bisnis AI",
+        filename: reportFilename("business-health-report", businessId, "pdf"),
+        title: "Laporan Kesehatan Bisnis",
         subtitle: content.meta.disclaimer,
         summary: [
           ["Ringkasan Eksekutif", content.executive_summary],
@@ -132,11 +132,11 @@ export function AIReportPage() {
     if (!content) return;
     setExportError("");
     try {
-      await downloadWorkbook(reportFilename("ai-business-report", businessId, "xlsx"), [
+      await downloadWorkbook(reportFilename("business-health-report", businessId, "xlsx"), [
         {
           name: "Ringkasan",
           rows: [
-            ["Laporan Bisnis AI"],
+            ["Laporan Kesehatan Bisnis"],
             ["Ringkasan Eksekutif", content.executive_summary],
             ["Kekuatan Utama", content.key_strengths?.narrative ?? "-"],
             ["Tingkat Risiko", content.risk_assessment.level],
@@ -170,19 +170,19 @@ export function AIReportPage() {
   };
 
   return (
-    <DashboardShell activeView="aiReport" title="Laporan Bisnis AI">
+    <DashboardShell activeView="aiReport" title="Laporan Kesehatan Bisnis">
       <section className="ai-report">
         <nav className="page-nav">
           <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
           <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
         </nav>
-        {isLoading && <LoadingState>Memuat laporan AI...</LoadingState>}
+        {isLoading && <LoadingState>Memuat laporan kesehatan bisnis...</LoadingState>}
 
         {!isLoading && notEligible && (
           <article className="panel empty-state">
             <span><Icon name="bulb" /></span>
-            <h3>Laporan AI belum tersedia</h3>
-            <p>Laporan AI tersedia otomatis untuk omzet 6 bulan di atas Rp 50 juta setelah submit inventarisasi.</p>
+            <h3>Laporan Kesehatan Bisnis belum tersedia</h3>
+            <p>Laporan Kesehatan Bisnis tersedia otomatis untuk omzet 6 bulan di atas Rp 50 juta setelah submit inventarisasi.</p>
           </article>
         )}
 
@@ -202,13 +202,13 @@ export function AIReportPage() {
         )}
 
         {!isLoading && !error && !notEligible && report?.status === "processing" && (
-          <LoadingState>Laporan AI sedang diproses, biasanya butuh beberapa saat...</LoadingState>
+          <LoadingState>Laporan Kesehatan Bisnis sedang diproses, biasanya butuh beberapa saat...</LoadingState>
         )}
 
         {!isLoading && !error && !notEligible && report?.status === "failed" && (
           <article className="panel empty-state retry-state">
             <span><Icon name="alert" /></span>
-            <strong>Laporan AI gagal dibuat.</strong>
+            <strong>Laporan Kesehatan Bisnis gagal dibuat.</strong>
             <Button className="btn--dashboard-hover" onClick={handleRegenerate} disabled={isRegenerating}>
               {isRegenerating ? "Memulai ulang..." : "Generate Ulang"} <Icon name="refresh" size={18} />
             </Button>

@@ -21,7 +21,7 @@ function routeByView(view: View, businessId?: string) {
   const subScores = businessId ? `/businesses/${businessId}/sub-scores` : "/businesses";
   const inventoryInput = businessId ? `/businesses/${businessId}/inventory-input` : "/businesses";
   const inventory = businessId ? `/businesses/${businessId}/inventory/new` : "/businesses";
-  const aiReport = businessId ? `/businesses/${businessId}/ai-report` : "/businesses";
+  const aiReport = businessId ? `/businesses/${businessId}/health-report` : "/businesses";
 
   return {
     landing: "/",
@@ -221,7 +221,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
     { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: resultNavReason },
     { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: resultNavReason },
     { view: "inventoryInput", label: "Hasil Input", icon: "file", disabledReason: resultNavReason },
-    { view: "aiReport", label: "Laporan AI", icon: "bulb", disabledReason: resultNavReason },
+    { view: "aiReport", label: "Laporan Kesehatan Bisnis", icon: "bulb", disabledReason: resultNavReason },
     { view: "inventory", label: "Input Masalah", icon: "alert", disabledReason: inventoryNavReason },
   ];
 

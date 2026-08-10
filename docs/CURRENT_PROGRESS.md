@@ -37,11 +37,11 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - Confirmation dialog submit inventory.
 - Analysis progress page berbasis timer lokal.
 - Score result page.
-- Halaman `DashboardPage` terpisah sudah dihapus dan digabung ke `/businesses/:businessId/sub-scores` (`SubScoresPage`) supaya tidak ada dua halaman dengan informasi sama; `/businesses/:businessId/dashboard` sekarang redirect ke sub-scores. Sub-scores page kini berisi (urut dari atas): health ring skor keseluruhan, business snapshot (`RadarProfile`, disusun vertikal di bawah health ring, bukan 2 kolom), card enam sub-skor, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend — semua readable di light/dark mode. Action plan 30 hari dari `analysis.action_plan` dan insight prioritas/kekuatan/rekomendasi (rule-based) hanya tampil kalau omzet 6 bulan submission ≤ Rp 50 juta (`aiReportRevenueThreshold` di `SubScoresPage.tsx`, mirror `AI_REPORT_REVENUE_THRESHOLD` backend); di atas itu disembunyikan karena Laporan AI sudah tersedia dan lebih detail, supaya tidak ada dua narasi (rule-based vs AI) yang berpotensi beda untuk toko yang sama.
+- Halaman `DashboardPage` terpisah sudah dihapus dan digabung ke `/businesses/:businessId/sub-scores` (`SubScoresPage`) supaya tidak ada dua halaman dengan informasi sama; `/businesses/:businessId/dashboard` sekarang redirect ke sub-scores. Sub-scores page kini berisi (urut dari atas): health ring skor keseluruhan, business snapshot (`RadarProfile`, disusun vertikal di bawah health ring, bukan 2 kolom), card enam sub-skor, radar SVG, bar chart, insight operasional inventory termasuk sisa margin, dan legend — semua readable di light/dark mode. Action plan 30 hari dari `analysis.action_plan` dan insight prioritas/kekuatan/rekomendasi (rule-based) hanya tampil kalau omzet 6 bulan submission ≤ Rp 50 juta (`aiReportRevenueThreshold` di `SubScoresPage.tsx`, mirror `AI_REPORT_REVENUE_THRESHOLD` backend); di atas itu disembunyikan karena Laporan Kesehatan Bisnis sudah tersedia dan lebih detail, supaya tidak ada dua narasi (rule-based vs AI) yang berpotensi beda untuk toko yang sama.
 - Business Snapshot (`RadarProfile.tsx`) memuat 8 metrik: omzet 6 bulan, estimasi laba bersih, total biaya, total transaksi, rata-rata transaksi, repeat ratio, pelanggan aktif, aset, dan modal.
 - CSS efek hover/dekorasi kartu (`health-card`, `trend-card`, `radar-card`, `snapshot-card`, `insight-card`) di `global.css` di-rescope dari `.dashboard` (class yang sudah tidak ada sejak `DashboardPage` dihapus, sehingga efeknya mati total) ke `.subscores-page`, satu-satunya halaman yang memakai komponen-komponen ini sekarang.
 - Export PDF report dan XLSX gabungan (satu tombol masing-masing) untuk seluruh laporan kesehatan bisnis di sub-scores page (sebelumnya terpisah antara dashboard summary dan sub-scores detailed analysis).
-- Page navigation (pill nav dengan style tersendiri, bukan tombol biasa) antar halaman Sub Skor, Lihat Input, dan Laporan AI untuk memudahkan pindah halaman satu sama lain.
+- Page navigation (pill nav dengan style tersendiri, bukan tombol biasa) antar halaman Sub Skor, Lihat Input, dan Laporan Kesehatan Bisnis untuk memudahkan pindah halaman satu sama lain.
 - Settings page untuk update nama profile dengan konfirmasi, metode login readonly, tautkan atau lepas tautan Google dengan konfirmasi, guard agar akun Google-only membuat password dulu sebelum unlink, dan setup/ubah password mandiri dalam layout 50/50, lalu warna tema lokal tampil full-width dengan preview tema mini.
 - Theme provider dengan dark/light mode, OS preference initial mode, CSS variable colors, document title, dan toggle tema di landing/login/register.
 - Admin dashboard dipecah jadi 5 route/halaman terpisah (`AdminSummaryPage`, `AdminDiagnosisPage`, `AdminLimitPage`, `AdminUsersPage`, `AdminAuditLogPage`), masing-masing fetch data sendiri:
@@ -57,7 +57,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - WebSocket realtime dengan reconnect sederhana;
   - dropdown dan toast menampilkan waktu notifikasi di kanan judul dengan format relatif lalu tanggal/jam Asia/Jakarta untuk data lama.
 - Admin inventory detail/input readout page.
-- Laporan bisnis AI `/businesses/:businessId/ai-report` (dan versi admin `/admin/businesses/:businessId/ai-report`): polling status processing/ready/failed, narasi per sub-skor dengan score drivers dan alternative solutions, 10 chart Chart.js (`AIReportChart`) per submission — bar horizontal (`indexAxis: 'y'`, tinggi menyesuaikan jumlah baris) untuk 7 chart nilai, radar untuk profil skor, doughnut dengan teks tengah untuk struktur biaya, dan doughnut gauge (nilai vs sisa 100) dengan teks tengah skor+status untuk skor keseluruhan sebagai capstone card full-width, export PDF/XLSX reuse `downloadPdfReport`/`downloadWorkbook`, dan tombol generate ulang saat status gagal.
+- Laporan Kesehatan Bisnis `/businesses/:businessId/health-report` (dan versi admin `/admin/businesses/:businessId/health-report`): polling status processing/ready/failed, narasi per sub-skor dengan score drivers dan alternative solutions, 10 chart Chart.js (`AIReportChart`) per submission — bar horizontal (`indexAxis: 'y'`, tinggi menyesuaikan jumlah baris) untuk 7 chart nilai, radar untuk profil skor, doughnut dengan teks tengah untuk struktur biaya, dan doughnut gauge (nilai vs sisa 100) dengan teks tengah skor+status untuk skor keseluruhan sebagai capstone card full-width, export PDF/XLSX reuse `downloadPdfReport`/`downloadWorkbook`, dan tombol generate ulang saat status gagal.
 - `chartTheme.ts` (`getChartTheme`) sekarang menurunkan warna chart Chart.js langsung dari `theme.mode` (lookup statis light/dark) alih-alih membaca `getComputedStyle(document.documentElement)`. Sebelumnya ada race condition: `ThemeProvider` menerapkan atribut `data-theme` lewat `useEffect` yang berjalan setelah render komponen chart, jadi `getChartTheme()` bisa membaca warna tema sebelumnya. Dipakai di `AIReportChart.tsx` dan `AdminAnalyticsChart.tsx`.
 - Semua komponen `<Radar>/<Doughnut>/<Pie>/<Bar>/<Line>` di `AIReportChart.tsx` dan `AdminAnalyticsChart.tsx` diberi `key={theme.mode}` supaya chart di-remount penuh saat ganti tema — sebelumnya plugin custom penggambar teks tengah gauge (`centerText` di `chartHelpers.ts`) bisa "kebeku" pakai warna dari tema saat chart pertama kali mount, karena react-chartjs-2 tidak selalu re-register plugin lewat prop `plugins` setelah chart aktif, sehingga teks jadi tidak kelihatan (warna gelap di atas background gelap) setelah pindah ke dark mode.
 - `buildLegendLabels` (`chartHelpers.ts`) sekarang menerima parameter warna dan set `fontColor` eksplisit per item legend. Sebelumnya `generateLabels` custom pada legend doughnut/pie tidak pernah kasih `fontColor`, jadi Chart.js pakai warna default internalnya sendiri (bukan `chartTheme.muted`), teks legend jadi selalu gelap tidak peduli tema.
@@ -81,7 +81,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/businesses/:businessId/inventory-input`
 - `/businesses/:businessId/inventory/new`
 - `/businesses/:businessId/analysis`
-- `/businesses/:businessId/ai-report`
+- `/businesses/:businessId/health-report`
 - `/settings`
 - `/admin`
 - `/admin/diagnosis`
@@ -89,7 +89,7 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
 - `/admin/users`
 - `/admin/audit-log`
 - `/admin/businesses/:businessId/inventory-input`
-- `/admin/businesses/:businessId/ai-report`
+- `/admin/businesses/:businessId/health-report`
 
 Redirect/fallback:
 
@@ -114,7 +114,7 @@ Catatan penting yang ditemukan:
 - Tidak ada field `scoring_version` di type `BusinessHealthAnalysis` frontend.
 - `AdminUsersPage.updateStatus` tidak memiliki try/catch lokal saat update user status.
 - `AdminInventoryDetailPage` pada mode admin mencari submitter dari `adminUsers({ limit: 100, offset: 0 })`, sehingga user di luar 100 pertama bisa tidak ditemukan.
-- Halaman laporan AI belum diverifikasi manual end-to-end di browser (empat state: not-eligible/processing/ready/failed) karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi; baru diverifikasi lewat type-check dan build.
+- Halaman Laporan Kesehatan Bisnis belum diverifikasi manual end-to-end di browser (empat state: not-eligible/processing/ready/failed) karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi; baru diverifikasi lewat type-check dan build.
 
 ## Test atau Build yang Tersedia
 
@@ -141,7 +141,7 @@ node ./node_modules/typescript/bin/tsc --noEmit
 npm run build
 ```
 
-Hasil: kedua perintah exit code `0`. Smoke test manual di browser (proses/ready/failed/not-eligible untuk laporan AI) belum dijalankan karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi.
+Hasil: kedua perintah exit code `0`. Smoke test manual di browser (proses/ready/failed/not-eligible untuk laporan kesehatan bisnis) belum dijalankan karena membutuhkan backend `be-gimb` hidup dengan `ANTHROPIC_API_KEY` terisi.
 
 ## Risiko atau Bagian yang Perlu Dikonfirmasi
 

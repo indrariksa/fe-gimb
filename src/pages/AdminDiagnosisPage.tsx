@@ -165,7 +165,7 @@ export function AdminDiagnosisPage() {
                               <Link className="admin-row-action--score" to={`/businesses/${business.public_id}/sub-scores`}>Sub Skor <Icon name="arrow" size={16} /></Link>
                               <Link className="admin-row-action--input" to={`/admin/businesses/${business.public_id}/inventory-input`}>Lihat Input <Icon name="arrow" size={16} /></Link>
                               {submission.six_month_revenue > aiReportRevenueThreshold && (
-                                <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/ai-report`}>Laporan AI <Icon name="arrow" size={16} /></Link>
+                                <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/health-report`}>Laporan Kesehatan Bisnis <Icon name="arrow" size={16} /></Link>
                               )}
                             </>
                           ) : (

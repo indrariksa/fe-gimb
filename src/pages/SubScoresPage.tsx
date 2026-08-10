@@ -36,8 +36,8 @@ type InventoryInsightBar = {
 const inventoryPeriodMonths = 6;
 
 // Mirrors AI_REPORT_REVENUE_THRESHOLD on the backend (default Rp 50 juta) — di atas ini
-// Laporan AI sudah tersedia dan lebih detail, jadi action plan/insight rule-based di sini
-// disembunyikan untuk menghindari narasi yang berpotensi beda dengan Laporan AI.
+// Laporan Kesehatan Bisnis sudah tersedia dan lebih detail, jadi action plan/insight rule-based
+// di sini disembunyikan untuk menghindari narasi yang berpotensi beda dengan Laporan Kesehatan Bisnis.
 const aiReportRevenueThreshold = 50_000_000;
 
 function statusShort(score: number) {
@@ -392,7 +392,7 @@ export function SubScoresPage() {
       <section className="subscores-page">
         <nav className="page-nav">
           <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
-          <Link className="page-nav__link" to={`/businesses/${businessId}/ai-report`}><Icon name="bulb" size={16} /> Laporan AI</Link>
+          <Link className="page-nav__link" to={`/businesses/${businessId}/health-report`}><Icon name="bulb" size={16} /> Laporan Kesehatan Bisnis</Link>
         </nav>
         {isLoading && <LoadingState>Memuat dashboard bisnis...</LoadingState>}
         {error && (
