@@ -113,7 +113,7 @@ export function AIReportPage() {
           ...(content.financial_analysis?.narrative
             ? [
                 {
-                  title: "Kelayakan Investasi",
+                  title: "Analisis Keuangan",
                   headers: ["Metrik", "Nilai"],
                   rows: [
                     ["CAPEX", formatRupiah(content.financial_analysis.capex)],
@@ -161,7 +161,7 @@ export function AIReportPage() {
           ],
         },
         {
-          name: "Kelayakan Investasi",
+          name: "Analisis Keuangan",
           rows: [
             ["Metrik", "Nilai"],
             ["CAPEX", content.financial_analysis?.capex ?? 0],
@@ -271,7 +271,7 @@ export function AIReportPage() {
             {content.financial_analysis?.narrative && (
               <article className="panel admin-inventory-note">
                 <span><Icon name="chart" /></span>
-                <h3>Kelayakan Investasi</h3>
+                <h3>Analisis Keuangan</h3>
                 <FinancialAnalysisTiles
                   bepPerMonth={content.financial_analysis.bep_per_month}
                   capex={content.financial_analysis.capex}
