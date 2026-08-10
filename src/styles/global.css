@@ -5603,6 +5603,98 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   box-shadow: 0 16px 32px color-mix(in srgb, var(--gauge-color) 16%, transparent);
 }
 
+.financial-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.financial-tiles__tile {
+  --tile-color: var(--color-primary);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.financial-tiles__tile::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--tile-color), color-mix(in srgb, var(--tile-color) 0%, transparent));
+}
+
+.financial-tiles__tile:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--tile-color) 40%, var(--line));
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--tile-color) 14%, transparent);
+}
+
+.financial-tiles__label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: .76rem;
+}
+
+.financial-tiles__label::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--tile-color);
+  flex-shrink: 0;
+}
+
+.financial-tiles__value {
+  position: relative;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.financial-tiles__unit {
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.financial-tiles__meta {
+  position: relative;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+@media (max-width: 640px) {
+  .financial-tiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ai-report .admin-inventory-note p.financial-tiles__narrative {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--surface));
+  line-height: 1.85;
+  letter-spacing: .005em;
+  text-align: justify;
+}
+
 .capital-bars {
   height: 230px;
   display: grid;

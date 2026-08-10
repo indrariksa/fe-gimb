@@ -25,7 +25,11 @@ function statusIndexForScore(score: number) {
 function nextTargetLabel(dimensionLabel: string, score: number) {
   const currentIndex = statusIndexForScore(score);
   if (currentIndex === statusBands.length - 1) return `${dimensionLabel}: pertahankan`;
-  return `${dimensionLabel}: menuju ${statusBands[currentIndex + 1]}`;
+  const nextBand = statusBands[currentIndex + 1];
+  // "Buruk" masih terdengar negatif kalau ditampilkan sebagai tujuan ("menuju Buruk"),
+  // meski secara skor itu memang satu tingkat di atas "Sangat Buruk" — pakai frasa netral.
+  if (nextBand === "Buruk") return `${dimensionLabel}: perlu ditingkatkan`;
+  return `${dimensionLabel}: menuju ${nextBand}`;
 }
 
 function getScoreInsights(submission: InventorySubmission) {

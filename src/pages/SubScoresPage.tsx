@@ -417,7 +417,7 @@ export function SubScoresPage() {
         { title: "Customer Funnel", headers: ["Metrik", "Jumlah"], rows: [...inventoryInsights.customerItems.map((item) => [item.label, item.formatted]), ["Retensi", formatPercent(inventoryInsights.retentionRate)]] },
         { title: "Efisiensi Transaksi & Beban SDM", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.gauges.map((item) => [item.label, item.value, item.note]) },
         { title: "Keseimbangan Modal", headers: ["Metrik", "Nilai"], rows: inventoryInsights.capitalItems.map((item) => [item.label, formatRupiah(item.value)]) },
-        { title: "Analisis Keuangan Lanjutan", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.financeGauges.map((item) => [item.label, item.value, item.note]) },
+        { title: "Kelayakan Investasi", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.financeGauges.map((item) => [item.label, item.value, item.note]) },
         { title: "Kualitas Transaksi & Pelanggan", headers: ["Metrik", "Nilai"], rows: inventoryInsights.customerQualityItems.map((item) => [item.label, item.formatted]) },
         {
           title: "Business Snapshot",
@@ -684,7 +684,7 @@ export function SubScoresPage() {
 
                   <article className="panel inventory-insight-card inventory-insight-card--gauges">
                     <div>
-                      <h4>Analisis Keuangan Lanjutan</h4>
+                      <h4>Kelayakan Investasi</h4>
                       <p>BEP, CAPEX, payback period, dan ROI dari data inventarisasi.</p>
                     </div>
                     <div className="insight-gauge-grid insight-gauge-grid--2col">

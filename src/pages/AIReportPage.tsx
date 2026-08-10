@@ -6,13 +6,15 @@ import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { AIReportChart, statusLabel } from "../components/organisms/AIReportChart";
+import { FinancialAnalysisTiles } from "../components/organisms/FinancialAnalysisTiles";
 import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
 import type { AIReport } from "../services/api/types";
 import { useAuth } from "../context/AuthContext";
 import { ApiError, getFriendlyApiError } from "../services/api/client";
 import { formatJakartaDateTime } from "../utils/dateTime";
-import { downloadPdfReport, downloadWorkbook, reportFilename } from "../utils/exportReport";
+import { downloadPdfReport, downloadWorkbook, formatRupiah, reportFilename } from "../utils/exportReport";
+import { formatScore } from "../utils/number";
 
 const pollIntervalMs = 5000;
 
@@ -108,6 +110,21 @@ export function AIReportPage() {
         scores: content.sub_score_analysis.map((item) => ({ label: item.title, score: item.score })),
         sections: [
           { title: "Profil Bisnis", headers: ["Narasi"], rows: [[content.business_profile.narrative]] },
+          ...(content.financial_analysis?.narrative
+            ? [
+                {
+                  title: "Kelayakan Investasi",
+                  headers: ["Metrik", "Nilai"],
+                  rows: [
+                    ["CAPEX", formatRupiah(content.financial_analysis.capex)],
+                    ["BEP per Bulan", formatRupiah(content.financial_analysis.bep_per_month)],
+                    ["Payback Period", content.financial_analysis.payback_months > 0 ? `${formatScore(content.financial_analysis.payback_months)} bulan` : "Belum Profit"],
+                    ["ROI 6 Bulan", `${formatScore(content.financial_analysis.roi)}%`],
+                    ["Narasi", content.financial_analysis.narrative],
+                  ],
+                },
+              ]
+            : []),
           ...content.sub_score_analysis.map((item) => ({
             title: `Analisis ${item.title}`,
             headers: ["Bagian", "Isi"],
@@ -142,6 +159,18 @@ export function AIReportPage() {
             ["Tingkat Risiko", content.risk_assessment.level],
             ["Kesimpulan", content.conclusion],
           ],
+        },
+        {
+          name: "Kelayakan Investasi",
+          rows: [
+            ["Metrik", "Nilai"],
+            ["CAPEX", content.financial_analysis?.capex ?? 0],
+            ["BEP per Bulan", content.financial_analysis?.bep_per_month ?? 0],
+            ["Payback Period", content.financial_analysis && content.financial_analysis.payback_months > 0 ? `${formatScore(content.financial_analysis.payback_months)} bulan` : "Belum Profit"],
+            ["ROI 6 Bulan", content.financial_analysis ? `${formatScore(content.financial_analysis.roi)}%` : "-"],
+            ["Narasi", content.financial_analysis?.narrative ?? "-"],
+          ],
+          currencyColumns: [1],
         },
         {
           name: "Sub Skor",
@@ -239,6 +268,23 @@ export function AIReportPage() {
               <h3>Profil Bisnis</h3>
               <p>{content.business_profile.narrative}</p>
             </article>
+            {content.financial_analysis?.narrative && (
+              <article className="panel admin-inventory-note">
+                <span><Icon name="chart" /></span>
+                <h3>Kelayakan Investasi</h3>
+                <FinancialAnalysisTiles
+                  bepPerMonth={content.financial_analysis.bep_per_month}
+                  capex={content.financial_analysis.capex}
+                  paybackMonths={content.financial_analysis.payback_months}
+                  roi={content.financial_analysis.roi}
+                  capitalInvestment={content.financial_analysis.capital_investment}
+                  monthlyRevenue={content.financial_analysis.monthly_revenue}
+                  monthlyNetProfit={content.financial_analysis.monthly_net_profit}
+                  netProfit={content.financial_analysis.net_profit}
+                />
+                <p className="financial-tiles__narrative">{content.financial_analysis.narrative}</p>
+              </article>
+            )}
             <div className="ai-report__charts inventory-insight-grid">
               {content.charts.map((chart) => (
                 <AIReportChart key={chart.id} chart={chart} />

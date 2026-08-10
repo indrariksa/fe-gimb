@@ -255,6 +255,18 @@ export type AIReportRiskAssessment = {
   level: string;
 };
 
+export type AIReportFinancialAnalysis = {
+  narrative: string;
+  bep_per_month: number;
+  capex: number;
+  payback_months: number;
+  roi: number;
+  capital_investment: number;
+  monthly_revenue: number;
+  monthly_net_profit: number;
+  net_profit: number;
+};
+
 export type AIReportChartSeries = {
   name: string;
   values: number[];
@@ -282,6 +294,8 @@ export type AIReportContent = {
   // Optional: reports generated before this field was added won't have it.
   key_strengths?: { narrative: string };
   risk_assessment: AIReportRiskAssessment;
+  // Optional: reports generated before this field was added won't have it.
+  financial_analysis?: AIReportFinancialAnalysis;
   recommendations: string[];
   conclusion: string;
   charts: AIReportChartData[];
