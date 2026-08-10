@@ -5565,6 +5565,10 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   margin-top: 22px;
 }
 
+.insight-gauge-grid--2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .insight-gauge {
   --gauge-color: var(--color-primary);
   --gauge-value: 0%;

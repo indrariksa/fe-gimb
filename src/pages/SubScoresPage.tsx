@@ -144,10 +144,10 @@ export function SubScoresPage() {
     if (!submission || !metrics) return null;
 
     const rawCostItems: InventoryInsightBar[] = [
-      { label: "HPP", value: submission.cogs, formatted: `Rp ${formatCompactCurrency(submission.cogs)}`, color: "#3b82f6" },
-      { label: "Operasional", value: submission.operational_cost, formatted: `Rp ${formatCompactCurrency(submission.operational_cost)}`, color: "#10b981" },
-      { label: "Gaji", value: submission.salary_cost, formatted: `Rp ${formatCompactCurrency(submission.salary_cost)}`, color: "#f59e0b" },
-      { label: "Marketing", value: submission.marketing_cost, formatted: `Rp ${formatCompactCurrency(submission.marketing_cost)}`, color: "#ec4899" },
+      { label: "HPP", value: submission.cogs, formatted: formatRupiah(submission.cogs), color: "#3b82f6" },
+      { label: "Operasional", value: submission.operational_cost, formatted: formatRupiah(submission.operational_cost), color: "#10b981" },
+      { label: "Gaji", value: submission.salary_cost, formatted: formatRupiah(submission.salary_cost), color: "#f59e0b" },
+      { label: "Marketing", value: submission.marketing_cost, formatted: formatRupiah(submission.marketing_cost), color: "#ec4899" },
     ];
     const costTotal = rawCostItems.reduce((total, item) => total + item.value, 0);
     const costItems = rawCostItems.map((item) => ({
@@ -163,9 +163,9 @@ export function SubScoresPage() {
     }).join(", ");
 
     const financialItems: InventoryInsightBar[] = [
-      { label: "Omzet 6 Bulan", value: submission.six_month_revenue, formatted: `Rp ${formatCompactCurrency(submission.six_month_revenue)}`, color: "#3b82f6" },
-      { label: "Total Biaya", value: metrics.total_expense, formatted: `Rp ${formatCompactCurrency(metrics.total_expense)}`, color: "#ef4444" },
-      { label: "Laba Bersih", value: metrics.net_profit, formatted: `Rp ${formatCompactCurrency(metrics.net_profit)}`, color: metrics.net_profit >= 0 ? "#10b981" : "#ef4444" },
+      { label: "Omzet 6 Bulan", value: submission.six_month_revenue, formatted: formatRupiah(submission.six_month_revenue), color: "#3b82f6" },
+      { label: "Total Biaya", value: metrics.total_expense, formatted: formatRupiah(metrics.total_expense), color: "#ef4444" },
+      { label: "Laba Bersih", value: metrics.net_profit, formatted: formatRupiah(metrics.net_profit), color: metrics.net_profit >= 0 ? "#10b981" : "#ef4444" },
     ];
     const financialMax = Math.max(1, ...financialItems.map((item) => Math.abs(item.value)));
     const profitPerHundred = safeDivide(metrics.net_profit, submission.six_month_revenue) * 100;
@@ -182,38 +182,76 @@ export function SubScoresPage() {
     const gauges = [
       {
         label: "Nilai rata-rata transaksi",
-        value: `Rp ${formatCompactCurrency(metrics.average_transaction_value)}`,
+        value: formatRupiah(metrics.average_transaction_value),
         note: `${formatCompactCurrency(submission.six_month_transactions)} transaksi`,
         percent: Math.min(100, safeDivide(metrics.average_transaction_value, 500000) * 100),
         color: "#3b82f6",
       },
       {
         label: "Rata-rata gaji per karyawan / bulan",
-        value: `Rp ${formatCompactCurrency(monthlySalaryPerEmployee)}`,
-        note: `Total gaji 6 bulan Rp ${formatCompactCurrency(submission.salary_cost)}`,
+        value: formatRupiah(monthlySalaryPerEmployee),
+        note: `Total gaji 6 bulan ${formatRupiah(submission.salary_cost)}`,
         percent: Math.min(100, safeDivide(monthlySalaryPerEmployee, 10000000) * 100),
         color: "#10b981",
-      },
-      {
-        label: "Rasio laba terhadap modal",
-        value: formatPercent(safeDivide(metrics.net_profit, submission.capital_investment) * 100),
-        note: `Modal Rp ${formatCompactCurrency(submission.capital_investment)}`,
-        percent: Math.min(100, Math.max(0, safeDivide(metrics.net_profit, submission.capital_investment) * 100)),
-        color: "#f59e0b",
       },
     ];
 
     const capitalItems: InventoryInsightBar[] = [
-      { label: "Aset", value: submission.asset_value, formatted: `Rp ${formatCompactCurrency(submission.asset_value)}`, color: "#8b5cf6" },
-      { label: "Modal", value: submission.capital_investment, formatted: `Rp ${formatCompactCurrency(submission.capital_investment)}`, color: "#ec4899" },
-      { label: "Laba", value: metrics.net_profit, formatted: `Rp ${formatCompactCurrency(metrics.net_profit)}`, color: "#10b981" },
+      { label: "Aset", value: submission.asset_value, formatted: formatRupiah(submission.asset_value), color: "#8b5cf6" },
+      { label: "Modal", value: submission.capital_investment, formatted: formatRupiah(submission.capital_investment), color: "#ec4899" },
+      { label: "Laba", value: metrics.net_profit, formatted: formatRupiah(metrics.net_profit), color: "#10b981" },
     ];
     const capitalMax = Math.max(1, ...capitalItems.map((item) => Math.abs(item.value)));
+
+    const fixedCost = submission.operational_cost + submission.salary_cost + submission.marketing_cost;
+    const contributionMarginRatio = safeDivide(submission.six_month_revenue - submission.cogs, submission.six_month_revenue);
+    const bepPerMonth = safeDivide(safeDivide(fixedCost, contributionMarginRatio), inventoryPeriodMonths);
+    const monthlyRevenue = safeDivide(submission.six_month_revenue, inventoryPeriodMonths);
+    const monthlyNetProfit = safeDivide(metrics.net_profit, inventoryPeriodMonths);
+    const paybackMonths = safeDivide(submission.capital_investment, monthlyNetProfit);
+    const canComputePayback = monthlyNetProfit > 0 && submission.capital_investment > 0;
+    const roi = safeDivide(metrics.net_profit, submission.capital_investment) * 100;
+
+    const financeGauges = [
+      {
+        label: "CAPEX",
+        value: formatRupiah(submission.asset_value),
+        note: `Modal ${formatRupiah(submission.capital_investment)}`,
+        percent: Math.min(100, Math.max(0, safeDivide(submission.asset_value, submission.capital_investment) * 100)),
+        color: "#8b5cf6",
+      },
+      {
+        label: "BEP per Bulan",
+        value: formatRupiah(bepPerMonth),
+        note: `Omzet aktual ${formatRupiah(monthlyRevenue)}/bulan`,
+        percent: Math.min(100, Math.max(0, safeDivide(bepPerMonth, monthlyRevenue) * 100)),
+        color: "#f97316",
+      },
+      {
+        label: "Payback Period",
+        value: canComputePayback ? `${formatScore(paybackMonths)} bulan` : monthlyNetProfit <= 0 ? "Belum Profit" : "-",
+        note: canComputePayback
+          ? `Laba ${formatRupiah(monthlyNetProfit)}/bulan`
+          : monthlyNetProfit <= 0
+            ? "Laba bersih belum positif, belum bisa dihitung"
+            : "Belum ada modal investasi diinput",
+        percent: canComputePayback ? Math.min(100, Math.max(0, 100 - safeDivide(paybackMonths, 36) * 100)) : 0,
+        color: "#10b981",
+      },
+      {
+        label: "ROI 6 Bulan",
+        value: formatPercent(roi),
+        note: `Laba ${formatRupiah(metrics.net_profit)} dari Modal ${formatRupiah(submission.capital_investment)}`,
+        percent: Math.min(100, Math.max(0, roi)),
+        color: "#ec4899",
+      },
+    ];
+
     const customerQualityItems: InventoryInsightBar[] = [
       {
         label: "Omzet 6 bulan per pelanggan aktif",
         value: safeDivide(submission.six_month_revenue, submission.active_customers),
-        formatted: `Rp ${formatCompactCurrency(safeDivide(submission.six_month_revenue, submission.active_customers))}`,
+        formatted: formatRupiah(safeDivide(submission.six_month_revenue, submission.active_customers)),
         color: "#3b82f6",
       },
       {
@@ -245,6 +283,10 @@ export function SubScoresPage() {
       gauges,
       capitalItems,
       capitalMax,
+      financeGauges,
+      bepPerMonth,
+      paybackMonths,
+      roi,
       customerQualityItems,
       customerQualityMax,
       retentionRate: metrics.retention_rate,
@@ -317,6 +359,10 @@ export function SubScoresPage() {
           ["Aset", submission.asset_value],
           ["Modal", submission.capital_investment],
           ["Laba", metrics!.net_profit],
+          ["BEP per Bulan", inventoryInsights.bepPerMonth],
+          ["CAPEX (Nilai Aset)", submission.asset_value],
+          ["Payback Period (Bulan)", inventoryInsights.paybackMonths],
+          ["ROI 6 Bulan (%)", inventoryInsights.roi],
         ],
         currencyColumns: [1],
       },
@@ -371,6 +417,7 @@ export function SubScoresPage() {
         { title: "Customer Funnel", headers: ["Metrik", "Jumlah"], rows: [...inventoryInsights.customerItems.map((item) => [item.label, item.formatted]), ["Retensi", formatPercent(inventoryInsights.retentionRate)]] },
         { title: "Efisiensi Transaksi & Beban SDM", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.gauges.map((item) => [item.label, item.value, item.note]) },
         { title: "Keseimbangan Modal", headers: ["Metrik", "Nilai"], rows: inventoryInsights.capitalItems.map((item) => [item.label, formatRupiah(item.value)]) },
+        { title: "Analisis Keuangan Lanjutan", headers: ["Metrik", "Nilai", "Catatan"], rows: inventoryInsights.financeGauges.map((item) => [item.label, item.value, item.note]) },
         { title: "Kualitas Transaksi & Pelanggan", headers: ["Metrik", "Nilai"], rows: inventoryInsights.customerQualityItems.map((item) => [item.label, item.formatted]) },
         {
           title: "Business Snapshot",
@@ -555,7 +602,7 @@ export function SubScoresPage() {
                     <span>Data Inventarisasi</span>
                     <h3>Insight Operasional Tambahan</h3>
                   </div>
-                  <b>6 visual</b>
+                  <b>7 visual</b>
                 </div>
 
                 <div className="inventory-insight-grid">
@@ -586,7 +633,7 @@ export function SubScoresPage() {
                   <article className="panel inventory-insight-card inventory-insight-card--bars">
                     <div>
                       <h4>Ringkasan Arus Uang</h4>
-                      <p>Setiap Rp 100 omzet menghasilkan sekitar Rp {formatCompactCurrency(inventoryInsights.profitPerHundred)} laba bersih.</p>
+                      <p>Setiap Rp 100 omzet menghasilkan sekitar {formatRupiah(inventoryInsights.profitPerHundred)} laba bersih.</p>
                     </div>
                     <div className="insight-bars">
                       {inventoryInsights.financialItems.map((item) => (
@@ -624,8 +671,24 @@ export function SubScoresPage() {
                       <h4>Efisiensi Transaksi & Beban SDM</h4>
                       <p>Rasio cepat dari transaksi, beban gaji, dan modal.</p>
                     </div>
-                    <div className="insight-gauge-grid">
+                    <div className="insight-gauge-grid insight-gauge-grid--2col">
                       {inventoryInsights.gauges.map((gauge) => (
+                        <div className="insight-gauge" key={gauge.label} style={{ "--gauge-color": gauge.color, "--gauge-value": `${gauge.percent}%` } as CSSProperties}>
+                          <span>{gauge.label}</span>
+                          <strong>{gauge.value}</strong>
+                          <small>{gauge.note}</small>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+
+                  <article className="panel inventory-insight-card inventory-insight-card--gauges">
+                    <div>
+                      <h4>Analisis Keuangan Lanjutan</h4>
+                      <p>BEP, CAPEX, payback period, dan ROI dari data inventarisasi.</p>
+                    </div>
+                    <div className="insight-gauge-grid insight-gauge-grid--2col">
+                      {inventoryInsights.financeGauges.map((gauge) => (
                         <div className="insight-gauge" key={gauge.label} style={{ "--gauge-color": gauge.color, "--gauge-value": `${gauge.percent}%` } as CSSProperties}>
                           <span>{gauge.label}</span>
                           <strong>{gauge.value}</strong>
