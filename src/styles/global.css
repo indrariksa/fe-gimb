@@ -204,13 +204,11 @@ a { color: inherit; text-decoration: none; }
 
 .btn--wiggle__icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
   transform-origin: center;
-  padding: 3px;
-  border-radius: 999px;
-  color: var(--on-primary);
-  background: color-mix(in srgb, var(--on-primary) 24%, transparent);
+}
+.btn--wiggle__icon svg path {
+  stroke: #ffffff;
+  stroke-width: 2.4;
 }
 @media (prefers-reduced-motion: no-preference) {
   .btn--wiggle:hover:not(:disabled) .btn--wiggle__icon,
@@ -3090,6 +3088,12 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+.business-card--skeleton .skeleton-bar--mark { width: 100%; height: 100%; margin-top: 0; border-radius: inherit; }
+.business-card--skeleton .skeleton-bar--tag { width: 40%; height: 0.9rem; margin-top: 0; }
+.business-card--skeleton .skeleton-bar--title { width: 65%; height: 1.4rem; margin-top: 10px; }
+.business-card--skeleton .skeleton-bar--desc { width: 85%; height: 1rem; margin-top: 10px; }
+.business-card--skeleton .skeleton-bar--btn { width: 130px; height: 48px; margin-top: 0; border-radius: 8px; }
 
 .business-layout {
   display: grid;

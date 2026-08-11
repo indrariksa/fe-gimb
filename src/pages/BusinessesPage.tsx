@@ -3,7 +3,6 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
-import { LoadingState } from "../components/atoms/LoadingState";
 import { HolographicCard } from "../components/molecules/HolographicCard";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { useAuth } from "../context/AuthContext";
@@ -207,7 +206,19 @@ export function BusinessesPage() {
 
         <div className="business-layout">
           <div className="business-list">
-            {isLoading && <LoadingState>Memuat usaha...</LoadingState>}
+            {isLoading && [0, 1, 2].map((key) => (
+              <article className="business-card panel business-card--skeleton" key={key}>
+                <span className="business-card__mark"><i className="skeleton-bar skeleton-bar--mark" /></span>
+                <div>
+                  <i className="skeleton-bar skeleton-bar--tag" />
+                  <i className="skeleton-bar skeleton-bar--title" />
+                  <i className="skeleton-bar skeleton-bar--desc" />
+                </div>
+                <div className="business-card__actions">
+                  <i className="skeleton-bar skeleton-bar--btn" />
+                </div>
+              </article>
+            ))}
             {!isLoading && loadError && (
               <article className="panel empty-state retry-state">
                 <span>{loadError}</span>
@@ -223,7 +234,7 @@ export function BusinessesPage() {
                 <p>Buat usaha pertama untuk mulai mengisi inventarisasi dan melihat hasil sub skor diagnosis.</p>
               </article>
             )}
-            {!loadError && businesses.map((business) => {
+            {!isLoading && !loadError && businesses.map((business) => {
               const hasDiagnosis = completedBusinessIds.has(business.public_id);
 
               return (
@@ -260,7 +271,7 @@ export function BusinessesPage() {
                         title="Input data inventory"
                         onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
                       >
-                        Input Data <span className="btn--wiggle__icon"><Icon name="edit" size={16} /></span>
+                        Input Data <span className="btn--wiggle__icon"><Icon name="edit" size={18} /></span>
                       </Button>
                     )}
                   </div>
