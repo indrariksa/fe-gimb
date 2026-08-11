@@ -27,6 +27,13 @@ export function createBusinessInventory(publicId: string, payload: InventoryPayl
   });
 }
 
+export function updateBusinessInventory(publicId: string, payload: InventoryPayload) {
+  return apiRequest<InventorySubmission>(`/businesses/${publicId}/inventory-submissions`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
 export function listBusinessInventories(publicId: string, params = { limit: 20, offset: 0 }) {
   return apiRequest<ListResponse<InventorySubmission>>(
     `/businesses/${publicId}/inventory-submissions?limit=${params.limit}&offset=${params.offset}`,

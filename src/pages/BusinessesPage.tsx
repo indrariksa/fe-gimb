@@ -75,6 +75,7 @@ export function BusinessesPage() {
   const { user } = useAuth();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [completedBusinessIds, setCompletedBusinessIds] = useState<Set<string>>(() => new Set());
+  const [lockedBusinessIds, setLockedBusinessIds] = useState<Set<string>>(() => new Set());
   const [businessLimit, setBusinessLimit] = useState(2);
   const [form, setForm] = useState({ name: "", industry: "", description: "" });
   const [industrySearch, setIndustrySearch] = useState("");
@@ -96,17 +97,20 @@ export function BusinessesPage() {
       ]);
       setBusinesses(response.items);
       setBusinessLimit(limitSetting.value);
-      const completedIds = await Promise.all(
+      const statuses = await Promise.all(
         response.items.map(async (business) => {
           try {
             await businessApi.latestBusinessInventory(business.public_id);
-            return business.public_id;
           } catch {
-            return null;
+            return { id: business.public_id, hasDiagnosis: false, isLocked: false };
           }
+          const report = await businessApi.getBusinessAIReport(business.public_id).catch(() => null);
+          const isLocked = report ? report.status === "processing" || report.status === "ready" : false;
+          return { id: business.public_id, hasDiagnosis: true, isLocked };
         }),
       );
-      setCompletedBusinessIds(new Set(completedIds.filter((id): id is string => Boolean(id))));
+      setCompletedBusinessIds(new Set(statuses.filter((item) => item.hasDiagnosis).map((item) => item.id)));
+      setLockedBusinessIds(new Set(statuses.filter((item) => item.isLocked).map((item) => item.id)));
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : "Gagal memuat usaha");
     } finally {
@@ -236,6 +240,7 @@ export function BusinessesPage() {
             )}
             {!isLoading && !loadError && businesses.map((business) => {
               const hasDiagnosis = completedBusinessIds.has(business.public_id);
+              const isLocked = lockedBusinessIds.has(business.public_id);
 
               return (
                 <article className={`business-card panel ${hasDiagnosis ? "is-complete" : ""}`} key={business.public_id}>
@@ -253,7 +258,7 @@ export function BusinessesPage() {
                           title="Buka hasil sub skor diagnosis"
                           onClick={() => navigate(`/businesses/${business.public_id}/sub-scores`)}
                         >
-                          Sub Skor <Icon name="arrow" size={18} />
+                          Sub Skor <Icon name="arrow" size={14} />
                         </Button>
                         <Button
                           className="btn--dashboard-hover"
@@ -261,8 +266,26 @@ export function BusinessesPage() {
                           title="Lihat detail data inventarisasi"
                           onClick={() => navigate(`/businesses/${business.public_id}/inventory-input`)}
                         >
-                          Lihat Hasil Input <Icon name="file" size={18} />
+                          Lihat Hasil Input <Icon name="file" size={14} />
                         </Button>
+                        {isLocked ? (
+                          <Button
+                            className="btn--report-highlight btn--wiggle"
+                            title="Buka laporan kesehatan bisnis"
+                            onClick={() => navigate(`/businesses/${business.public_id}/health-report`)}
+                          >
+                            Laporan Kesehatan Bisnis <span className="btn--wiggle__icon"><Icon name="bulb" size={14} /></span>
+                          </Button>
+                        ) : (
+                          <Button
+                            className="btn--dashboard-hover btn--wiggle"
+                            variant="dark"
+                            title="Edit data inventory"
+                            onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
+                          >
+                            Edit <span className="btn--wiggle__icon"><Icon name="edit" size={14} /></span>
+                          </Button>
+                        )}
                       </>
                     ) : (
                       <Button
@@ -271,7 +294,7 @@ export function BusinessesPage() {
                         title="Input data inventory"
                         onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
                       >
-                        Input Data <span className="btn--wiggle__icon"><Icon name="edit" size={18} /></span>
+                        Input Data <span className="btn--wiggle__icon"><Icon name="edit" size={14} /></span>
                       </Button>
                     )}
                   </div>

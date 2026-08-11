@@ -55,6 +55,7 @@ export function AdminInventoryDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
   const backPath = isAdmin ? "/admin/diagnosis" : "/businesses";
 
   useEffect(() => {
@@ -75,11 +76,13 @@ export function AdminInventoryDetailPage() {
         const submitterData = isAdmin
           ? (await adminApi.adminUsers({ limit: 100, offset: 0 })).items.find((item) => item.id === submissionData.user_id) ?? null
           : user;
+        const report = isAdmin ? null : await businessApi.getBusinessAIReport(businessId).catch(() => null);
 
         if (!isMounted) return;
         setBusiness(businessData);
         setSubmission(submissionData);
         setSubmitter(submitterData);
+        setIsLocked(report ? report.status === "processing" || report.status === "ready" : false);
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat detail data inventarisasi");
       } finally {
@@ -146,6 +149,9 @@ export function AdminInventoryDetailPage() {
                 <nav className="page-nav">
                   <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
                   <Link className="page-nav__link" to={`/businesses/${businessId}/health-report`}><Icon name="bulb" size={16} /> Laporan Kesehatan Bisnis</Link>
+                  {!isAdmin && !isLocked && (
+                    <Link className="page-nav__link" to={`/businesses/${businessId}/inventory/new`}><Icon name="edit" size={16} /> Edit Data</Link>
+                  )}
                 </nav>
               </div>
               <div className="admin-inventory-hero__score">

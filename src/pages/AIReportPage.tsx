@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
+import { ConfirmDialog } from "../components/molecules/ConfirmDialog";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { AIReportChart, statusLabel } from "../components/organisms/AIReportChart";
 import { FinancialAnalysisTiles } from "../components/organisms/FinancialAnalysisTiles";
@@ -36,11 +37,12 @@ export function AIReportPage() {
   const { businessId = "" } = useParams();
   const { isAdmin } = useAuth();
   const [report, setReport] = useState<AIReport | null>(null);
-  const [notEligible, setNotEligible] = useState(false);
+  const [notGenerated, setNotGenerated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [exportError, setExportError] = useState("");
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const pollTimer = useRef(0);
 
   const load = useCallback(async () => {
@@ -48,12 +50,12 @@ export function AIReportPage() {
     try {
       const data = await getReport(businessId);
       setReport(data);
-      setNotEligible(false);
+      setNotGenerated(false);
       setError("");
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
         setReport(null);
-        setNotEligible(true);
+        setNotGenerated(true);
         setError("");
       } else {
         setError(getFriendlyApiError(err, "Gagal memuat laporan kesehatan bisnis"));
@@ -77,17 +79,19 @@ export function AIReportPage() {
     return () => window.clearTimeout(pollTimer.current);
   }, [report, load]);
 
-  const handleRegenerate = async () => {
+  const confirmGenerate = async () => {
     setIsRegenerating(true);
     try {
-      const regenerate = isAdmin ? adminApi.adminRegenerateBusinessAIReport : businessApi.regenerateBusinessAIReport;
-      const data = await regenerate(businessId);
+      const generate = isAdmin ? adminApi.adminRegenerateBusinessAIReport : businessApi.regenerateBusinessAIReport;
+      const data = await generate(businessId);
       setReport(data);
+      setNotGenerated(false);
       setError("");
     } catch (err) {
-      setError(getFriendlyApiError(err, "Gagal memulai ulang laporan kesehatan bisnis"));
+      setError(getFriendlyApiError(err, "Gagal memulai laporan kesehatan bisnis"));
     } finally {
       setIsRegenerating(false);
+      setIsConfirmOpen(false);
     }
   };
 
@@ -207,11 +211,23 @@ export function AIReportPage() {
         </nav>
         {isLoading && <LoadingState>Memuat laporan kesehatan bisnis...</LoadingState>}
 
-        {!isLoading && notEligible && (
+        {!isLoading && notGenerated && (
           <article className="panel empty-state">
             <span><Icon name="bulb" /></span>
-            <h3>Laporan Kesehatan Bisnis belum tersedia</h3>
-            <p>Laporan Kesehatan Bisnis tersedia otomatis untuk omzet 6 bulan di atas Rp 50 juta setelah submit inventarisasi.</p>
+            <h3>{isAdmin ? "Laporan Kesehatan Bisnis belum dibuat" : "Ungkap Kesehatan Bisnis Anda Lebih Dalam"}</h3>
+            <p>
+              {isAdmin
+                ? "Pemilik usaha belum membuat laporan kesehatan bisnis untuk data inventarisasi ini."
+                : "Dapatkan skor per dimensi, analisis keuangan (BEP, ROI, payback period), dan rekomendasi actionable yang siap dipakai untuk evaluasi, presentasi tim, atau pengajuan modal."}
+            </p>
+            {!isAdmin && (
+              <div className="empty-state__cta">
+                <small className="field__example">Setelah laporan dibuat, data inventarisasi usaha ini akan terkunci. Pastikan datanya sudah benar sebelum lanjut.</small>
+                <Button className="btn--report-highlight btn--wiggle" onClick={() => setIsConfirmOpen(true)} disabled={isRegenerating}>
+                  {isRegenerating ? "Memulai..." : "Buat Laporan Sekarang"} <span className="btn--wiggle__icon"><Icon name="bulb" size={18} /></span>
+                </Button>
+              </div>
+            )}
           </article>
         )}
 
@@ -230,21 +246,21 @@ export function AIReportPage() {
           </article>
         )}
 
-        {!isLoading && !error && !notEligible && report?.status === "processing" && (
+        {!isLoading && !error && !notGenerated && report?.status === "processing" && (
           <LoadingState>Laporan Kesehatan Bisnis sedang diproses, biasanya butuh beberapa saat...</LoadingState>
         )}
 
-        {!isLoading && !error && !notEligible && report?.status === "failed" && (
+        {!isLoading && !error && !notGenerated && report?.status === "failed" && (
           <article className="panel empty-state retry-state">
             <span><Icon name="alert" /></span>
             <strong>Laporan Kesehatan Bisnis gagal dibuat.</strong>
-            <Button className="btn--dashboard-hover" onClick={handleRegenerate} disabled={isRegenerating}>
+            <Button className="btn--dashboard-hover" onClick={() => setIsConfirmOpen(true)} disabled={isRegenerating}>
               {isRegenerating ? "Memulai ulang..." : "Generate Ulang"} <Icon name="refresh" size={18} />
             </Button>
           </article>
         )}
 
-        {!isLoading && !error && !notEligible && report?.status === "ready" && content && (
+        {!isLoading && !error && !notGenerated && report?.status === "ready" && content && (
           <>
             <div className="ai-report__actions">
               <Button className="btn--dashboard-hover" variant="dark" onClick={exportExcel}>
@@ -367,6 +383,21 @@ export function AIReportPage() {
           </>
         )}
       </section>
+
+      {isConfirmOpen && (
+        <ConfirmDialog
+          variant="dashboard"
+          titleId="ai-report-generate-confirm-title"
+          icon="bulb"
+          title="Yakin mau generate laporan kesehatan bisnis?"
+          message="Setelah laporan berhasil dibuat, data inventarisasi usaha ini tidak bisa diubah lagi."
+          cancelLabel="Batal"
+          confirmLabel={isRegenerating ? "Memproses..." : "Ya, Generate"}
+          onCancel={() => setIsConfirmOpen(false)}
+          onConfirm={confirmGenerate}
+          isBusy={isRegenerating}
+        />
+      )}
     </DashboardShell>
   );
 }

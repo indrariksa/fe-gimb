@@ -10,7 +10,7 @@ import { DashboardShell } from "../components/organisms/DashboardShell";
 import { inventoryFields } from "../data/inventoryFields";
 import * as businessApi from "../services/api/businesses";
 import { getFriendlyApiError } from "../services/api/client";
-import type { Business, InventoryPayload } from "../services/api/types";
+import type { Business, InventoryPayload, InventorySubmission } from "../services/api/types";
 import { cleanText, firstValidationError, validateMaxLength } from "../utils/formValidation";
 
 const storageKeyPrefix = "gimb:sbd:inventory";
@@ -60,6 +60,14 @@ function formatNumberInput(value: string | undefined) {
   const digits = digitsOnly(value ?? "");
   if (!digits) return "";
   return Number(digits).toLocaleString("id-ID");
+}
+
+function submissionToValues(submission: InventorySubmission): Record<string, string> {
+  const values: Record<string, string> = { description: submission.description ?? "" };
+  for (const [fieldId, payloadKey] of Object.entries(fieldToPayloadKey)) {
+    values[fieldId] = String(submission[payloadKey] ?? 0);
+  }
+  return values;
 }
 
 function buildPayload(values: Record<string, string>): InventoryPayload {
@@ -118,6 +126,7 @@ export function InventoryPage() {
   const [isCheckingAccess, setIsCheckingAccess] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [isEditMode, setIsEditMode] = useState(false);
   const completed = inventoryFields.filter((field) => values[field.id]).length;
   const progress = Math.round((completed / inventoryFields.length) * 100);
 
@@ -138,9 +147,19 @@ export function InventoryPage() {
 
         if (!isMounted) return;
         if (latestSubmission) {
+          const report = await businessApi.getBusinessAIReport(businessId).catch(() => null);
+          const isLocked = report ? report.status === "processing" || report.status === "ready" : false;
+          if (!isMounted) return;
+
+          if (isLocked) {
+            localStorage.removeItem(storageKey(businessId));
+            navigate(`/businesses/${businessId}/sub-scores`, { replace: true });
+            return;
+          }
+
           localStorage.removeItem(storageKey(businessId));
-          navigate(`/businesses/${businessId}/sub-scores`, { replace: true });
-          return;
+          setIsEditMode(true);
+          setValues(submissionToValues(latestSubmission));
         }
 
         setBusiness(detail);
@@ -168,7 +187,11 @@ export function InventoryPage() {
 
     setIsSubmitting(true);
     try {
-      await businessApi.createBusinessInventory(businessId, payload);
+      if (isEditMode) {
+        await businessApi.updateBusinessInventory(businessId, payload);
+      } else {
+        await businessApi.createBusinessInventory(businessId, payload);
+      }
       localStorage.removeItem(storageKey(businessId));
       navigate(`/businesses/${businessId}/analysis`);
     } catch (err) {
@@ -194,7 +217,7 @@ export function InventoryPage() {
         ) : (
         <>
         <div className="form-hero">
-          <h2>Lengkapi data bisnis 6 bulan terakhir</h2>
+          <h2>{isEditMode ? "Perbarui data bisnis 6 bulan terakhir" : "Lengkapi data bisnis 6 bulan terakhir"}</h2>
           <p>{business?.name ?? "Usaha"} - setiap angka akan dipakai sebagai bahan diagnosis kesehatan bisnis yang lebih komprehensif.</p>
         </div>
 
@@ -243,7 +266,7 @@ export function InventoryPage() {
             </label>
             <footer>
               <Button className="btn--dashboard-hover" variant="secondary" onClick={() => navigate(`/businesses/${businessId}/sub-scores`)}>Batal</Button>
-              <Button className="btn--shiny-dashboard" onClick={() => setIsConfirmOpen(true)} disabled={isSubmitting}>Simpan & Lanjutkan <Icon name="arrow" size={18} /></Button>
+              <Button className="btn--shiny-dashboard" onClick={() => setIsConfirmOpen(true)} disabled={isSubmitting}>{isEditMode ? "Simpan Perubahan" : "Simpan & Lanjutkan"} <Icon name="arrow" size={18} /></Button>
             </footer>
           </form>
 
@@ -279,7 +302,11 @@ export function InventoryPage() {
           titleId="confirm-title"
           icon="alert"
           title="Data yang diinput sudah benar?"
-          message="Pastikan angka dan informasi bisnis sudah sesuai sebelum sistem mulai melakukan analisis."
+          message={
+            isEditMode
+              ? "Pastikan angka dan informasi bisnis sudah sesuai. Skor dan hasil analisis akan dihitung ulang berdasarkan data terbaru."
+              : "Pastikan angka dan informasi bisnis sudah sesuai sebelum sistem mulai melakukan analisis."
+          }
           cancelLabel="Tidak"
           confirmLabel={isSubmitting ? "Menyimpan..." : "Ya, Lanjutkan"}
           onCancel={() => setIsConfirmOpen(false)}
