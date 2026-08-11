@@ -3095,6 +3095,14 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .business-card--skeleton .skeleton-bar--desc { width: 85%; height: 1rem; margin-top: 10px; }
 .business-card--skeleton .skeleton-bar--btn { width: 130px; height: 48px; margin-top: 0; border-radius: 8px; }
 
+.admin-table__skeleton-row .skeleton-bar { margin-top: 0; }
+.admin-table__skeleton-row .skeleton-bar--name { width: 65%; height: 1rem; margin-bottom: 6px; }
+.admin-table__skeleton-row .skeleton-bar--sub { width: 40%; height: 0.8rem; }
+.admin-table__skeleton-row .skeleton-bar--pill { width: 90px; height: 1.4rem; border-radius: 999px; }
+.admin-table__skeleton-row .skeleton-bar--date { width: 100px; height: 1rem; }
+.admin-table__skeleton-row .skeleton-bar--score { width: 50px; height: 1.4rem; }
+.admin-table__skeleton-row .skeleton-bar--action { width: 120px; height: 1.4rem; }
+
 .business-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, 410px);

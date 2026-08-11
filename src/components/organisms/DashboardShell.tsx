@@ -228,7 +228,7 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const adminNavigation: NavigationItem[] = [
     { view: "adminSummary", label: "Dashboard", icon: "dashboard" },
     { view: "adminDiagnosis", label: "Diagnosis", icon: "alert" },
-    { view: "adminLimit", label: "Limit", icon: "settings" },
+    { view: "adminLimit", label: "Limit Usaha", icon: "settings" },
     { view: "adminUsers", label: "User", icon: "home" },
     { view: "adminAuditLog", label: "Audit Log", icon: "file" },
   ];

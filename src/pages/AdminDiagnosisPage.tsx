@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
-import { LoadingState } from "../components/atoms/LoadingState";
 import { PaginationControls } from "../components/organisms/PaginationControls";
 import { useAdminRealtimeSignal } from "../hooks/useAdminRealtimeSignal";
 import * as adminApi from "../services/api/admin";
@@ -141,9 +140,18 @@ export function AdminDiagnosisPage() {
                     </td>
                   </tr>
                 )}
-                {!diagnosisError && isDiagnosisLoading && (
-                  <tr><td colSpan={5}><LoadingState inline>Memuat monitoring diagnosis...</LoadingState></td></tr>
-                )}
+                {!diagnosisError && isDiagnosisLoading && Array.from({ length: Math.min(diagnosisPageSize, 5) }).map((_, index) => (
+                  <tr className="admin-table__skeleton-row" key={index}>
+                    <td data-label="Usaha">
+                      <i className="skeleton-bar skeleton-bar--name" />
+                      <i className="skeleton-bar skeleton-bar--sub" />
+                    </td>
+                    <td data-label="Status"><i className="skeleton-bar skeleton-bar--pill" /></td>
+                    <td data-label="Tanggal"><i className="skeleton-bar skeleton-bar--date" /></td>
+                    <td data-label="Skor"><i className="skeleton-bar skeleton-bar--score" /></td>
+                    <td className="admin-table__actions-col" data-label="Aksi"><i className="skeleton-bar skeleton-bar--action" /></td>
+                  </tr>
+                ))}
                 {!diagnosisError && !isDiagnosisLoading && diagnosisRows.length === 0 && (
                   <tr><td colSpan={5}>Belum ada hasil diagnosis yang bisa dipantau.</td></tr>
                 )}
