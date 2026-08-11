@@ -114,7 +114,7 @@ export function AIReportPage() {
         scores: content.sub_score_analysis.map((item) => ({ label: item.title, score: item.score })),
         sections: [
           { title: "Profil Bisnis", headers: ["Narasi"], rows: [[content.business_profile.narrative]] },
-          ...(content.financial_analysis?.narrative
+          ...(content.financial_analysis?.points?.length
             ? [
                 {
                   title: "Analisis Keuangan",
@@ -124,7 +124,7 @@ export function AIReportPage() {
                     ["BEP per Bulan", formatRupiah(content.financial_analysis.bep_per_month)],
                     ["Payback Period", content.financial_analysis.payback_months > 0 ? `${formatScore(content.financial_analysis.payback_months)} bulan` : "Belum Profit"],
                     ["ROI 6 Bulan", `${formatScore(content.financial_analysis.roi)}%`],
-                    ["Narasi", content.financial_analysis.narrative],
+                    ...content.financial_analysis.points.map((point, index) => [`Poin ${index + 1}`, point]),
                   ],
                 },
               ]
@@ -172,7 +172,9 @@ export function AIReportPage() {
             ["BEP per Bulan", content.financial_analysis?.bep_per_month ?? 0],
             ["Payback Period", content.financial_analysis && content.financial_analysis.payback_months > 0 ? `${formatScore(content.financial_analysis.payback_months)} bulan` : "Belum Profit"],
             ["ROI 6 Bulan", content.financial_analysis ? `${formatScore(content.financial_analysis.roi)}%` : "-"],
-            ["Narasi", content.financial_analysis?.narrative ?? "-"],
+            ...(content.financial_analysis?.points?.length
+              ? content.financial_analysis.points.map((point, index) => [`Poin ${index + 1}`, point])
+              : [["Poin", "-"]]),
           ],
           currencyColumns: [1],
         },
@@ -284,7 +286,7 @@ export function AIReportPage() {
               <h3>Profil Bisnis</h3>
               <p>{content.business_profile.narrative}</p>
             </article>
-            {content.financial_analysis?.narrative && (
+            {content.financial_analysis && content.financial_analysis.points && content.financial_analysis.points.length > 0 && (
               <article className="panel admin-inventory-note">
                 <span><Icon name="chart" /></span>
                 <h3>Analisis Keuangan</h3>
@@ -298,7 +300,11 @@ export function AIReportPage() {
                   monthlyNetProfit={content.financial_analysis.monthly_net_profit}
                   netProfit={content.financial_analysis.net_profit}
                 />
-                <p className="financial-tiles__narrative">{content.financial_analysis.narrative}</p>
+                <ul className="financial-tiles__points">
+                  {content.financial_analysis.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
               </article>
             )}
             <div className="ai-report__charts inventory-insight-grid">

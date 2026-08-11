@@ -5753,14 +5753,31 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   }
 }
 
-.ai-report .admin-inventory-note p.financial-tiles__narrative {
+.ai-report .admin-inventory-note ul.financial-tiles__points {
   margin-top: 20px;
   padding: 18px 20px;
   border-radius: 14px;
   background: color-mix(in srgb, var(--color-primary) 6%, var(--surface));
-  line-height: 1.85;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.financial-tiles__points li {
+  position: relative;
+  padding-left: 20px;
+  line-height: 1.6;
   letter-spacing: .005em;
   text-align: justify;
+}
+.financial-tiles__points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
 }
 
 .capital-bars {
@@ -6406,6 +6423,19 @@ dt,
     transition: transform .24s ease;
   }
   .sidebar.is-open { transform: translateX(0); }
+  .page-nav {
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-self: stretch;
+    border-radius: 16px;
+    gap: 6px;
+  }
+  .page-nav__link {
+    width: 100%;
+    justify-content: center;
+    border-radius: 10px;
+  }
   .sidebar-backdrop {
     position: fixed;
     inset: 0;

@@ -256,7 +256,8 @@ export type AIReportRiskAssessment = {
 };
 
 export type AIReportFinancialAnalysis = {
-  narrative: string;
+  // null on reports generated before this field existed (old `narrative` string field).
+  points: string[] | null;
   bep_per_month: number;
   capex: number;
   payback_months: number;
