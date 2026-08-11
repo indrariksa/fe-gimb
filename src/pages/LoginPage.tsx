@@ -75,7 +75,7 @@ export function LoginPage() {
         <Brand name={theme.appName} compact />
         <div>
           <h1>Masuk ke dashboard</h1>
-          <p>Gunakan akun yang sudah terdaftar untuk mengelola toko dan diagnosis bisnis.</p>
+          <p>Gunakan akun yang sudah terdaftar untuk mengelola usaha dan diagnosis bisnis.</p>
         </div>
         <form onSubmit={submit} className="auth-form" autoComplete="off">
           <label>

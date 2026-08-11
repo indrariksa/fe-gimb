@@ -203,21 +203,21 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
 
   const needsBusiness = !businessId;
   const resultNavReason = needsBusiness
-    ? "Pilih toko dulu"
+    ? "Pilih usaha dulu"
     : isCheckingInventoryResult
       ? "Memuat status..."
       : !hasInventoryResult
         ? "Isi inventory dulu"
         : undefined;
   const inventoryNavReason = needsBusiness
-    ? "Pilih toko dulu"
+    ? "Pilih usaha dulu"
     : isCheckingInventoryResult
       ? "Memuat status..."
       : hasInventoryResult
         ? "Sudah diisi"
         : undefined;
   const userNavigation: NavigationItem[] = [
-    { view: "businesses", label: "Daftar Toko", icon: "home" },
+    { view: "businesses", label: "Daftar Usaha", icon: "home" },
     { view: "score", label: "Hasil Skor", icon: "grid", disabledReason: resultNavReason },
     { view: "subscores", label: "Sub Skor", icon: "chart", disabledReason: resultNavReason },
     { view: "inventoryInput", label: "Hasil Input", icon: "file", disabledReason: resultNavReason },

@@ -83,7 +83,7 @@ export function AdminSummaryPage() {
       <section className="admin-page">
         <div className="form-hero admin-anchor">
           <h2>Kontrol operasional aplikasi</h2>
-          <p>Pantau user, toko, dan submission inventarisasi yang masuk ke sistem.</p>
+          <p>Pantau user, usaha, dan submission inventarisasi yang masuk ke sistem.</p>
         </div>
 
         {isLoading && <LoadingState>Memuat data admin...</LoadingState>}
@@ -101,9 +101,9 @@ export function AdminSummaryPage() {
             <div className="admin-grid">
               <HolographicCard className="admin-metric panel"><span>Total User</span><strong>{summary?.users ?? 0}</strong></HolographicCard>
               <HolographicCard className="admin-metric panel"><span>User Aktif</span><strong>{summary?.active_users ?? 0}</strong></HolographicCard>
-              <HolographicCard className="admin-metric panel"><span>Toko</span><strong>{summary?.businesses ?? 0}</strong></HolographicCard>
+              <HolographicCard className="admin-metric panel"><span>Usaha</span><strong>{summary?.businesses ?? 0}</strong></HolographicCard>
               <HolographicCard className="admin-metric panel"><span>Submission</span><strong>{summary?.inventory_submissions ?? 0}</strong></HolographicCard>
-              <HolographicCard className="admin-metric panel"><span>Limit toko/user</span><strong>{businessLimit?.value ?? 2}</strong></HolographicCard>
+              <HolographicCard className="admin-metric panel"><span>Limit usaha/user</span><strong>{businessLimit?.value ?? 2}</strong></HolographicCard>
             </div>
 
             <div className="inventory-insight-grid">

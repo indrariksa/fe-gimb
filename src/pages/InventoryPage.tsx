@@ -145,7 +145,7 @@ export function InventoryPage() {
 
         setBusiness(detail);
       } catch (err) {
-        if (isMounted) setLoadError(err instanceof Error ? err.message : "Gagal memuat toko");
+        if (isMounted) setLoadError(err instanceof Error ? err.message : "Gagal memuat usaha");
       } finally {
         if (isMounted) setIsCheckingAccess(false);
       }
@@ -195,7 +195,7 @@ export function InventoryPage() {
         <>
         <div className="form-hero">
           <h2>Lengkapi data bisnis 6 bulan terakhir</h2>
-          <p>{business?.name ?? "Toko"} - setiap angka akan dipakai sebagai bahan diagnosis kesehatan bisnis yang lebih komprehensif.</p>
+          <p>{business?.name ?? "Usaha"} - setiap angka akan dipakai sebagai bahan diagnosis kesehatan bisnis yang lebih komprehensif.</p>
         </div>
 
         <div className="inventory-layout">

@@ -454,7 +454,7 @@ export function SubScoresPage() {
           <article className="panel dashboard-empty">
             <span><Icon name="alert" /></span>
             <h3>Belum ada hasil diagnosis</h3>
-            <p>Masukkan data inventarisasi pertama untuk menghitung skor kesehatan bisnis {business?.name ?? "toko ini"}.</p>
+            <p>Masukkan data inventarisasi pertama untuk menghitung skor kesehatan bisnis {business?.name ?? "usaha ini"}.</p>
             <Button onClick={() => navigate(`/businesses/${businessId}/inventory/new`)}>Mulai Inventarisasi <Icon name="arrow" size={18} /></Button>
           </article>
         )}

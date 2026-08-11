@@ -37,7 +37,7 @@ export function AdminDiagnosisPage() {
         const response = await adminApi.adminBusinesses({ limit: 100, offset: 0 });
         if (isMounted) setBusinesses(response.items);
       } catch (err) {
-        if (isMounted) setBusinessesError(err instanceof Error ? err.message : "Gagal memuat daftar toko");
+        if (isMounted) setBusinessesError(err instanceof Error ? err.message : "Gagal memuat daftar usaha");
       }
     }
     loadBusinesses();
@@ -105,7 +105,7 @@ export function AdminDiagnosisPage() {
           <div className="admin-section__heading">
             <div>
               <h3>Monitoring Diagnosis</h3>
-              <p>Toko dengan skor terendah tampil lebih dulu agar admin bisa cepat melakukan review.</p>
+              <p>Usaha dengan skor terendah tampil lebih dulu agar admin bisa cepat melakukan review.</p>
             </div>
             <b>{diagnosisMeta.total} data</b>
           </div>
@@ -121,7 +121,7 @@ export function AdminDiagnosisPage() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Toko</th>
+                  <th>Usaha</th>
                   <th>Status</th>
                   <th>Tanggal</th>
                   <th>Skor</th>
@@ -151,9 +151,9 @@ export function AdminDiagnosisPage() {
                   const business = businesses.find((item) => item.id === submission.business_id);
                   return (
                     <tr key={submission.public_id}>
-                      <td data-label="Toko">
+                      <td data-label="Usaha">
                         <strong>{submission.business_name || business?.name || submission.public_id}</strong>
-                        <span>{business?.industry || "Tanpa industri"}</span>
+                        <span>{business?.industry || "Tanpa jenis usaha"}</span>
                       </td>
                       <td data-label="Status"><b className="status-pill">{submission.analysis.status}</b></td>
                       <td data-label="Tanggal">{formatJakartaDate(submission.created_at, "short")}</td>

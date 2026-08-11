@@ -109,7 +109,7 @@ export function BusinessesPage() {
       );
       setCompletedBusinessIds(new Set(completedIds.filter((id): id is string => Boolean(id))));
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : "Gagal memuat toko");
+      setLoadError(err instanceof Error ? err.message : "Gagal memuat usaha");
     } finally {
       setIsLoading(false);
     }
@@ -140,8 +140,8 @@ export function BusinessesPage() {
       description: cleanText(form.description),
     };
     const validationError = firstValidationError([
-      validateRequiredText(cleanedForm.name, "Nama toko"),
-      validateRequiredText(cleanedForm.industry, "Industri"),
+      validateRequiredText(cleanedForm.name, "Nama usaha"),
+      validateRequiredText(cleanedForm.industry, "Jenis usaha"),
       validateMaxLength(cleanedForm.description, "Deskripsi", 500),
     ]);
 
@@ -161,34 +161,34 @@ export function BusinessesPage() {
       });
       navigate(`/businesses/${business.public_id}/inventory/new`);
     } catch (err) {
-      setError(getFriendlyApiError(err, "Gagal membuat toko"));
+      setError(getFriendlyApiError(err, "Gagal membuat usaha"));
     } finally {
       setIsCreating(false);
     }
   };
 
   return (
-    <DashboardShell activeView="businesses" title="Pilih Toko">
+    <DashboardShell activeView="businesses" title="Pilih Usaha">
       <section className="business-page">
         <div className="business-hero">
           <div>
             <span>Workspace Bisnis</span>
-            <h2>Pilih toko yang ingin dianalisis</h2>
-            <p>Halo {user?.full_name ?? "Owner"}, setiap toko punya riwayat inventarisasi, skor kesehatan, dan rekomendasi yang terpisah.</p>
+            <h2>Pilih usaha yang ingin dianalisis</h2>
+            <p>Halo {user?.full_name ?? "Owner"}, setiap usaha punya riwayat inventarisasi, skor kesehatan, dan rekomendasi yang terpisah.</p>
           </div>
           <Button
             className="btn--dashboard-hover"
             disabled={hasReachedLimit}
-            title={hasReachedLimit ? "Batas toko sudah tercapai" : "Tambah toko baru"}
+            title={hasReachedLimit ? "Batas usaha sudah tercapai" : "Tambah usaha baru"}
             onClick={() => document.getElementById("business-create-form")?.scrollIntoView({ behavior: "smooth", block: "center" })}
           >
-            {hasReachedLimit ? "Limit Tercapai" : "Tambah Toko"} <Icon name="arrow" size={18} />
+            {hasReachedLimit ? "Limit Tercapai" : "Tambah Usaha"} <Icon name="arrow" size={18} />
           </Button>
         </div>
 
         <div className="business-summary">
           <HolographicCard>
-            <span>Total toko</span>
+            <span>Total usaha</span>
             {isLoading ? <i className="skeleton-bar" /> : <strong>{businesses.length} dari {businessLimit}</strong>}
           </HolographicCard>
           <HolographicCard>
@@ -207,7 +207,7 @@ export function BusinessesPage() {
 
         <div className="business-layout">
           <div className="business-list">
-            {isLoading && <LoadingState>Memuat toko...</LoadingState>}
+            {isLoading && <LoadingState>Memuat usaha...</LoadingState>}
             {!isLoading && loadError && (
               <article className="panel empty-state retry-state">
                 <span>{loadError}</span>
@@ -219,8 +219,8 @@ export function BusinessesPage() {
             {!isLoading && !loadError && businesses.length === 0 && (
               <article className="panel empty-state business-empty">
                 <span><Icon name="home" /></span>
-                <h3>Belum ada toko</h3>
-                <p>Buat toko pertama untuk mulai mengisi inventarisasi dan melihat hasil sub skor diagnosis.</p>
+                <h3>Belum ada usaha</h3>
+                <p>Buat usaha pertama untuk mulai mengisi inventarisasi dan melihat hasil sub skor diagnosis.</p>
               </article>
             )}
             {!loadError && businesses.map((business) => {
@@ -232,35 +232,37 @@ export function BusinessesPage() {
                   <div>
                     <span>{business.industry || "Bisnis"} · dibuat {formatJakartaDate(business.created_at, "short")}</span>
                     <h3>{business.name}</h3>
-                    <p>{business.description || "Belum ada deskripsi toko."}</p>
+                    <p>{business.description || "Belum ada deskripsi usaha."}</p>
                   </div>
                   <div className="business-card__actions">
-                    <Button
-                      className={hasDiagnosis ? "btn--dashboard-hover" : "btn--shiny-dashboard"}
-                      variant="secondary"
-                      disabled={hasDiagnosis}
-                      title={hasDiagnosis ? "Inventory toko ini sudah diisi" : "Input data inventory"}
-                      onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
-                    >
-                      {hasDiagnosis ? "Sudah Diisi" : "Input Data"}
-                    </Button>
-                    <Button
-                      className="btn--shiny-dashboard"
-                      disabled={!hasDiagnosis}
-                      title={hasDiagnosis ? "Buka hasil sub skor diagnosis" : "Isi inventory dulu untuk membuka sub skor"}
-                      onClick={() => navigate(`/businesses/${business.public_id}/sub-scores`)}
-                    >
-                      Sub Skor <Icon name="arrow" size={18} />
-                    </Button>
-                    <Button
-                      className="btn--dashboard-hover"
-                      variant="secondary"
-                      disabled={!hasDiagnosis}
-                      title={hasDiagnosis ? "Lihat detail data inventarisasi" : "Isi inventory dulu untuk melihat detail input"}
-                      onClick={() => navigate(`/businesses/${business.public_id}/inventory-input`)}
-                    >
-                      Lihat Input <Icon name="file" size={18} />
-                    </Button>
+                    {hasDiagnosis ? (
+                      <>
+                        <Button
+                          className="btn--shiny-dashboard"
+                          title="Buka hasil sub skor diagnosis"
+                          onClick={() => navigate(`/businesses/${business.public_id}/sub-scores`)}
+                        >
+                          Sub Skor <Icon name="arrow" size={18} />
+                        </Button>
+                        <Button
+                          className="btn--dashboard-hover"
+                          variant="secondary"
+                          title="Lihat detail data inventarisasi"
+                          onClick={() => navigate(`/businesses/${business.public_id}/inventory-input`)}
+                        >
+                          Lihat Hasil Input <Icon name="file" size={18} />
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        className="btn--dashboard-hover btn--wiggle"
+                        variant="dark"
+                        title="Input data inventory"
+                        onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
+                      >
+                        Input Data <span className="btn--wiggle__icon"><Icon name="edit" size={16} /></span>
+                      </Button>
+                    )}
                   </div>
                   {hasDiagnosis ? (
                     <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil sub skor.</small>
@@ -274,19 +276,19 @@ export function BusinessesPage() {
 
           <form id="business-create-form" className="business-form panel" onSubmit={create}>
             <span className="business-form__icon"><Icon name="home" /></span>
-            <h3>{hasReachedLimit ? "Batas toko tercapai" : "Tambah toko baru"}</h3>
+            <h3>{hasReachedLimit ? "Batas usaha tercapai" : "Tambah usaha baru"}</h3>
             <p>
               {hasReachedLimit
-                ? `Akun ini sudah memiliki ${businesses.length} dari ${businessLimit} toko yang diperbolehkan. Hubungi admin untuk menambah limit.`
+                ? `Akun ini sudah memiliki ${businesses.length} dari ${businessLimit} usaha yang diperbolehkan. Hubungi admin untuk menambah limit.`
                 : "Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah."}
             </p>
-            <label><span>Nama toko</span><input required disabled={hasReachedLimit} placeholder="Contoh: Toko Maju Jaya" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
+            <label><span>Nama usaha</span><input required disabled={hasReachedLimit} placeholder="Contoh: Usaha Maju Jaya" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
             <label className="industry-combobox">
-              <span>Industri</span>
+              <span>Jenis Usaha</span>
               <input
                 required
                 disabled={hasReachedLimit}
-                placeholder={isCustomIndustry ? "Tulis nama industri Anda" : "Cari atau pilih industri"}
+                placeholder={isCustomIndustry ? "Tulis jenis usaha Anda" : "Cari atau pilih jenis usaha"}
                 value={isIndustryOpen ? industrySearch : form.industry}
                 onFocus={() => {
                   setIndustrySearch(form.industry);
@@ -347,9 +349,9 @@ export function BusinessesPage() {
                 </div>
               )}
             </label>
-            <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} placeholder="Contoh: Toko kebutuhan harian dan produk rumah tangga" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
+            <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} placeholder="Contoh: Usaha kebutuhan harian dan produk rumah tangga" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
             {error && <p className="form-error">{error}</p>}
-            <Button className="btn--shiny-dashboard" type="submit" disabled={isCreating || hasReachedLimit}>{isCreating ? "Menyimpan..." : hasReachedLimit ? "Tidak Ada Slot" : "Buat Toko"}</Button>
+            <Button className="btn--shiny-dashboard" type="submit" disabled={isCreating || hasReachedLimit}>{isCreating ? "Menyimpan..." : hasReachedLimit ? "Tidak Ada Slot" : "Buat Usaha"}</Button>
           </form>
         </div>
       </section>

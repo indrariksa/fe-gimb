@@ -20,7 +20,7 @@ export function AdminLimitPage() {
         const limitData = await adminApi.adminBusinessLimit();
         if (isMounted) setBusinessLimitInput(String(limitData.value));
       } catch (err) {
-        if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat limit toko");
+        if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat limit usaha");
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -42,9 +42,9 @@ export function AdminLimitPage() {
     try {
       const updated = await adminApi.updateBusinessLimit(Number(businessLimitInput));
       setBusinessLimitInput(String(updated.value));
-      setSettingMessage("Limit toko per user berhasil diperbarui.");
+      setSettingMessage("Limit usaha per user berhasil diperbarui.");
     } catch (err) {
-      setSettingMessage(err instanceof Error ? err.message : "Gagal memperbarui limit toko");
+      setSettingMessage(err instanceof Error ? err.message : "Gagal memperbarui limit usaha");
     } finally {
       setIsSavingLimit(false);
       setIsLimitConfirmOpen(false);
@@ -58,11 +58,11 @@ export function AdminLimitPage() {
         <section className="admin-section panel admin-anchor">
           <h3>Pengaturan Limit</h3>
           {isLoading ? (
-            <LoadingState>Memuat limit toko...</LoadingState>
+            <LoadingState>Memuat limit usaha...</LoadingState>
           ) : (
             <form className="admin-setting-form" onSubmit={saveBusinessLimit}>
               <label>
-                <span>Batas toko per user</span>
+                <span>Batas usaha per user</span>
                 <input
                   type="number"
                   min="1"
@@ -86,7 +86,7 @@ export function AdminLimitPage() {
           titleId="limit-confirm-title"
           icon="settings"
           title="Simpan perubahan limit?"
-          message={<>Limit toko per user akan diubah menjadi <strong>{businessLimitInput}</strong>.</>}
+          message={<>Limit usaha per user akan diubah menjadi <strong>{businessLimitInput}</strong>.</>}
           cancelLabel="Tidak"
           confirmLabel={isSavingLimit ? "Menyimpan..." : "Ya, Simpan"}
           onCancel={() => setIsLimitConfirmOpen(false)}

@@ -27,7 +27,7 @@ const steps = [
 ];
 
 const features: Array<{ title: string; body: string; icon: ComponentProps<typeof Icon>["name"] }> = [
-  { title: "Kelola Multi-Toko", body: "Daftarkan dan pantau beberapa toko dalam satu akun, masing-masing punya data inventarisasi serta histori diagnosis sendiri.", icon: "home" },
+  { title: "Kelola Multi-Usaha", body: "Daftarkan dan pantau beberapa usaha dalam satu akun, masing-masing punya data inventarisasi serta histori diagnosis sendiri.", icon: "home" },
   { title: "Laporan Naratif AI", body: "Hasil diagnosis diterjemahkan jadi narasi bisnis yang mudah dipahami, lengkap konteks dan rekomendasinya.", icon: "file" },
   { title: "Ekspor Sekali Klik", body: "Unduh laporan dalam format PDF atau Excel, siap dibagikan ke tim atau dilampirkan ke pengajuan modal.", icon: "download" },
 ];

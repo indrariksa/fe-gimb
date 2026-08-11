@@ -3,7 +3,7 @@ import { hexToRgb } from "../utils/color";
 
 export const defaultTheme: ThemeSettings = {
   appName: "GIMB Business",
-  businessName: "Toko Maju Jaya",
+  businessName: "Usaha Maju Jaya",
   ownerName: "Budi Santoso",
   mode: "light",
   primaryColor: "#6558d9",

@@ -140,7 +140,7 @@ export function AdminInventoryDetailPage() {
                 <span>Data inventarisasi user</span>
                 <h2>{business?.name || submission.business_name || "Detail Bisnis"}</h2>
                 <p>
-                  {business?.industry || "Tanpa industri"} · diinput {formatJakartaDate(submission.created_at)}
+                  {business?.industry || "Tanpa jenis usaha"} · diinput {formatJakartaDate(submission.created_at)}
                   {submitter ? ` oleh ${submitter.full_name}` : ` oleh user ${shortValue(submission.user_id)}`}
                 </p>
                 <nav className="page-nav">

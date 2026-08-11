@@ -82,7 +82,7 @@ export const inventoryFields: InventoryField[] = [
     shortLabel: "Nilai aset bisnis",
     prefix: "Rp",
     note: "Catatan: Aset adalah barang atau perlengkapan yang digunakan untuk menjalankan usaha. Gunakan nilai perkiraan saat ini.",
-    example: "Contoh: Mesin produksi, kendaraan operasional, komputer, peralatan kerja, inventaris toko.",
+    example: "Contoh: Mesin produksi, kendaraan operasional, komputer, peralatan kerja, inventaris usaha.",
   },
   {
     id: "capitalInvestment",

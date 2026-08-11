@@ -202,6 +202,30 @@ a { color: inherit; text-decoration: none; }
     0 0 0 3px color-mix(in srgb, var(--color-accent) 14%, transparent);
 }
 
+.btn--wiggle__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+  padding: 3px;
+  border-radius: 999px;
+  color: var(--on-primary);
+  background: color-mix(in srgb, var(--on-primary) 24%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn--wiggle:hover:not(:disabled) .btn--wiggle__icon,
+  .btn--wiggle:focus-visible:not(:disabled) .btn--wiggle__icon {
+    animation: btnWiggle .6s ease;
+  }
+}
+@keyframes btnWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-22deg) scale(1.2); }
+  40% { transform: rotate(16deg) scale(1.2); }
+  60% { transform: rotate(-10deg) scale(1.1); }
+  80% { transform: rotate(6deg) scale(1.05); }
+}
+
 .retry-state,
 .table-retry-state {
   display: flex;
@@ -3164,6 +3188,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   color: color-mix(in srgb, var(--color-success) 76%, var(--ink));
   background: color-mix(in srgb, var(--color-success) 12%, var(--surface));
   font-weight: 900;
+  font-size: 0.95rem;
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
