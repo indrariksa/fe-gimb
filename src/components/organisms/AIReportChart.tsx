@@ -17,6 +17,28 @@ export function statusLabel(score: number) {
   return "Sangat Buruk";
 }
 
+// Chart.js right-aligns horizontal-bar category labels against the axis line; on a narrow
+// (mobile) canvas a long single-line label doesn't fit the reserved width and its leading
+// characters draw off the left edge of the canvas, getting clipped. Wrapping into multiple
+// short lines (Chart.js accepts an array as one tick's label) keeps every line short enough to fit.
+function wrapLabel(label: string, maxCharsPerLine = 18): string | string[] {
+  if (label.length <= maxCharsPerLine) return label;
+  const words = label.split(" ");
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length > maxCharsPerLine && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
 function RadarCard({ chart }: AIReportChartProps) {
   const { theme } = useThemeSettings();
   const chartTheme = useMemo(() => getChartTheme(theme.mode), [theme.mode]);
@@ -111,7 +133,7 @@ function BarCard({ chart }: AIReportChartProps) {
         <Bar
           key={theme.mode}
           data={{
-            labels: chart.labels,
+            labels: chart.labels.map((label) => wrapLabel(label)),
             datasets: [{ label: chart.series[0]?.name ?? chart.title, data: values, backgroundColor: colors, borderRadius: 6, hoverBorderWidth: 2, hoverBorderColor: chartTheme.ink }],
           }}
           options={{

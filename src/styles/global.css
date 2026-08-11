@@ -5411,11 +5411,13 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .ai-chart-card {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .ai-chart-canvas {
   position: relative;
   flex: 1 1 auto;
+  min-width: 0;
   min-height: 160px;
   margin-top: 12px;
 }
@@ -6436,6 +6438,9 @@ dt,
     justify-content: center;
     border-radius: 10px;
   }
+  .ai-subscore-card { padding: 18px 18px 18px 22px; }
+  .ai-subscore-card__icon { width: 38px; height: 38px; font-size: 1.05rem; }
+  .ai-subscore-card__score { font-size: 1.6rem; }
   .sidebar-backdrop {
     position: fixed;
     inset: 0;
@@ -6990,19 +6995,138 @@ dt,
 .ai-report__callout { padding: 16px 18px; margin: 4px 0 16px; border-radius: 14px; background: color-mix(in srgb, var(--color-primary) 8%, var(--surface)); }
 .ai-report__callout p { margin: 0; color: var(--ink); line-height: 1.7; text-align: justify; }
 .ai-report__disclaimer { color: var(--text-tertiary); font-size: var(--text-caption); margin-top: 12px; }
-.ai-report .admin-inventory-note p,
-.ai-report .subscore-card p {
+.ai-report .admin-inventory-note p {
   text-align: justify;
 }
 .admin-inventory-page .admin-inventory-note p,
 .admin-inventory-page .admin-inventory-note li {
   text-align: justify;
 }
-/* Each card sizes to its own content instead of stretching to match the tallest sibling in the row. */
-.ai-report__sub-scores { align-items: start; }
 
-.ai-report__drivers { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.ai-report__drivers li { padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--subscore-color, var(--color-primary)) 6%, var(--surface-soft)); }
+.ai-subscore-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ai-subscore-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 24px 22px 30px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, .05);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease, border-color .3s ease;
+}
+.ai-subscore-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--subscore-color);
+  transition: width .3s ease;
+}
+.ai-subscore-card:hover,
+.ai-subscore-card:focus-within {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--subscore-color) 45%, var(--line));
+  box-shadow:
+    0 22px 44px color-mix(in srgb, var(--subscore-color) 22%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--subscore-color) 14%, transparent);
+}
+.ai-subscore-card:hover::before,
+.ai-subscore-card:focus-within::before {
+  width: 8px;
+}
+
+.ai-subscore-card__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ai-subscore-card__icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  background: color-mix(in srgb, var(--subscore-color) 14%, var(--surface-soft));
+  color: var(--subscore-color);
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.ai-subscore-card:hover .ai-subscore-card__icon,
+.ai-subscore-card:focus-within .ai-subscore-card__icon {
+  transform: scale(1.12) rotate(-6deg);
+}
+.ai-subscore-card__heading {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+.ai-subscore-card__heading h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--ink);
+}
+.ai-subscore-card__status {
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  color: var(--subscore-color);
+  background: color-mix(in srgb, var(--subscore-color) 16%, transparent);
+}
+.ai-subscore-card__score {
+  flex: 0 0 auto;
+  font-size: 2rem;
+  font-weight: 950;
+  color: var(--subscore-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-subscore-meter {
+  margin-top: 16px;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--subscore-color) 12%, var(--line));
+  overflow: hidden;
+}
+.ai-subscore-meter i {
+  display: block;
+  height: 100%;
+  width: var(--subscore-width, 0%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--subscore-color) 65%, white), var(--subscore-color));
+  transition: width .8s cubic-bezier(.22, 1, .36, 1);
+}
+
+.ai-subscore-card > p {
+  margin-top: 16px;
+  color: var(--muted);
+  line-height: 1.7;
+  text-align: justify;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-subscore-card,
+  .ai-subscore-card::before,
+  .ai-subscore-card__icon,
+  .ai-subscore-meter i {
+    transition: none !important;
+  }
+}
+
+.ai-report__drivers { margin: 16px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.ai-report__driver { margin: 0; padding: 10px 12px 10px 8px; border-radius: 8px; background: color-mix(in srgb, var(--subscore-color, var(--color-primary)) 6%, var(--surface-soft)); }
 
 /* Collapsed by default via native <details> so a dimension with many alternative solutions (e.g. a low-scoring one) doesn't blow out the card height. */
 .ai-report__solutions { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
@@ -7021,10 +7145,10 @@ dt,
 .ai-report__solutions summary::before { content: "▸"; display: inline-block; width: 12px; transition: transform .15s ease; }
 .ai-report__solutions[open] summary::before { transform: rotate(90deg); }
 .ai-report__solutions summary:hover { color: var(--subscore-color, var(--color-primary)); }
-.ai-report__solution { margin-top: 8px; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--subscore-color, var(--color-primary)) 6%, var(--surface-soft)); }
+.ai-report__solution { margin-top: 8px; padding: 10px 12px 10px 8px; border-radius: 8px; background: color-mix(in srgb, var(--subscore-color, var(--color-primary)) 6%, var(--surface-soft)); }
 
 /* Driver factors and solution titles/descriptions share one type scale so they read as the same kind of content. */
-.ai-report__drivers li strong,
+.ai-report__driver strong,
 .ai-report__solution strong {
   display: block;
   font-size: var(--text-body-sm);
@@ -7032,7 +7156,7 @@ dt,
   line-height: 1.4;
   color: var(--ink);
 }
-.ai-report__drivers li em,
+.ai-report__driver em,
 .ai-report__solution p,
 .ai-report__solution small {
   display: block;

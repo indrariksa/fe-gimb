@@ -19,15 +19,25 @@ import { formatScore } from "../utils/number";
 
 const pollIntervalMs = 5000;
 
-// Same colors and glyphs as the dimension cards on the Sub Skor page, so the two views read as one system.
-const dimensionMeta: Record<string, { color: string; icon: string }> = {
-  profitability: { color: "#3b82f6", icon: "$" },
-  cashflow: { color: "#ef4444", icon: "↯" },
-  marketing: { color: "#10b981", icon: "↗" },
-  retention: { color: "#8b5cf6", icon: "☷" },
-  operational: { color: "#d97706", icon: "▣" },
-  hr: { color: "#ec4899", icon: "♙" },
+// Same glyphs as the dimension cards on the Sub Skor page, so the two views read as one system.
+const dimensionIcon: Record<string, string> = {
+  profitability: "$",
+  cashflow: "↯",
+  marketing: "↗",
+  retention: "☷",
+  operational: "▣",
+  hr: "♙",
 };
+
+// One shared color scale by health status (not by dimension), so a user can tell at a glance
+// which dimension is weak just from color: red = worst, blue = best.
+function statusColor(score: number) {
+  if (score >= 80) return "#3b82f6"; // Sangat Sehat
+  if (score >= 60) return "#14b8a6"; // Sehat
+  if (score >= 40) return "#eab308"; // Cukup Sehat
+  if (score >= 20) return "#f97316"; // Buruk
+  return "#ef4444"; // Sangat Buruk
+}
 
 function riskLevelClass(level: string) {
   return level.toLowerCase();
@@ -312,49 +322,55 @@ export function AIReportPage() {
                 <AIReportChart key={chart.id} chart={chart} />
               ))}
             </div>
-            <div className="subscore-card-grid ai-report__sub-scores">
-              {content.sub_score_analysis.map((item) => (
-                <article
-                  key={item.dimension}
-                  className="panel subscore-card ai-report__sub-score"
-                  style={{
-                    "--subscore-color": dimensionMeta[item.dimension]?.color ?? "var(--color-primary)",
-                    "--subscore-width": `${Math.max(0, Math.min(100, item.score))}%`,
-                  } as CSSProperties}
-                >
-                  <div className="subscore-card__top">
-                    <span>{dimensionMeta[item.dimension]?.icon ?? "★"}</span>
-                    <b>{statusLabel(item.score)}</b>
-                  </div>
-                  <strong>{item.score}</strong>
-                  <h3>{item.title}</h3>
-                  <p>{item.narrative}</p>
-                  <div className="subscore-meter"><i /></div>
-                  {item.score_drivers.length > 0 && (
-                    <ul className="ai-report__drivers">
-                      {item.score_drivers.map((driver) => (
-                        <li key={driver.factor}>
-                          <strong>{driver.factor}</strong>
-                          <em>{driver.effect}</em>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {item.alternative_solutions.length > 0 && (
-                    <details className="ai-report__solutions">
-                      <summary>Alternatif Solusi ({item.alternative_solutions.length})</summary>
-                      {item.alternative_solutions.map((solution) => (
-                        <div key={solution.title} className="ai-report__solution">
-                          <strong>{solution.title}</strong>
-                          <p>{solution.description}</p>
-                          <small>Trade-off: {solution.trade_off}</small>
-                        </div>
-                      ))}
-                    </details>
-                  )}
-                </article>
-              ))}
-            </div>
+            <article className="panel admin-inventory-note">
+              <span><Icon name="grid" /></span>
+              <h3>Analisis 6 Sub Skor</h3>
+              <div className="ai-subscore-list">
+                {content.sub_score_analysis.map((item) => (
+                  <article
+                    key={item.dimension}
+                    className="ai-subscore-card"
+                    style={{
+                      "--subscore-color": statusColor(item.score),
+                      "--subscore-width": `${Math.max(0, Math.min(100, item.score))}%`,
+                    } as CSSProperties}
+                  >
+                    <div className="ai-subscore-card__head">
+                      <span className="ai-subscore-card__icon">{dimensionIcon[item.dimension] ?? "★"}</span>
+                      <div className="ai-subscore-card__heading">
+                        <h4>{item.title}</h4>
+                        <b className="ai-subscore-card__status">{statusLabel(item.score)}</b>
+                      </div>
+                      <strong className="ai-subscore-card__score">{item.score}</strong>
+                    </div>
+                    <div className="ai-subscore-meter"><i /></div>
+                    <p>{item.narrative}</p>
+                    {item.score_drivers.length > 0 && (
+                      <div className="ai-report__drivers">
+                        {item.score_drivers.map((driver) => (
+                          <div className="ai-report__driver" key={driver.factor}>
+                            <strong>{driver.factor}</strong>
+                            <em>{driver.effect}</em>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {item.alternative_solutions.length > 0 && (
+                      <details className="ai-report__solutions">
+                        <summary>Alternatif Solusi ({item.alternative_solutions.length})</summary>
+                        {item.alternative_solutions.map((solution) => (
+                          <div key={solution.title} className="ai-report__solution">
+                            <strong>{solution.title}</strong>
+                            <p>{solution.description}</p>
+                            <small>Trade-off: {solution.trade_off}</small>
+                          </div>
+                        ))}
+                      </details>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </article>
             {content.key_strengths?.narrative && (
               <article className="panel admin-inventory-note">
                 <span><Icon name="check" /></span>
