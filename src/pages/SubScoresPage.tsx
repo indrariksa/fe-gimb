@@ -35,11 +35,6 @@ type InventoryInsightBar = {
 
 const inventoryPeriodMonths = 6;
 
-// Mirrors AI_REPORT_REVENUE_THRESHOLD on the backend (default Rp 50 juta) — di atas ini
-// Laporan Kesehatan Bisnis sudah tersedia dan lebih detail, jadi action plan/insight rule-based
-// di sini disembunyikan untuk menghindari narasi yang berpotensi beda dengan Laporan Kesehatan Bisnis.
-const aiReportRevenueThreshold = 50_000_000;
-
 function statusShort(score: number) {
   if (score >= 80) return "Sangat Sehat";
   if (score >= 60) return "Sehat";
@@ -562,38 +557,36 @@ export function SubScoresPage() {
               </section>
             </div>
 
-            {submission.six_month_revenue <= aiReportRevenueThreshold && (
-              <div className="dashboard-merge-stack">
-                <TrendChart
-                  priorityIssues={submission.analysis.priority_issues}
-                  recommendations={submission.analysis.recommendations}
-                  actionPlan={submission.analysis.action_plan}
-                />
-                <div className="insight-grid">
-                  <article className="insight-card insight-card--dark">
-                    <span><Icon name="alert" /></span>
-                    <h3>Prioritas Perbaikan</h3>
-                    <ul>
-                      {priorityIssues.map((item) => <li key={item}>{item}</li>)}
-                    </ul>
-                  </article>
-                  <article className="insight-card">
-                    <span><Icon name="chart" /></span>
-                    <h3>Kekuatan Utama</h3>
-                    <ul>
-                      {strengths.map((item) => <li key={item}>{item}</li>)}
-                    </ul>
-                  </article>
-                  <article className="insight-card insight-card--warm">
-                    <span><Icon name="bulb" /></span>
-                    <h3>Rekomendasi Kunci</h3>
-                    <ul>
-                      {recommendations.map((item) => <li key={item}>{item}</li>)}
-                    </ul>
-                  </article>
-                </div>
+            <div className="dashboard-merge-stack">
+              <TrendChart
+                priorityIssues={submission.analysis.priority_issues}
+                recommendations={submission.analysis.recommendations}
+                actionPlan={submission.analysis.action_plan}
+              />
+              <div className="insight-grid">
+                <article className="insight-card insight-card--dark">
+                  <span><Icon name="alert" /></span>
+                  <h3>Prioritas Perbaikan</h3>
+                  <ul>
+                    {priorityIssues.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                </article>
+                <article className="insight-card">
+                  <span><Icon name="chart" /></span>
+                  <h3>Kekuatan Utama</h3>
+                  <ul>
+                    {strengths.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                </article>
+                <article className="insight-card insight-card--warm">
+                  <span><Icon name="bulb" /></span>
+                  <h3>Rekomendasi Kunci</h3>
+                  <ul>
+                    {recommendations.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                </article>
               </div>
-            )}
+            </div>
 
             {inventoryInsights && (
               <section className="inventory-insights">

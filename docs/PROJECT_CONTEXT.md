@@ -4,7 +4,7 @@ Dokumen ini adalah snapshot konteks frontend `fe-gimb` berdasarkan source code d
 
 ## Gambaran Umum
 
-`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, verifikasi email registrasi, update nama profil, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, laporan bisnis naratif berbasis Claude API untuk toko dengan omzet di atas threshold, pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
+`fe-gimb` adalah frontend React/Vite untuk GIMB Smart Business Dashboard. Aplikasi menyediakan landing page, autentikasi user/admin dengan email/password atau Google, verifikasi email registrasi, update nama profil, ubah password mandiri, daftar toko, form inventarisasi bisnis, detail data inventarisasi, simulasi proses analisis, dashboard hasil diagnosis, halaman skor, halaman sub-skor, laporan bisnis naratif berbasis Claude API yang di-generate manual oleh user (tidak lagi digate omzet), pengaturan tema, admin dashboard, dan bell notifikasi realtime untuk admin.
 
 ## Tujuan Aplikasi
 

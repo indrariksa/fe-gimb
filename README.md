@@ -53,7 +53,7 @@ npm run build
 - `/businesses/:businessId/sub-scores` halaman 6 sub skor bisnis
 - `/businesses/:businessId/inventory/new` form input inventarisasi toko
 - `/businesses/:businessId/analysis` animasi proses analisis setelah submit
-- `/businesses/:businessId/health-report` Laporan Kesehatan Bisnis naratif berbasis Claude API (tersedia otomatis untuk omzet di atas threshold backend)
+- `/businesses/:businessId/health-report` Laporan Kesehatan Bisnis naratif berbasis Claude API (generate manual lewat tombol, tidak lagi digate omzet; data inventarisasi terkunci selama laporan `processing`/`ready`)
 - `/settings` pengaturan tema dan identitas aplikasi
 - `/admin` dashboard admin, hanya untuk role `admin`
 

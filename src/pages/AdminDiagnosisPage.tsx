@@ -10,9 +10,6 @@ import { emptyPaginationMeta, normalizePaginationMeta } from "../utils/paginatio
 import { formatJakartaDate } from "../utils/dateTime";
 import { formatScore } from "../utils/number";
 
-// Mirrors AI_REPORT_REVENUE_THRESHOLD on the backend (default Rp 50 juta) — below this,
-// AI report generation is never triggered, so the button would only ever 404.
-const aiReportRevenueThreshold = 50_000_000;
 const defaultDiagnosisPageSize = 5;
 
 export function AdminDiagnosisPage() {
@@ -172,9 +169,7 @@ export function AdminDiagnosisPage() {
                             <>
                               <Link className="admin-row-action--score" to={`/businesses/${business.public_id}/sub-scores`}>Sub Skor <Icon name="arrow" size={16} /></Link>
                               <Link className="admin-row-action--input" to={`/admin/businesses/${business.public_id}/inventory-input`}>Lihat Input <Icon name="arrow" size={16} /></Link>
-                              {submission.six_month_revenue > aiReportRevenueThreshold && (
-                                <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/health-report`}>Laporan Kesehatan Bisnis <Icon name="arrow" size={16} /></Link>
-                              )}
+                              <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/health-report`}>Laporan Kesehatan Bisnis <Icon name="arrow" size={16} /></Link>
                             </>
                           ) : (
                             <span>-</span>
