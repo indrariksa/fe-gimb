@@ -75,7 +75,7 @@ Peta ini membantu Codex berikutnya memilih file yang perlu dibaca sebelum mengub
 | `src/pages/RegisterPage.tsx` | Register form dan instruksi verifikasi email. | Saat mengubah register UX/validasi. |
 | `src/pages/RegistrationSuccessPage.tsx` | Halaman pemberitahuan setelah register, resend verification, dan countdown. | Saat mengubah alur setelah register email/password. |
 | `src/pages/VerifyEmailPage.tsx` | Halaman public untuk submit token verifikasi email dari query string. | Saat mengubah alur verifikasi email. |
-| `src/pages/BusinessesPage.tsx` | List/create business, business limit, completed inventory check, industry combobox. | Saat mengubah toko/user workspace. |
+| `src/pages/BusinessesPage.tsx` | List/create business, business limit, completed inventory check, dropdown jenis usaha (10 kategori tetap + fallback). | Saat mengubah toko/user workspace. |
 | `src/pages/InventoryPage.tsx` | Inventory form, local draft, numeric formatting, validation, submit. | Saat mengubah field/payload inventory. |
 | `src/pages/AnalysisPage.tsx` | Progress animation dan CTA score. | Saat mengubah flow setelah submit. |
 | `src/pages/ScoreResultPage.tsx` | Hasil skor keseluruhan. | Saat mengubah score summary. |

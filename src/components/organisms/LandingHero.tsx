@@ -171,7 +171,7 @@ export function LandingHero() {
           <HolographicCard className="hero-visual__panel">
             <span>Skor Kesehatan Bisnis</span>
             <div className="hero-score">
-              <div><small>Total Skor</small><strong><AnimatedNumber value={42} delay={0.5} /></strong><b>Cukup Sehat</b></div>
+              <div><small>Total Skor</small><strong><AnimatedNumber value={42} delay={0.5} /></strong><b>Perlu Perbaikan</b></div>
               <div className="donut" style={{ "--donut-target": 42 } as React.CSSProperties}>42%</div>
             </div>
             <div className="hero-mini-grid">

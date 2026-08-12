@@ -12,7 +12,7 @@ import { useAuth } from "../context/AuthContext";
 import { formatJakartaDate } from "../utils/dateTime";
 import { clampPercent, formatScore } from "../utils/number";
 
-const statusBands = ["Sangat Buruk", "Buruk", "Cukup Sehat", "Sehat", "Sangat Sehat"];
+const statusBands = ["Kritis", "Berisiko Tinggi", "Perlu Perbaikan", "Sehat", "Sangat Sehat"];
 
 function statusIndexForScore(score: number) {
   if (score >= 80) return 4;
@@ -26,9 +26,10 @@ function nextTargetLabel(dimensionLabel: string, score: number) {
   const currentIndex = statusIndexForScore(score);
   if (currentIndex === statusBands.length - 1) return `${dimensionLabel}: pertahankan`;
   const nextBand = statusBands[currentIndex + 1];
-  // "Buruk" masih terdengar negatif kalau ditampilkan sebagai tujuan ("menuju Buruk"),
-  // meski secara skor itu memang satu tingkat di atas "Sangat Buruk" — pakai frasa netral.
-  if (nextBand === "Buruk") return `${dimensionLabel}: perlu ditingkatkan`;
+  // "Berisiko Tinggi" masih terdengar negatif kalau ditampilkan sebagai tujuan ("menuju
+  // Berisiko Tinggi"), meski secara skor itu memang satu tingkat di atas "Kritis" — pakai
+  // frasa netral.
+  if (nextBand === "Berisiko Tinggi") return `${dimensionLabel}: perlu ditingkatkan`;
   return `${dimensionLabel}: menuju ${nextBand}`;
 }
 

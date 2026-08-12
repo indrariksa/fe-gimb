@@ -12,9 +12,9 @@ type AIReportChartProps = {
 export function statusLabel(score: number) {
   if (score >= 80) return "Sangat Sehat";
   if (score >= 60) return "Sehat";
-  if (score >= 40) return "Cukup Sehat";
-  if (score >= 20) return "Buruk";
-  return "Sangat Buruk";
+  if (score >= 40) return "Perlu Perbaikan";
+  if (score >= 20) return "Berisiko Tinggi";
+  return "Kritis";
 }
 
 // Chart.js right-aligns horizontal-bar category labels against the axis line; on a narrow

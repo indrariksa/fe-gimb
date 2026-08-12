@@ -34,9 +34,9 @@ const dimensionIcon: Record<string, string> = {
 function statusColor(score: number) {
   if (score >= 80) return "#3b82f6"; // Sangat Sehat
   if (score >= 60) return "#14b8a6"; // Sehat
-  if (score >= 40) return "#eab308"; // Cukup Sehat
-  if (score >= 20) return "#f97316"; // Buruk
-  return "#ef4444"; // Sangat Buruk
+  if (score >= 40) return "#eab308"; // Perlu Perbaikan
+  if (score >= 20) return "#f97316"; // Berisiko Tinggi
+  return "#ef4444"; // Kritis
 }
 
 function riskLevelClass(level: string) {

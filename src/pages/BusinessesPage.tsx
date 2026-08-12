@@ -12,62 +12,20 @@ import type { Business } from "../services/api/types";
 import { formatJakartaDate } from "../utils/dateTime";
 import { cleanText, firstValidationError, validateMaxLength, validateRequiredText } from "../utils/formValidation";
 
+// Daftar tertutup 10 kategori usaha + fallback, harus sama persis dengan
+// domain.IndustryCategories di be-gimb (internal/domain/scoring.go).
 const industryOptions = [
-  "Apotek",
-  "Asuransi & Pegadaian",
-  "Bakery",
-  "Barbershop / Salon",
-  "Bengkel",
-  "Catering",
-  "Digital / Online",
-  "E-commerce",
-  "Elektronik",
-  "Event Organizer",
-  "Fashion",
-  "Florist / Bunga",
-  "Fotografi / Videografi",
-  "Furniture",
-  "Grosir",
-  "Jasa Kebersihan",
-  "Jasa Profesional",
-  "Jasa Reparasi",
-  "Kafe",
-  "Kecantikan",
-  "Kerajinan",
-  "Kesehatan",
-  "Keuangan / Koperasi",
-  "Konstruksi",
-  "Konter Pulsa & Aksesoris HP",
-  "Konveksi",
-  "Kreatif / Desain",
-  "Kuliner / F&B",
-  "Kursus / Pelatihan",
-  "Laundry",
-  "Manufaktur / Produksi",
-  "Media / Konten",
-  "Minimarket",
-  "Optik",
-  "Otomotif",
-  "Pendidikan",
-  "Percetakan",
-  "Perhotelan / Penginapan",
-  "Perikanan",
-  "Pertanian",
-  "Peternakan",
-  "Petshop / Klinik Hewan",
-  "Properti",
-  "Rental / Persewaan",
-  "Restoran",
-  "Retail",
-  "Teknologi / Software",
-  "Toko Bangunan / Material",
-  "Toko Buku & Alat Tulis",
-  "Toko Herbal / Jamu",
-  "Toko Kelontong",
-  "Toko Perhiasan / Emas",
-  "Transportasi / Logistik",
-  "Travel / Pariwisata",
-  "Lainnya",
+  "Retail & Perdagangan",
+  "Kuliner & F&B",
+  "Produksi & Industri Rumahan",
+  "Jasa",
+  "Fashion & Apparel",
+  "Kecantikan & Personal Care",
+  "Transportasi & Logistik",
+  "Pendidikan & Pelatihan",
+  "Properti & Konstruksi",
+  "Digital & Kreatif",
+  "Lainnya/Belum Dikategorikan",
 ];
 
 export function BusinessesPage() {
@@ -78,9 +36,7 @@ export function BusinessesPage() {
   const [lockedBusinessIds, setLockedBusinessIds] = useState<Set<string>>(() => new Set());
   const [businessLimit, setBusinessLimit] = useState(2);
   const [form, setForm] = useState({ name: "", industry: "", description: "" });
-  const [industrySearch, setIndustrySearch] = useState("");
   const [isIndustryOpen, setIsIndustryOpen] = useState(false);
-  const [isCustomIndustry, setIsCustomIndustry] = useState(false);
   const [error, setError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -122,13 +78,6 @@ export function BusinessesPage() {
   const needInputCount = Math.max(0, businesses.length - completedBusinessIds.size);
   const diagnosisStatus = businesses.length === 0 ? "Belum mulai" : needInputCount === 0 ? "Lengkap" : "Belum lengkap";
   const isDiagnosisComplete = businesses.length > 0 && needInputCount === 0;
-  const normalizedIndustrySearch = industrySearch.toLowerCase().trim();
-  const filteredIndustries = industryOptions.filter((industry) => industry.toLowerCase().includes(normalizedIndustrySearch));
-  const canUseCustomIndustry = Boolean(
-    industrySearch.trim() &&
-    !industryOptions.some((industry) => industry.toLowerCase() === normalizedIndustrySearch),
-  );
-
   useEffect(() => {
     loadBusinesses();
   }, [reloadKey]);
@@ -317,71 +266,44 @@ export function BusinessesPage() {
                 : "Gunakan nama yang mudah dikenali agar tidak tertukar saat bisnis sudah bertambah."}
             </p>
             <label><span>Nama usaha</span><input required disabled={hasReachedLimit} placeholder="Contoh: Usaha Maju Jaya" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} /></label>
-            <label className="industry-combobox">
+            <label>
               <span>Jenis Usaha</span>
-              <input
-                required
-                disabled={hasReachedLimit}
-                placeholder={isCustomIndustry ? "Tulis jenis usaha Anda" : "Cari atau pilih jenis usaha"}
-                value={isIndustryOpen ? industrySearch : form.industry}
-                onFocus={() => {
-                  setIndustrySearch(form.industry);
-                  setIsIndustryOpen(true);
-                  setIsCustomIndustry(false);
-                }}
-                onBlur={() => {
-                  window.setTimeout(() => {
-                    setIndustrySearch("");
-                    setIsIndustryOpen(false);
-                    setIsCustomIndustry(false);
-                  }, 120);
-                }}
-                onChange={(event) => {
-                  setIndustrySearch(event.target.value);
-                  setForm((current) => ({ ...current, industry: event.target.value }));
-                  if (!isCustomIndustry) setIsIndustryOpen(true);
-                }}
-              />
-              {isIndustryOpen && !hasReachedLimit && (
-                <div className="industry-combobox__menu">
-                  {canUseCustomIndustry && (
-                    <button
-                      type="button"
-                      className="industry-combobox__custom"
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => {
-                        setForm((current) => ({ ...current, industry: industrySearch.trim() }));
-                        setIndustrySearch("");
-                        setIsIndustryOpen(false);
-                      }}
-                    >
-                      Gunakan "{industrySearch.trim()}"
-                    </button>
-                  )}
-                  {filteredIndustries.map((industry) => (
-                    <button
-                      type="button"
-                      key={industry}
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => {
-                        if (industry === "Lainnya") {
-                          setForm((current) => ({ ...current, industry: "" }));
-                          setIndustrySearch("");
+              <div className="industry-select">
+                <button
+                  type="button"
+                  className="industry-select__trigger"
+                  disabled={hasReachedLimit}
+                  aria-haspopup="listbox"
+                  aria-expanded={isIndustryOpen}
+                  onClick={() => setIsIndustryOpen((open) => !open)}
+                  onBlur={() => window.setTimeout(() => setIsIndustryOpen(false), 120)}
+                >
+                  <span className={form.industry ? "" : "industry-select__placeholder"}>
+                    {form.industry || "Pilih jenis usaha"}
+                  </span>
+                  <Icon name="chevron" size={16} />
+                </button>
+                {isIndustryOpen && !hasReachedLimit && (
+                  <div className="industry-select__menu" role="listbox">
+                    {industryOptions.map((industry) => (
+                      <button
+                        type="button"
+                        key={industry}
+                        role="option"
+                        aria-selected={form.industry === industry}
+                        className={form.industry === industry ? "is-selected" : ""}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={() => {
+                          setForm((current) => ({ ...current, industry }));
                           setIsIndustryOpen(false);
-                          setIsCustomIndustry(true);
-                          return;
-                        }
-                        setForm((current) => ({ ...current, industry }));
-                        setIndustrySearch("");
-                        setIsIndustryOpen(false);
-                        setIsCustomIndustry(false);
-                      }}
-                    >
-                      {industry}
-                    </button>
-                  ))}
-                </div>
-              )}
+                        }}
+                      >
+                        {industry}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </label>
             <label><span>Deskripsi</span><textarea disabled={hasReachedLimit} placeholder="Contoh: Usaha kebutuhan harian dan produk rumah tangga" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} /></label>
             {error && <p className="form-error">{error}</p>}

@@ -34,7 +34,7 @@ Route ini memakai `RequireAuth userOnly`. Admin diarahkan ke `/admin`.
 
 | Route | Halaman | Komponen Utama | Auth | Role | API yang Digunakan | Fungsi |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/businesses` | `BusinessesPage` | `DashboardShell`, business cards, business create form, industry combobox | Yes | `user` | `GET /businesses`, `GET /settings/business-limit`, `GET /businesses/:id/inventory-submissions/latest` (per item), `GET /businesses/:id/health-report` (per item yang sudah ada submission, untuk cek status kunci), `POST /businesses` | Daftar usaha user, status inventory tiap usaha, tombol Sub Skor/Lihat Hasil Input untuk usaha yang sudah ada hasil (ukuran tombol dikecilkan), plus tombol keempat yang bergantian: "Edit" kalau submission belum terkunci laporan AI, atau "Laporan Kesehatan Bisnis" kalau sudah terkunci (`processing`/`ready`) — business limit, tambah usaha baru, dan tombol coba lagi saat load daftar gagal. |
+| `/businesses` | `BusinessesPage` | `DashboardShell`, business cards, business create form, dropdown jenis usaha (10 kategori tetap + `Lainnya/Belum Dikategorikan`) | Yes | `user` | `GET /businesses`, `GET /settings/business-limit`, `GET /businesses/:id/inventory-submissions/latest` (per item), `GET /businesses/:id/health-report` (per item yang sudah ada submission, untuk cek status kunci), `POST /businesses` | Daftar usaha user, status inventory tiap usaha, tombol Sub Skor/Lihat Hasil Input untuk usaha yang sudah ada hasil (ukuran tombol dikecilkan), plus tombol keempat yang bergantian: "Edit" kalau submission belum terkunci laporan AI, atau "Laporan Kesehatan Bisnis" kalau sudah terkunci (`processing`/`ready`) — business limit, tambah usaha baru, dan tombol coba lagi saat load daftar gagal. |
 
 ## Admin-Only
 

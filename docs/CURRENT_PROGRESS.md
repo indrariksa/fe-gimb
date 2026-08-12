@@ -1,6 +1,6 @@
 # Current Progress
 
-Terakhir diperbarui: 11 Agustus 2026
+Terakhir diperbarui: 12 Agustus 2026
 
 Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan menganggap build/test berhasil kecuali bagian verifikasi menyebut perintah yang benar-benar dijalankan.
 
@@ -29,7 +29,8 @@ Dokumen ini mencatat kondisi source code frontend `fe-gimb` saat ini. Jangan men
   - logout confirmation.
 - Daftar toko user.
 - Halaman user utama menyediakan tombol coba lagi saat load data gagal.
-- Create toko dengan validasi lokal dan business limit dari backend.
+- Create toko dengan validasi lokal dan business limit dari backend. Field "Jenis Usaha" adalah dropdown tertutup 10 kategori usaha + fallback `Lainnya/Belum Dikategorikan` (`BusinessesPage.tsx`, harus sama persis dengan `domain.IndustryCategories` di backend) — sebelumnya combobox 51 opsi + input teks bebas.
+- Label status skor (badge, legend, target dimensi terlemah, warna chart) adalah Kritis/Berisiko Tinggi/Perlu Perbaikan/Sehat/Sangat Sehat (sebelumnya Sangat Buruk/Buruk/Cukup Sehat/Sehat/Sangat Sehat), rentang skor tidak berubah. Dipakai di `SubScoresPage.tsx`, `ScoreResultPage.tsx`, `AIReportChart.tsx`, `AIReportPage.tsx` (warna saja), dan copy demo di `LandingHero.tsx`.
 - Status inventory tiap toko melalui latest inventory check; kartu usaha yang sudah ada submission menampilkan tombol Sub Skor/Lihat Hasil Input berukuran compact (`.business-card__actions .btn`), plus tombol keempat yang bergantian tergantung status kunci laporan AI (dicek lewat `GET .../health-report` per item): "Edit" menuju form edit kalau belum terkunci, atau "Laporan Kesehatan Bisnis" kalau sudah terkunci (`processing`/`ready`).
 - Detail data inventarisasi untuk user dari Sub Skor toko dan daftar toko. Kartu ringkasan (omzet, transaksi, repeat ratio, dll) di halaman ini sudah dihapus karena dobel dengan Business Snapshot di Sub Skor — sekaligus memperbaiki bug "Repeat Ratio" di Business Snapshot (`RadarProfile.tsx`) yang sebelumnya salah pakai field `repeat_to_new_ratio` (bisa >100%) padahal seharusnya `retention_rate`.
 - Form inventarisasi business-scoped, dengan mode edit: kalau submission sudah ada dan belum terkunci laporan AI, form ke-prefill dari data lama dan submit memanggil `PUT` (bukan redirect otomatis ke Sub Skor seperti sebelumnya); kalau sudah terkunci, tetap redirect seperti semula. Status terkunci dicek lewat `GET .../health-report` (`processing`/`ready` = terkunci).
@@ -142,7 +143,7 @@ node ./node_modules/typescript/bin/tsc --noEmit
 npm run build
 ```
 
-Hasil: kedua perintah exit code `0`. Smoke test manual di browser (mode edit inventory, generate manual laporan AI beserta dialog konfirmasi, link "Edit Data") belum dijalankan karena membutuhkan backend `be-gimb` hidup (dan `ANTHROPIC_API_KEY` untuk laporan AI) serta login user.
+Hasil: kedua perintah exit code `0`. Smoke test manual di browser (mode edit inventory, generate manual laporan AI beserta dialog konfirmasi, link "Edit Data", dropdown jenis usaha 10 kategori tetap) belum dijalankan karena membutuhkan backend `be-gimb` hidup (dan `ANTHROPIC_API_KEY` untuk laporan AI) serta login user.
 
 ## Risiko atau Bagian yang Perlu Dikonfirmasi
 
@@ -151,3 +152,5 @@ Hasil: kedua perintah exit code `0`. Smoke test manual di browser (mode edit inv
 - Apakah admin inventory detail perlu endpoint submitter/detail user daripada mengambil 100 user pertama.
 - Apakah perlu test runner/lint formal untuk CI.
 - Migrasi auth token ke httpOnly cookie ditunda sampai domain production (satu induk vs terpisah dari backend) diputuskan; lihat catatan di `PROJECT_CONTEXT.md` bagian localStorage.
+- Daftar 10 kategori usaha + fallback di `industryOptions` (`BusinessesPage.tsx`) adalah salinan manual dari `domain.IndustryCategories` di be-gimb (juga diduplikasi lagi sebagai literal `oneof` di `businessRequest`, `internal/http/dto.go`) — 3 tempat harus tetap sinkron manual kalau kategori berubah, tidak ada sumber tunggal lintas repo.
+- Belum ada endpoint update business (`PATCH`/`PUT /businesses/:id`) di backend, jadi kategori usaha toko saat ini hanya bisa diisi sekali saat create, belum bisa diganti setelah itu.
