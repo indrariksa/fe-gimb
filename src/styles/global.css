@@ -7037,6 +7037,8 @@ dt,
 }
 
 .ai-report { display: flex; flex-direction: column; gap: 20px; padding: clamp(24px, 4vw, 56px); }
+.ai-report__business-identity { margin: -12px 0 0; font-size: var(--text-body); font-weight: 800; color: var(--muted); }
+.ai-report__business-identity span { font-weight: 600; }
 /* The overall-score gauge is always last in the fixed 10-chart set; give it its own full-width row as a capstone. */
 .ai-report__charts > article:last-child { grid-column: 1 / -1; }
 .ai-report__actions { display: flex; gap: 12px; justify-content: flex-end; }

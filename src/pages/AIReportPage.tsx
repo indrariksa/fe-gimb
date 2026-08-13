@@ -47,6 +47,7 @@ export function AIReportPage() {
   const { businessId = "" } = useParams();
   const { isAdmin } = useAuth();
   const [report, setReport] = useState<AIReport | null>(null);
+  const [businessName, setBusinessName] = useState("");
   const [industry, setIndustry] = useState("");
   const [notGenerated, setNotGenerated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,6 +63,7 @@ export function AIReportPage() {
     try {
       const [data, business] = await Promise.all([getReport(businessId), getBusiness(businessId)]);
       setReport(data);
+      setBusinessName(business.name);
       setIndustry(business.industry);
       setNotGenerated(false);
       setError("");
@@ -220,6 +222,12 @@ export function AIReportPage() {
   return (
     <DashboardShell activeView="aiReport" title="Laporan Kesehatan Bisnis">
       <section className="ai-report">
+        {businessName && (
+          <p className="ai-report__business-identity">
+            {businessName}
+            {industry && <span> · {industry}</span>}
+          </p>
+        )}
         <nav className="page-nav">
           <Link className="page-nav__link" to={`/businesses/${businessId}/sub-scores`}><Icon name="chart" size={16} /> Sub Skor</Link>
           <Link className="page-nav__link" to={`/businesses/${businessId}/inventory-input`}><Icon name="file" size={16} /> Lihat Input</Link>
@@ -299,13 +307,6 @@ export function AIReportPage() {
               <h3>Profil Bisnis</h3>
               <p>{content.business_profile.narrative}</p>
             </article>
-            {industry && (
-              <article className="panel admin-inventory-note">
-                <span><Icon name="grid" /></span>
-                <h3>Jenis Usaha</h3>
-                <p>{industry}</p>
-              </article>
-            )}
             {content.financial_analysis && content.financial_analysis.points && content.financial_analysis.points.length > 0 && (
               <article className="panel admin-inventory-note">
                 <span><Icon name="chart" /></span>
