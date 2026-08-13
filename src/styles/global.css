@@ -7220,6 +7220,16 @@ dt,
 .ai-report__risk-level--rendah { background: color-mix(in srgb, var(--color-success) 16%, var(--surface)); color: var(--color-success); }
 .ai-report__risk-level--sedang { background: color-mix(in srgb, var(--color-warning) 16%, var(--surface)); color: var(--color-warning); }
 .ai-report__risk-level--tinggi { background: color-mix(in srgb, var(--color-danger) 16%, var(--surface)); color: var(--color-danger); }
+.ai-report__risk-meter { display: flex; gap: 10px; margin: 16px 0; }
+.ai-report__risk-meter__segment { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: .4; transition: opacity .2s ease; }
+.ai-report__risk-meter__segment i { display: block; width: 100%; height: 8px; border-radius: 999px; background: var(--surface-muted); }
+.ai-report__risk-meter__segment span { font-size: var(--text-caption); font-weight: 700; color: var(--muted); }
+.ai-report__risk-meter__segment.is-active { opacity: 1; }
+.ai-report__risk-meter__segment.is-active i { animation: meterGrow .6s ease both; box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); }
+.ai-report__risk-meter__segment.is-active span { color: var(--ink); }
+.ai-report__risk-meter__segment--rendah.is-active i { background: var(--color-success); color: var(--color-success); }
+.ai-report__risk-meter__segment--sedang.is-active i { background: var(--color-warning); color: var(--color-warning); }
+.ai-report__risk-meter__segment--tinggi.is-active i { background: var(--color-danger); color: var(--color-danger); }
 .ai-report ul.ai-report__recommendations { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: rec; }
 .ai-report__recommendations li { counter-increment: rec; padding: 10px 14px 10px 40px; position: relative; border-radius: 10px; background: var(--surface-soft); line-height: 1.6; }
 .ai-report__recommendations li::before { content: counter(rec); position: absolute; left: 12px; top: 10px; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }

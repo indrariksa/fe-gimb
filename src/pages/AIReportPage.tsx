@@ -386,6 +386,17 @@ export function AIReportPage() {
                   {content.risk_assessment.level}
                 </span>
               </h3>
+              <div className="ai-report__risk-meter">
+                {(["Rendah", "Sedang", "Tinggi"] as const).map((level) => (
+                  <div
+                    key={level}
+                    className={`ai-report__risk-meter__segment ai-report__risk-meter__segment--${riskLevelClass(level)}${level === content.risk_assessment.level ? " is-active" : ""}`}
+                  >
+                    <i />
+                    <span>{level}</span>
+                  </div>
+                ))}
+              </div>
               <p>{content.risk_assessment.narrative}</p>
             </article>
             <article className="panel admin-inventory-note">
