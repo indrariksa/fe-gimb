@@ -70,7 +70,7 @@ export function AnalysisPage() {
         <p>
           {progress === 100
             ? "Diagnosis awal sudah siap. Buka dashboard untuk melihat skor kesehatan bisnis dan prioritas perbaikan."
-            : "Sistem AI kami sedang memproses informasi bisnis untuk menghasilkan diagnosis yang akurat dan personal."}
+            : "Sistem kami sedang memproses informasi bisnis untuk menghasilkan diagnosis yang akurat dan personal."}
         </p>
 
         <div className="analysis-steps">

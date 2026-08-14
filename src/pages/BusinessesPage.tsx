@@ -226,14 +226,23 @@ export function BusinessesPage() {
                             Laporan Kesehatan Bisnis <span className="btn--wiggle__icon"><Icon name="bulb" size={14} /></span>
                           </Button>
                         ) : (
-                          <Button
-                            className="btn--dashboard-hover btn--wiggle"
-                            variant="dark"
-                            title="Edit data inventory"
-                            onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
-                          >
-                            Edit <span className="btn--wiggle__icon"><Icon name="edit" size={14} /></span>
-                          </Button>
+                          <>
+                            <Button
+                              className="btn--report-highlight btn--wiggle"
+                              title="Buat laporan kesehatan bisnis"
+                              onClick={() => navigate(`/businesses/${business.public_id}/health-report`)}
+                            >
+                              Buat Laporan Kesehatan Bisnis <span className="btn--wiggle__icon"><Icon name="bulb" size={14} /></span>
+                            </Button>
+                            <Button
+                              className="btn--dashboard-hover"
+                              variant="dark"
+                              title="Edit data inventory"
+                              onClick={() => navigate(`/businesses/${business.public_id}/inventory/new`)}
+                            >
+                              Edit <Icon name="edit" size={14} />
+                            </Button>
+                          </>
                         )}
                       </>
                     ) : (
@@ -248,7 +257,11 @@ export function BusinessesPage() {
                     )}
                   </div>
                   {hasDiagnosis ? (
-                    <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil sub skor.</small>
+                    isLocked ? (
+                      <small className="business-card__notice">Inventory sudah diisi. Lanjutkan dengan melihat hasil sub skor.</small>
+                    ) : (
+                      <small className="business-card__notice business-card__notice--pending">Belum generate Laporan Kesehatan Bisnis. Generate sekarang untuk dapat insight dan rekomendasi yang lebih akurat.</small>
+                    )
                   ) : (
                     <small className="business-card__notice business-card__notice--pending">Inventory belum diisi. Mulai input data untuk membuka sub skor.</small>
                   )}

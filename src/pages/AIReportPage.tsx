@@ -336,6 +336,7 @@ export function AIReportPage() {
             <article className="panel admin-inventory-note">
               <span><Icon name="grid" /></span>
               <h3>Analisis 6 Sub Skor</h3>
+              <p>Profitabilitas, Cashflow, Marketing, Retensi Pelanggan, Operasional, dan SDM.</p>
               <div className="ai-subscore-list">
                 {content.sub_score_analysis.map((item) => (
                   <article
@@ -356,7 +357,7 @@ export function AIReportPage() {
                     </div>
                     <div className="ai-subscore-meter"><i /></div>
                     <p>{item.narrative}</p>
-                    {item.score_drivers.length > 0 && (
+                    {(item.score_drivers ?? []).length > 0 && (
                       <div className="ai-report__drivers">
                         {item.score_drivers.map((driver) => (
                           <div className="ai-report__driver" key={driver.factor}>
@@ -366,7 +367,7 @@ export function AIReportPage() {
                         ))}
                       </div>
                     )}
-                    {item.alternative_solutions.length > 0 && (
+                    {(item.alternative_solutions ?? []).length > 0 && (
                       <details className="ai-report__solutions">
                         <summary>Alternatif Solusi ({item.alternative_solutions.length})</summary>
                         {item.alternative_solutions.map((solution) => (
