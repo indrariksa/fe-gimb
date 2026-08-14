@@ -14,17 +14,18 @@ import { cleanText, firstValidationError, validateMaxLength, validateRequiredTex
 
 // Daftar tertutup 10 kategori usaha + fallback, harus sama persis dengan
 // domain.IndustryCategories di be-gimb (internal/domain/scoring.go).
+// Urut abjad ascending, "Lainnya/Belum Dikategorikan" tetap di akhir sebagai fallback catch-all.
 const industryOptions = [
-  "Retail & Perdagangan",
-  "Kuliner & F&B",
-  "Produksi & Industri Rumahan",
-  "Jasa",
-  "Fashion & Apparel",
-  "Kecantikan & Personal Care",
-  "Transportasi & Logistik",
-  "Pendidikan & Pelatihan",
-  "Properti & Konstruksi",
   "Digital & Kreatif",
+  "Fashion & Apparel",
+  "Jasa",
+  "Kecantikan & Personal Care",
+  "Kuliner & F&B",
+  "Pendidikan & Pelatihan",
+  "Produksi & Industri Rumahan",
+  "Properti & Konstruksi",
+  "Retail & Perdagangan",
+  "Transportasi & Logistik",
   "Lainnya/Belum Dikategorikan",
 ];
 
