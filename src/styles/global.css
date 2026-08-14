@@ -5777,6 +5777,14 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   flex-shrink: 0;
 }
 
+.financial-tiles__expansion {
+  font-style: normal;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: .7;
+}
+
 .financial-tiles__value {
   position: relative;
   font-size: 2rem;

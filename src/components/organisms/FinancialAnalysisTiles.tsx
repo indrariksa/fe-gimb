@@ -13,11 +13,11 @@ type FinancialAnalysisTilesProps = {
   netProfit: number;
 };
 
-const tiles: { key: "capex" | "bep" | "payback" | "roi"; label: string; color: string }[] = [
-  { key: "capex", label: "CAPEX", color: "#8b5cf6" },
-  { key: "bep", label: "BEP per bulan", color: "#f97316" },
-  { key: "payback", label: "Payback period", color: "#10b981" },
-  { key: "roi", label: "ROI 6 bulan", color: "#ec4899" },
+const tiles: { key: "capex" | "bep" | "payback" | "roi"; label: string; long?: string; color: string }[] = [
+  { key: "capex", label: "CAPEX", long: "Capital Expenditure", color: "#8b5cf6" },
+  { key: "bep", label: "BEP per bulan", long: "Break Even Point", color: "#f97316" },
+  { key: "payback", label: "Payback period", long: "periode balik modal", color: "#10b981" },
+  { key: "roi", label: "ROI 6 bulan", long: "Return on Investment", color: "#ec4899" },
 ];
 
 // Splits a formatted value like "Rp655.654.010" or "46.4%" or "12.9 bulan" into a
@@ -58,7 +58,10 @@ export function FinancialAnalysisTiles({
         const { prefix, main, suffix } = splitValue(values[tile.key].value);
         return (
           <div className="financial-tiles__tile" key={tile.key} style={{ "--tile-color": tile.color } as CSSProperties}>
-            <span className="financial-tiles__label">{tile.label}</span>
+            <span className="financial-tiles__label">
+              {tile.label}
+              {tile.long && <em className="financial-tiles__expansion">({tile.long})</em>}
+            </span>
             <strong className="financial-tiles__value">
               {prefix && <span className="financial-tiles__unit">{prefix}</span>}
               {main}
