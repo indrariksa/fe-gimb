@@ -3576,8 +3576,8 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 }
 
 .admin-row-actions .admin-row-action--input {
-  --admin-action-color: var(--color-accent);
-  --admin-action-on: var(--on-accent);
+  --admin-action-color: var(--color-success);
+  --admin-action-on: var(--on-success);
 }
 
 .admin-row-actions .admin-row-action--ai-report {
@@ -4589,7 +4589,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 
 .admin-pagination__size-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  bottom: calc(100% + 8px);
   left: 0;
   display: grid;
   min-width: 100%;

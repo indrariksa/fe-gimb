@@ -10,7 +10,7 @@ import { emptyPaginationMeta, normalizePaginationMeta } from "../utils/paginatio
 import { formatJakartaDate } from "../utils/dateTime";
 import { formatScore } from "../utils/number";
 
-const defaultDiagnosisPageSize = 5;
+const defaultDiagnosisPageSize = 10;
 
 export function AdminDiagnosisPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);

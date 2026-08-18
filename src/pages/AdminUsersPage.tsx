@@ -10,7 +10,7 @@ import * as adminApi from "../services/api/admin";
 import type { User, UserStatus } from "../services/api/types";
 import { emptyPaginationMeta, normalizePaginationMeta } from "../utils/pagination";
 
-const defaultUserPageSize = 5;
+const defaultUserPageSize = 10;
 
 export function AdminUsersPage() {
   const { user: currentUser } = useAuth();
