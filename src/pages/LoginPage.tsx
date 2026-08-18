@@ -29,11 +29,15 @@ export function LoginPage() {
 
   const navigateAfterLogin = useCallback((user: User) => {
     const target = (location.state as { from?: string } | null)?.from;
-    navigate(target && target !== "/login" ? target : user.role === "admin" ? "/admin" : "/businesses", { replace: true });
+    if (target && target !== "/login") {
+      navigate(target, { replace: true });
+      return;
+    }
+    navigate(user.role === "admin" ? "/admin" : "/businesses", { replace: true, state: { justLoggedIn: true } });
   }, [location.state, navigate]);
 
   if (isAuthenticated) {
-    return <Navigate to={isAdmin ? "/admin" : "/businesses"} replace />;
+    return <Navigate to={isAdmin ? "/admin" : "/businesses"} replace state={{ justLoggedIn: true }} />;
   }
 
   const submit = async (event: FormEvent) => {

@@ -1191,8 +1191,34 @@ article.feature-grid__highlight:hover { box-shadow: 0 26px 56px color-mix(in srg
   border-bottom: 1px solid var(--line);
 }
 .workspace__topbar h1 { font-size: clamp(1.25rem, 2vw, 1.55rem); }
+.workspace__topbar-titlegroup { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .mobile-menu { display: none; }
 .user-chip { display: flex; align-items: center; gap: 14px; }
+
+.business-switcher { position: relative; }
+.business-switcher__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .16s ease, transform .16s ease;
+}
+.business-switcher__trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.business-switcher.is-open .business-switcher__trigger,
+.business-switcher__trigger:hover { background: var(--primary-soft); color: var(--color-primary); }
+.business-switcher__panel { position: absolute; top: calc(100% + 10px); left: 0; z-index: 30; width: min(260px, calc(100vw - 32px)); max-height: 360px; overflow: auto; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); animation: notification-panel-in .16s ease both; transform-origin: top left; }
+.business-switcher__panel > :is(button, a) { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 10px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); font-weight: 700; font-size: 13px; text-align: left; cursor: pointer; transition: background .16s ease; }
+.business-switcher__panel > :is(button, a):hover { background: var(--surface-soft); color: var(--color-primary); }
+.business-switcher__panel > button.is-active { color: var(--color-primary); background: var(--primary-soft); }
+.business-switcher__panel > a { margin-top: 4px; border-top: 1px solid var(--line); border-radius: 0; padding-top: 12px; color: var(--muted); }
 .mode-toggle {
   position: relative;
   width: 84px;
@@ -6561,6 +6587,8 @@ dt,
   .sidebar :is(button, a) { min-height: 54px; padding: 0 16px; }
   .sidebar__bottom { display: grid; }
   .workspace__topbar { height: auto; min-height: 72px; gap: 14px; }
+  .workspace__topbar-titlegroup { flex-wrap: wrap; gap: 8px; }
+  .business-switcher__trigger { max-width: 160px; }
   .mobile-menu { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 8px; background: #eef2ff; color: var(--color-primary); }
   .mode-toggle { width: 78px; min-height: 38px; border-radius: 999px; }
   .mode-toggle__option { height: 30px; }

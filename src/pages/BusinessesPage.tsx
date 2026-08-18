@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/atoms/Button";
 import { Icon } from "../components/atoms/Icon";
 import { HolographicCard } from "../components/molecules/HolographicCard";
-import { DashboardShell } from "../components/organisms/DashboardShell";
+import { DashboardShell, lastBusinessStorageKey } from "../components/organisms/DashboardShell";
 import { useAuth } from "../context/AuthContext";
 import * as businessApi from "../services/api/businesses";
 import { getFriendlyApiError } from "../services/api/client";
@@ -31,6 +31,7 @@ const industryOptions = [
 
 export function BusinessesPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [completedBusinessIds, setCompletedBusinessIds] = useState<Set<string>>(() => new Set());
@@ -82,6 +83,25 @@ export function BusinessesPage() {
   useEffect(() => {
     loadBusinesses();
   }, [reloadKey]);
+
+  const justLoggedIn = Boolean((location.state as { justLoggedIn?: boolean } | null)?.justLoggedIn);
+  const targetRouteFor = (businessId: string) =>
+    completedBusinessIds.has(businessId) ? `/businesses/${businessId}/sub-scores` : `/businesses/${businessId}/inventory/new`;
+  useEffect(() => {
+    if (!justLoggedIn || isLoading || loadError) return;
+    if (businesses.length === 1) {
+      navigate(targetRouteFor(businesses[0].public_id), { replace: true });
+      return;
+    }
+    if (businesses.length > 1) {
+      const lastBusinessId = localStorage.getItem(lastBusinessStorageKey);
+      if (lastBusinessId && businesses.some((business) => business.public_id === lastBusinessId)) {
+        navigate(targetRouteFor(lastBusinessId), { replace: true });
+      }
+    }
+    // Runs once right after a fresh login lands here; manual sidebar navigation to
+    // "Daftar Usaha" carries no `justLoggedIn` state, so it always shows the list.
+  }, [justLoggedIn, isLoading, loadError, businesses, completedBusinessIds]);
 
   const create = async (event: FormEvent) => {
     event.preventDefault();

@@ -20,11 +20,11 @@ export function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigateAfterAuth = useCallback((user: User) => {
-    navigate(user.role === "admin" ? "/admin" : "/businesses", { replace: true });
+    navigate(user.role === "admin" ? "/admin" : "/businesses", { replace: true, state: { justLoggedIn: true } });
   }, [navigate]);
 
   if (isAuthenticated) {
-    return <Navigate to={isAdmin ? "/admin" : "/businesses"} replace />;
+    return <Navigate to={isAdmin ? "/admin" : "/businesses"} replace state={{ justLoggedIn: true }} />;
   }
 
   const submit = async (event: FormEvent) => {

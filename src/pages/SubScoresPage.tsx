@@ -9,6 +9,7 @@ import { RadarProfile } from "../components/organisms/RadarProfile";
 import { TrendChart } from "../components/organisms/TrendChart";
 import * as businessApi from "../services/api/businesses";
 import * as adminApi from "../services/api/admin";
+import { ApiError } from "../services/api/client";
 import type { Business, InventorySubmission } from "../services/api/types";
 import { useAuth } from "../context/AuthContext";
 import { formatJakartaDate } from "../utils/dateTime";
@@ -99,13 +100,23 @@ export function SubScoresPage() {
       try {
         const getBusiness = isAdmin ? adminApi.adminBusiness : businessApi.getBusiness;
         const getLatestInventory = isAdmin ? adminApi.adminLatestBusinessInventory : businessApi.latestBusinessInventory;
-        const [businessDetail, latestSubmission] = await Promise.all([
-          getBusiness(businessId),
-          getLatestInventory(businessId),
-        ]);
-        if (isMounted) {
-          setBusiness(businessDetail);
-          setSubmission(latestSubmission);
+        const businessDetail = await getBusiness(businessId);
+        if (isMounted) setBusiness(businessDetail);
+
+        try {
+          const latestSubmission = await getLatestInventory(businessId);
+          if (isMounted) setSubmission(latestSubmission);
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 404) {
+            if (isMounted) {
+              setSubmission(null);
+              // User belum pernah isi inventarisasi untuk toko ini: langsung ke form,
+              // bukan menahan di halaman kosong. Admin tetap di sini (bukan pemilik data).
+              if (!isAdmin) navigate(`/businesses/${businessId}/inventory/new`, { replace: true });
+            }
+          } else {
+            throw err;
+          }
         }
       } catch (err) {
         if (isMounted) setError(err instanceof Error ? err.message : "Gagal memuat sub skor");
