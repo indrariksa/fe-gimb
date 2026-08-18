@@ -12,6 +12,16 @@ import { formatScore } from "../utils/number";
 
 const defaultDiagnosisPageSize = 10;
 
+// Sama seperti skema warna status di halaman laporan AI (AIReportPage.tsx) supaya
+// konsisten satu sistem: biru = terbaik, merah = terburuk.
+const statusPillClass: Record<string, string> = {
+  "Sangat Sehat": "status-pill--sangat-sehat",
+  "Sehat": "status-pill--sehat",
+  "Perlu Perbaikan": "status-pill--perlu-perbaikan",
+  "Berisiko Tinggi": "status-pill--berisiko-tinggi",
+  "Kritis": "status-pill--kritis",
+};
+
 export function AdminDiagnosisPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [businessesError, setBusinessesError] = useState("");
@@ -160,7 +170,7 @@ export function AdminDiagnosisPage() {
                         <strong>{submission.business_name || business?.name || submission.public_id}</strong>
                         <span>{business?.industry || "Tanpa jenis usaha"}</span>
                       </td>
-                      <td data-label="Status"><b className="status-pill">{submission.analysis.status}</b></td>
+                      <td data-label="Status"><b className={`status-pill ${statusPillClass[submission.analysis.status] ?? ""}`}>{submission.analysis.status}</b></td>
                       <td data-label="Tanggal">{formatJakartaDate(submission.created_at, "short")}</td>
                       <td data-label="Skor"><strong className="admin-table__score">{formatScore(submission.analysis.overall_score)}</strong></td>
                       <td className="admin-table__actions-col" data-label="Aksi">

@@ -4717,6 +4717,14 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
   background: var(--color-accent);
 }
 
+/* Warna status kesehatan bisnis, sama dengan skema di AIReportPage.tsx (statusColor):
+   biru = terbaik, merah = terburuk. */
+.status-pill--sangat-sehat { color: #3b82f6; background: color-mix(in srgb, #3b82f6 12%, var(--surface)); }
+.status-pill--sehat { color: #14b8a6; background: color-mix(in srgb, #14b8a6 12%, var(--surface)); }
+.status-pill--perlu-perbaikan { color: #b8860b; background: color-mix(in srgb, #eab308 16%, var(--surface)); }
+.status-pill--berisiko-tinggi { color: #f97316; background: color-mix(in srgb, #f97316 12%, var(--surface)); }
+.status-pill--kritis { color: #ef4444; background: color-mix(in srgb, #ef4444 12%, var(--surface)); }
+
 .score-result-page,
 .subscores-page {
   padding: clamp(24px, 4vw, 56px);
