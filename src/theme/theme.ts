@@ -6,16 +6,16 @@ export const defaultTheme: ThemeSettings = {
   businessName: "Usaha Maju Jaya",
   ownerName: "Budi Santoso",
   mode: "light",
-  primaryColor: "#6558d9",
-  accentColor: "#d58a28",
-  successColor: "#199c82",
-  warningColor: "#d58a28",
+  primaryColor: "#0d9488",
+  accentColor: "#0ea5e9",
+  successColor: "#22c55e",
+  warningColor: "#f2994a",
 };
 
 export const themeStorageKey = "gimb:sbd:theme";
 
 function relativeLuminance(hex: string) {
-  const { r, g, b } = hexToRgb(hex, [101, 88, 217]);
+  const { r, g, b } = hexToRgb(hex, [13, 148, 136]);
   const values = [r, g, b].map((channel) => {
     const normalized = channel / 255;
     return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;

@@ -11,10 +11,11 @@ import { useAuth } from "../../context/AuthContext";
 import * as businessApi from "../../services/api/businesses";
 import * as adminApi from "../../services/api/admin";
 import * as notificationApi from "../../services/api/notifications";
-import type { AdminNotification, NotificationEvent } from "../../services/api/types";
+import type { AdminNotification, Business, NotificationEvent } from "../../services/api/types";
 import { formatNotificationTime } from "../../utils/dateTime";
 
 const sidebarCollapsedStorageKey = "gimb:sbd:sidebar-collapsed";
+export const lastBusinessStorageKey = "gimb:sbd:last-business";
 
 function routeByView(view: View, businessId?: string) {
   const score = businessId ? `/businesses/${businessId}/score` : "/businesses";
@@ -73,12 +74,44 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
   const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("connecting");
   const [toastNotification, setToastNotification] = useState<AdminNotification | null>(null);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [switcherBusinesses, setSwitcherBusinesses] = useState<Business[]>([]);
+  const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const notificationMenuRef = useRef<HTMLDivElement | null>(null);
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
+  const switcherMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem(sidebarCollapsedStorageKey, String(isCollapsed));
   }, [isCollapsed]);
+
+  useEffect(() => {
+    if (isAdmin || !businessId) return;
+    localStorage.setItem(lastBusinessStorageKey, businessId);
+  }, [businessId, isAdmin]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    let isMounted = true;
+    businessApi.listBusinesses().then((response) => {
+      if (isMounted) setSwitcherBusinesses(response.items);
+    }).catch(() => {
+      if (isMounted) setSwitcherBusinesses([]);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (!isSwitcherOpen) return;
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!switcherMenuRef.current?.contains(event.target as Node)) {
+        setIsSwitcherOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [isSwitcherOpen]);
 
   useEffect(() => {
     let isMounted = true;
@@ -329,7 +362,45 @@ export function DashboardShell({ activeView, title = "Smart Business Dashboard",
           <button className="mobile-menu" onClick={() => setIsMenuOpen(true)} aria-label="Buka menu">
             <Icon name="menu" />
           </button>
-          <h1>{title}</h1>
+          <div className="workspace__topbar-titlegroup">
+            <h1>{title}</h1>
+            {!isAdmin && switcherBusinesses.length > 0 && (
+              <div className={`business-switcher ${isSwitcherOpen ? "is-open" : ""}`} ref={switcherMenuRef}>
+                <button
+                  className="business-switcher__trigger"
+                  onClick={() => setIsSwitcherOpen((current) => !current)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isSwitcherOpen}
+                  aria-label="Ganti usaha"
+                >
+                  <Icon name="home" size={15} />
+                  <span>{switcherBusinesses.find((business) => business.public_id === businessId)?.name ?? "Pilih Usaha"}</span>
+                  <Icon name="chevron" size={13} />
+                </button>
+                {isSwitcherOpen && (
+                  <div className="business-switcher__panel" role="listbox">
+                    {switcherBusinesses.map((business) => (
+                      <button
+                        key={business.public_id}
+                        role="option"
+                        aria-selected={business.public_id === businessId}
+                        className={business.public_id === businessId ? "is-active" : ""}
+                        onClick={() => {
+                          setIsSwitcherOpen(false);
+                          navigateRoute(`/businesses/${business.public_id}/sub-scores`);
+                        }}
+                      >
+                        {business.name}
+                      </button>
+                    ))}
+                    <Link to="/businesses" onClick={() => setIsSwitcherOpen(false)}>
+                      Kelola Usaha <Icon name="arrow" size={13} />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <div className="user-chip">
             <button
               className={`mode-toggle ${theme.mode === "dark" ? "is-dark" : ""}`}
