@@ -6044,7 +6044,6 @@ h4,
 .dashboard__intro h2,
 .form-hero h2,
 .business-hero h2,
-.score-result-copy h2,
 .subscores-hero h2,
 .admin-section__heading h3,
 .admin-section h3,
@@ -6052,6 +6051,16 @@ h4,
 .analysis-card h1 {
   font-family: var(--font-display);
   color: var(--ink);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* .score-result-copy duduk di atas gradient gelap (.score-result-hero), bukan
+   background terang seperti heading lain di grup atas — warisi putih dari
+   induknya, jangan ikut var(--ink) yang gelap. */
+.score-result-copy h2 {
+  font-family: var(--font-display);
+  color: #ffffff;
   font-weight: 700;
   letter-spacing: var(--tracking-tight);
 }
