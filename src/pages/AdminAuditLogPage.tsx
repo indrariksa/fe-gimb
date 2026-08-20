@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DashboardShell } from "../components/organisms/DashboardShell";
 import { Icon } from "../components/atoms/Icon";
 import { LoadingState } from "../components/atoms/LoadingState";
@@ -102,10 +102,22 @@ export function AdminAuditLogPage() {
   const [auditSearch, setAuditSearch] = useState("");
   const [auditLevelFilter, setAuditLevelFilter] = useState<AuditLevelFilter>("all");
   const [isAuditFilterOpen, setIsAuditFilterOpen] = useState(false);
+  const auditFilterRef = useRef<HTMLDivElement | null>(null);
   const [expandedAuditId, setExpandedAuditId] = useState<string | null>(null);
   const [auditError, setAuditError] = useState("");
   const [isAuditLoading, setIsAuditLoading] = useState(true);
   const realtimeRefreshKey = useAdminRealtimeSignal();
+
+  useEffect(() => {
+    if (!isAuditFilterOpen) return;
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!auditFilterRef.current?.contains(event.target as Node)) {
+        setIsAuditFilterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [isAuditFilterOpen]);
 
   useEffect(() => {
     let isMounted = true;
@@ -220,7 +232,7 @@ export function AdminAuditLogPage() {
                 placeholder="Cari log berdasarkan aksi, actor, target, IP, atau metadata..."
               />
             </label>
-            <div className="audit-filter">
+            <div className="audit-filter" ref={auditFilterRef}>
               <button
                 type="button"
                 aria-label="Filter audit log"
