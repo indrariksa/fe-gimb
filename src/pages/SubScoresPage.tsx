@@ -599,11 +599,11 @@ export function SubScoresPage() {
                   const legend = (business && scoreLegendByIndustry[business.industry]) || defaultScoreLegend;
                   return (
                     <>
-                      <article className="critical"><strong>Skor 0 - 19 - Kritis</strong><p>{legend[0]}</p></article>
-                      <article className="danger"><strong>Skor 20 - 39 - Berisiko Tinggi</strong><p>{legend[1]}</p></article>
-                      <article className="warning"><strong>Skor 40 - 59 - Perlu Perbaikan</strong><p>{legend[2]}</p></article>
-                      <article className="success"><strong>Skor 60 - 79 - Sehat</strong><p>{legend[3]}</p></article>
-                      <article className="excellent"><strong>Skor 80 - 100 - Sangat Sehat</strong><p>{legend[4]}</p></article>
+                      <article className="critical"><strong>Kritis (0–19)</strong><p>{legend[0]}</p></article>
+                      <article className="danger"><strong>Berisiko Tinggi (20–39)</strong><p>{legend[1]}</p></article>
+                      <article className="warning"><strong>Perlu Perbaikan (40–59)</strong><p>{legend[2]}</p></article>
+                      <article className="success"><strong>Sehat (60–79)</strong><p>{legend[3]}</p></article>
+                      <article className="excellent"><strong>Sangat Sehat (80–100)</strong><p>{legend[4]}</p></article>
                     </>
                   );
                 })()}
