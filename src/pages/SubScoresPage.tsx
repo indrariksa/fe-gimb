@@ -36,6 +36,91 @@ type InventoryInsightBar = {
 
 const inventoryPeriodMonths = 6;
 
+// Rentang skor dan nama status universal untuk semua kategori usaha (0-19 Kritis,
+// dst) — cuma "Makna Bisnis" yang beda per industri, sesuai dokumen client "Skala
+// Status Skor". Kategori yang tidak ada di map ini (termasuk
+// "Lainnya/Belum Dikategorikan") pakai defaultScoreLegend di bawah.
+const defaultScoreLegend: [string, string, string, string, string] = [
+  "Kondisi bisnis sangat kritis dan membutuhkan tindakan pemulihan segera.",
+  "Kondisi bisnis berisiko tinggi dan perlu tindakan cepat.",
+  "Bisnis masih berjalan, tetapi ada area penting yang harus diperbaiki.",
+  "Bisnis relatif stabil dengan beberapa peluang optimasi.",
+  "Bisnis berada dalam kondisi kuat dan siap dikembangkan.",
+];
+
+const scoreLegendByIndustry: Record<string, [string, string, string, string, string]> = {
+  "Retail & Perdagangan": [
+    "Bisnis mengalami tekanan serius pada margin, cashflow, persediaan, atau penjualan. Modal berisiko tertahan pada stok dan kemampuan memenuhi kewajiban sangat lemah.",
+    "Bisnis masih berjalan, tetapi perputaran stok, margin, likuiditas, atau penjualan belum memadai dan membutuhkan tindakan cepat.",
+    "Bisnis mampu beroperasi, tetapi terdapat kelemahan pada pengelolaan stok, margin, pemasaran, cashflow, atau produktivitas.",
+    "Penjualan, margin, cashflow, dan perputaran persediaan relatif terkendali dengan beberapa area yang masih dapat dioptimalkan.",
+    "Perputaran stok baik, margin dan cashflow kuat, operasional efisien, serta bisnis memiliki fondasi yang baik untuk berkembang.",
+  ],
+  "Kuliner & F&B": [
+    "Bisnis mengalami tekanan serius pada laba, cashflow, food cost, waste, atau biaya operasional dan membutuhkan tindakan pemulihan segera.",
+    "Penjualan masih terjadi, tetapi margin terlalu tipis, biaya bahan tinggi, atau arus kas tidak cukup kuat untuk menopang operasional.",
+    "Bisnis masih berjalan, tetapi food cost, efisiensi, repeat customer, produktivitas, atau profitabilitas perlu diperbaiki.",
+    "Margin, cashflow, biaya bahan, pelanggan dan operasional relatif terkendali dengan beberapa peluang optimalisasi.",
+    "Profitabilitas kuat, food cost dan waste terkendali, pelanggan stabil, operasional efisien, dan bisnis siap bertumbuh.",
+  ],
+  "Produksi & Industri Rumahan": [
+    "Biaya produksi, HPP, cashflow, waste, atau produktivitas berada pada tingkat yang dapat mengancam kelangsungan usaha.",
+    "Produksi tetap berjalan, tetapi biaya, penggunaan modal kerja, kapasitas, atau margin belum efisien.",
+    "Usaha mampu memproduksi dan menjual, tetapi HPP, waste, kapasitas, produktivitas, atau margin masih perlu diperkuat.",
+    "Produksi relatif efisien, margin dan cashflow terkendali, serta kapasitas produksi digunakan dengan cukup baik.",
+    "HPP terkendali, produktivitas tinggi, waste rendah, cashflow kuat, dan bisnis memiliki kapasitas meningkatkan produksi.",
+  ],
+  "Jasa": [
+    "Pendapatan, cashflow, produktivitas SDM, atau penggunaan kapasitas tidak cukup untuk menopang keberlangsungan usaha.",
+    "Bisnis memiliki pelanggan tetapi margin, transaksi, utilisasi, atau produktivitas belum menghasilkan kondisi yang sehat.",
+    "Bisnis tetap berjalan, tetapi produktivitas, jumlah pelanggan, kapasitas layanan, retensi, atau margin perlu ditingkatkan.",
+    "Pendapatan, produktivitas, cashflow dan kapasitas layanan relatif stabil dengan ruang untuk optimalisasi.",
+    "Produktivitas tinggi, kapasitas termanfaatkan dengan baik, pelanggan stabil, dan layanan menghasilkan profit yang kuat.",
+  ],
+  "Fashion & Apparel": [
+    "Modal banyak tertahan pada stok, penjualan rendah, cashflow tertekan, atau dead stock berada pada tingkat yang membahayakan usaha.",
+    "Bisnis masih menjual, tetapi inventory turnover rendah, cashflow lemah, margin tipis, atau pemasaran belum efektif.",
+    "Bisnis masih berjalan, tetapi pengelolaan stok, pemasaran, margin, atau perputaran modal perlu diperbaiki.",
+    "Stok relatif terkendali, pemasaran menghasilkan transaksi, margin cukup baik, dan cashflow relatif stabil.",
+    "Perputaran stok cepat, dead stock rendah, pemasaran kuat, margin sehat, dan bisnis memiliki ruang ekspansi.",
+  ],
+  "Kecantikan & Personal Care": [
+    "Jumlah pelanggan, repeat customer, produktivitas staf, pendapatan, atau cashflow tidak mampu menopang biaya usaha.",
+    "Bisnis masih beroperasi, tetapi retensi pelanggan, utilisasi staf, margin, atau cashflow berada pada tingkat berisiko.",
+    "Pelanggan tersedia, tetapi frekuensi kunjungan, loyalitas, produktivitas staf, marketing, atau profitabilitas perlu ditingkatkan.",
+    "Repeat customer, produktivitas, margin dan cashflow relatif baik dengan beberapa area yang dapat dioptimalkan.",
+    "Loyalitas pelanggan kuat, utilisasi staf tinggi, layanan menguntungkan, dan bisnis siap menambah kapasitas secara terukur.",
+  ],
+  "Transportasi & Logistik": [
+    "Pendapatan tidak mampu menutup biaya kendaraan, BBM, tenaga kerja, pemeliharaan, atau kewajiban usaha.",
+    "Aktivitas tetap berjalan, tetapi utilisasi armada, biaya perjalanan, margin, atau cashflow belum memadai.",
+    "Volume usaha tersedia, tetapi rute, utilisasi, biaya operasional, produktivitas, atau margin perlu ditingkatkan.",
+    "Armada dan kapasitas relatif produktif, cashflow cukup baik, serta biaya operasional relatif terkendali.",
+    "Utilisasi tinggi, biaya per perjalanan efisien, cashflow kuat, pelanggan stabil, dan usaha siap meningkatkan kapasitas.",
+  ],
+  "Pendidikan & Pelatihan": [
+    "Jumlah peserta, pendapatan, retensi, produktivitas pengajar, atau cashflow tidak mampu menopang biaya penyelenggaraan.",
+    "Program masih berjalan, tetapi penerimaan peserta, renewal, margin, utilisasi kelas, atau cashflow berada pada kondisi berisiko.",
+    "Bisnis memiliki peserta, tetapi akuisisi, retensi, kapasitas, produktivitas pengajar, atau profitabilitas perlu diperbaiki.",
+    "Jumlah peserta, retensi, produktivitas pengajar dan kondisi keuangan relatif stabil.",
+    "Akuisisi dan retensi peserta kuat, kapasitas optimal, program menguntungkan, dan usaha memiliki fondasi untuk berkembang.",
+  ],
+  "Properti & Konstruksi": [
+    "Cashflow proyek, biaya, pembayaran, atau kewajiban berada dalam tekanan serius dan dapat mengganggu kelangsungan proyek.",
+    "Proyek masih berjalan tetapi terdapat risiko besar pada cashflow, cost overrun, piutang, keterlambatan, atau modal kerja.",
+    "Bisnis mampu menjalankan proyek, tetapi kontrol biaya, termin pembayaran, produktivitas, margin, atau pipeline perlu diperkuat.",
+    "Cashflow dan pelaksanaan proyek relatif terkendali, margin cukup baik, serta operasional berjalan stabil.",
+    "Cashflow proyek kuat, biaya dan jadwal terkendali, proyek menguntungkan, pipeline tersedia, dan bisnis siap berkembang.",
+  ],
+  "Digital & Kreatif": [
+    "Pendapatan klien, cashflow, produktivitas tim, atau pipeline pekerjaan tidak cukup menopang keberlangsungan bisnis.",
+    "Bisnis memperoleh proyek tetapi margin rendah, cashflow lemah, utilisasi SDM rendah, atau terlalu bergantung pada sedikit klien.",
+    "Bisnis tetap berjalan, tetapi pipeline, retensi klien, produktivitas, recurring revenue, atau profitabilitas masih perlu diperkuat.",
+    "Portofolio klien, produktivitas, pendapatan dan cashflow relatif stabil dengan beberapa peluang optimalisasi.",
+    "Margin kuat, klien relatif terdiversifikasi, recurring revenue baik, tim produktif, dan bisnis siap meningkatkan skala.",
+  ],
+};
+
 function statusShort(score: number) {
   if (score >= 80) return "Sangat Sehat";
   if (score >= 60) return "Sehat";
@@ -510,11 +595,18 @@ export function SubScoresPage() {
             <section className="panel score-legend">
               <h3>Interpretasi & Skala Skor</h3>
               <div>
-                <article className="critical"><strong>Skor 0 - 19 - Kritis</strong><p>Kondisi bisnis sangat kritis dan membutuhkan tindakan pemulihan segera.</p></article>
-                <article className="danger"><strong>Skor 20 - 39 - Berisiko Tinggi</strong><p>Kondisi bisnis berisiko tinggi dan perlu tindakan cepat.</p></article>
-                <article className="warning"><strong>Skor 40 - 59 - Perlu Perbaikan</strong><p>Bisnis masih berjalan, tetapi ada area penting yang harus diperbaiki.</p></article>
-                <article className="success"><strong>Skor 60 - 79 - Sehat</strong><p>Bisnis relatif stabil dengan beberapa peluang optimasi.</p></article>
-                <article className="excellent"><strong>Skor 80 - 100 - Sangat Sehat</strong><p>Bisnis berada dalam kondisi kuat dan siap dikembangkan.</p></article>
+                {(() => {
+                  const legend = (business && scoreLegendByIndustry[business.industry]) || defaultScoreLegend;
+                  return (
+                    <>
+                      <article className="critical"><strong>Skor 0 - 19 - Kritis</strong><p>{legend[0]}</p></article>
+                      <article className="danger"><strong>Skor 20 - 39 - Berisiko Tinggi</strong><p>{legend[1]}</p></article>
+                      <article className="warning"><strong>Skor 40 - 59 - Perlu Perbaikan</strong><p>{legend[2]}</p></article>
+                      <article className="success"><strong>Skor 60 - 79 - Sehat</strong><p>{legend[3]}</p></article>
+                      <article className="excellent"><strong>Skor 80 - 100 - Sangat Sehat</strong><p>{legend[4]}</p></article>
+                    </>
+                  );
+                })()}
               </div>
             </section>
 
