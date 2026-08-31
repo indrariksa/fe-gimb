@@ -3567,7 +3567,7 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .admin-row-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   flex-wrap: nowrap;
   gap: 8px;
 }
@@ -3609,6 +3609,15 @@ textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px color
 .admin-row-actions .admin-row-action--ai-report {
   --admin-action-color: var(--color-warning);
   --admin-action-on: var(--on-warning);
+}
+
+/* Beda dari .admin-row-action--ai-report (aksi aktif): tombol disabled karena
+   generate pertama kali cuma boleh dari pemilik usaha, bukan admin — warna
+   netral/muted, bukan warna aksi utama. Opacity redup datang dari rule
+   `button:disabled` di bawah. */
+.admin-row-actions .admin-row-action--report-pending {
+  --admin-action-color: var(--muted);
+  --admin-action-on: var(--surface);
 }
 
 .admin-row-actions :is(button, a):hover:not(:disabled) {
@@ -6642,9 +6651,6 @@ dt,
   }
   .admin-watchlist article > b {
     text-align: left;
-  }
-  .admin-row-actions {
-    justify-content: flex-start;
   }
   .admin-inventory-detail__header,
   .admin-inventory-notes {

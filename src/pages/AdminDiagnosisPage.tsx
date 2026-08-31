@@ -33,6 +33,7 @@ export function AdminDiagnosisPage() {
   const [diagnosisError, setDiagnosisError] = useState("");
   const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(true);
   const [diagnosisReloadKey, setDiagnosisReloadKey] = useState(0);
+  const [notGeneratedBusinessIds, setNotGeneratedBusinessIds] = useState<Set<string>>(() => new Set());
   const realtimeRefreshKey = useAdminRealtimeSignal();
 
   useEffect(() => {
@@ -104,6 +105,33 @@ export function AdminDiagnosisPage() {
     };
   }, [diagnosisPage, diagnosisPageSize, realtimeRefreshKey]);
 
+  useEffect(() => {
+    if (diagnosisRows.length === 0 || businesses.length === 0) return;
+    let isMounted = true;
+    async function loadAIReportStatus() {
+      const publicIds = [...new Set(
+        diagnosisRows
+          .map((submission) => businesses.find((item) => item.id === submission.business_id)?.public_id)
+          .filter((id): id is string => Boolean(id)),
+      )];
+      const results = await Promise.all(
+        publicIds.map(async (publicId) => {
+          try {
+            await adminApi.adminBusinessAIReport(publicId);
+            return { publicId, notGenerated: false };
+          } catch {
+            return { publicId, notGenerated: true };
+          }
+        }),
+      );
+      if (isMounted) setNotGeneratedBusinessIds(new Set(results.filter((item) => item.notGenerated).map((item) => item.publicId)));
+    }
+    loadAIReportStatus();
+    return () => {
+      isMounted = false;
+    };
+  }, [diagnosisRows, businesses]);
+
   return (
     <DashboardShell activeView="adminDiagnosis" title="Admin Dashboard">
       <section className="admin-page">
@@ -164,13 +192,16 @@ export function AdminDiagnosisPage() {
                 )}
                 {!isDiagnosisLoading && !diagnosisError && diagnosisRows.map((submission) => {
                   const business = businesses.find((item) => item.id === submission.business_id);
+                  const isReportNotGenerated = business ? notGeneratedBusinessIds.has(business.public_id) : false;
                   return (
                     <tr key={submission.public_id}>
                       <td data-label="Usaha">
                         <strong>{submission.business_name || business?.name || submission.public_id}</strong>
                         <span>{business?.industry || "Tanpa jenis usaha"}</span>
                       </td>
-                      <td data-label="Status"><b className={`status-pill ${statusPillClass[submission.analysis.status] ?? ""}`}>{submission.analysis.status}</b></td>
+                      <td data-label="Status">
+                        <b className={`status-pill ${statusPillClass[submission.analysis.status] ?? ""}`}>{submission.analysis.status}</b>
+                      </td>
                       <td data-label="Tanggal">{formatJakartaDate(submission.created_at, "short")}</td>
                       <td data-label="Skor"><strong className="admin-table__score">{formatScore(submission.analysis.overall_score)}</strong></td>
                       <td className="admin-table__actions-col" data-label="Aksi">
@@ -179,7 +210,15 @@ export function AdminDiagnosisPage() {
                             <>
                               <Link className="admin-row-action--score" to={`/businesses/${business.public_id}/sub-scores`}>Sub Skor <Icon name="arrow" size={16} /></Link>
                               <Link className="admin-row-action--input" to={`/admin/businesses/${business.public_id}/inventory-input`}>Lihat Input <Icon name="arrow" size={16} /></Link>
-                              <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/health-report`}>Laporan Kesehatan Bisnis <Icon name="arrow" size={16} /></Link>
+                              {isReportNotGenerated ? (
+                                <button type="button" className="admin-row-action--report-pending" disabled title="Pemilik usaha belum membuat laporan kesehatan bisnis">
+                                  Belum Generate <Icon name="arrow" size={16} />
+                                </button>
+                              ) : (
+                                <Link className="admin-row-action--ai-report" to={`/admin/businesses/${business.public_id}/health-report`}>
+                                  Laporan Kesehatan Bisnis <Icon name="arrow" size={16} />
+                                </Link>
+                              )}
                             </>
                           ) : (
                             <span>-</span>
